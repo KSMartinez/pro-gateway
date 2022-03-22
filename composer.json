@@ -15,6 +15,9 @@
         "symfony/yaml": "5.4.*"
     },
     "require-dev": {
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan": "^1.4",
+        "phpstan/phpstan-symfony": "^1.1"
     },
     "config": {
         "allow-plugins": {
@@ -53,7 +56,8 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
-        ]
+        ],
+        "stan": "phpstan analyse -c phpstan.neon src tests --level max --no-progress"
     },
     "conflict": {
         "symfony/symfony": "*"
