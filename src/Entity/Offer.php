@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\Offer\ValidateOfferAction;
 use App\Repository\OfferRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,7 +13,15 @@ use Doctrine\ORM\Mapping as ORM;
  * @package App\Entity
  */
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
-#[ApiResource]
+#[ApiResource(itemOperations: [
+        'get','put','delete', 'patch',
+        'validate_offer' => [
+            'method' => 'POST',
+            'path' => '/offers/{id}/validate',
+            'controller' => ValidateOfferAction::class,
+        ],
+    ]
+)]
 class Offer
 {
 
