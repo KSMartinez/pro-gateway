@@ -12,5 +12,20 @@ composer stan
 git commit -m "commit message" --no-verify
 ```
 
+- The database is available as a docker container.  
+> **The database is not persistant. You will lose all data once you stop the container**. We use fixtures to generate data anyway.
 
+To setup the database, do the following:
+
+To create the container
+``` docker compose up -d ```
+
+To create the database
+``` symfony console doctrine:database:create ```
+
+To create tables
+``` symfony console doctrine:migrations:migrate ```
+
+To load sample data to the tables 
+``` symfony console doctrine:fixtures:load ```
 
