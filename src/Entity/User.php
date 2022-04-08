@@ -35,6 +35,9 @@ class User implements UserInterface
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: CV::class, cascade: ['persist', 'remove'])]
+    private ?CV $cV;
+
     /**
      * @return int|null
      */
@@ -130,5 +133,22 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getCV(): ?CV
+    {
+        return $this->cV;
+    }
+
+    public function setCV(CV $cV): self
+    {
+        // set the owning side of the relation if necessary
+        if ($cV->getUser() !== $this) {
+            $cV->setUser($this);
+        }
+
+        $this->cV = $cV;
+
+        return $this;
     }
 }
