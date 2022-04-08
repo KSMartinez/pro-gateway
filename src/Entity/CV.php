@@ -2,17 +2,33 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\CVRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
- *
+ * @Vich\Uploadable
  */
 #[ORM\Entity(repositoryClass: CVRepository::class)]
 #[ApiResource(
+    collectionOperations: [
+        'get',
+        'post' => [
+            'input_formats' => [
+                'multipart' => ['multipart/form-data'],
+            ],
+        ],
+    ],
     shortName: "cvs",
+    denormalizationContext: [
+        'groups' => [
+            'cv:write'
+        ]
+    ],
     normalizationContext: [
         "groups" => [
             "cv:read"
@@ -32,21 +48,21 @@ class CV
     /**
      * @var string|null
      */
-    #[Groups(["cv:read"])]
+    #[Groups(["cv:read", "cv:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $experience;
 
     /**
      * @var string|null
      */
-    #[Groups(["cv:read"])]
+    #[Groups(["cv:read", "cv:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $education;
 
     /**
      * @var string|null
      */
-    #[Groups(["cv:read"])]
+    #[Groups(["cv:read", "cv:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $skills;
 
@@ -55,7 +71,51 @@ class CV
      */
     #[Groups(["cv:read"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $fileLink;
+    private ?string $fileLink = null;
+
+    #[ApiProperty(iri: 'http://schema.org/contentUrl')]
+    #[Groups(['cv:read'])]
+    public ?string $contentUrl = null;
+
+
+    /**
+     * @Vich\UploadableField(mapping="media_object", fileNameProperty="fileLink")
+     */
+    #[Groups(['cv:write'])]
+    public ?File $file = null;
+
+
+    /**
+     * @return string|null
+     */
+    public function getContentUrl(): ?string
+    {
+        return $this->contentUrl;
+    }
+
+    /**
+     * @param string|null $contentUrl
+     */
+    public function setContentUrl(?string $contentUrl): void
+    {
+        $this->contentUrl = $contentUrl;
+    }
+
+    /**
+     * @return File|null
+     */
+    public function getFile(): ?File
+    {
+        return $this->file;
+    }
+
+    /**
+     * @param File|null $file
+     */
+    public function setFile(?File $file): void
+    {
+        $this->file = $file;
+    }
 
 
     /**
