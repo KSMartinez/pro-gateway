@@ -46,9 +46,16 @@ class User implements UserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Notification::class, orphanRemoval: true)]
     private Collection $notifications;
 
+    /**
+     * @var Collection<int, SavedOfferSearch>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: SavedOfferSearch::class, orphanRemoval: true)]
+    private Collection $savedOfferSearches;
+
     public function __construct()
     {
         $this->notifications = new ArrayCollection();
+        $this->savedOfferSearches = new ArrayCollection();
     }
 
     /**
@@ -172,4 +179,13 @@ class User implements UserInterface
     {
         return $this->notifications;
     }
+
+    /**
+     * @return Collection<int, SavedOfferSearch>
+     */
+    public function getSavedOfferSearches(): Collection
+    {
+        return $this->savedOfferSearches;
+    }
+
 }
