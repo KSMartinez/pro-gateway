@@ -2,7 +2,10 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Offer\ValidateOfferAction;
 use App\Repository\OfferRepository;
 use DateTimeInterface;
@@ -11,16 +14,18 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Class Offer
  * @package App\Entity
+ * @ApiFilter(SearchFilter::class, properties={"title": "partial", "description": "partial", "city":"exact", "country":"exact", "domain":"exact"})
+ * @ApiFilter(OrderFilter::class, properties={"datePosted" : "DESC"})
  */
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 #[ApiResource(itemOperations: [
-        'get','put','delete', 'patch',
-        'validate_offer' => [
-            'method' => 'POST',
-            'path' => '/offers/{id}/validate',
-            'controller' => ValidateOfferAction::class,
-        ],
-    ]
+    'get','put','delete', 'patch',
+    'validate_offer' => [
+        'method' => 'POST',
+        'path' => '/offers/{id}/validate',
+        'controller' => ValidateOfferAction::class,
+    ],
+]
 )]
 class Offer
 {
