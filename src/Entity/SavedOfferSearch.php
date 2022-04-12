@@ -14,6 +14,77 @@ use Doctrine\ORM\Mapping as ORM;
 class SavedOfferSearch
 {
     /**
+     * @var int|null
+     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id;
+    /**
+     * @var User
+     */
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'savedOfferSearches')]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $user;
+    /**
+     * @var string
+     */
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $url;
+    /**
+     * @var string
+     */
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $nameOfSearch;
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $title;
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $description;
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $city;
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $country;
+    /**
+     * @var Domain|null
+     */
+    #[ORM\ManyToOne(targetEntity: Domain::class)]
+    private ?Domain $domain;
+    /**
+     * @var int|null
+     */
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $minSalary;
+    /**
+     * @var int|null
+     */
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $maxSalary;
+    /**
+     * @var TypeOfContract|null
+     */
+    #[ORM\ManyToOne(targetEntity: TypeOfContract::class)]
+    private ?TypeOfContract $typeOfContract;
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $companyName;
+    #[ORM\Column(type: 'boolean')]
+    private bool $isActive = true;
+
+    /**
      * @return string|null
      */
     public function getTitle(): ?string
@@ -156,91 +227,6 @@ class SavedOfferSearch
     {
         $this->companyName = $companyName;
     }
-
-    /**
-     * @var int|null
-     */
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id;
-
-    /**
-     * @var User
-     */
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'savedOfferSearches')]
-    #[ORM\JoinColumn(nullable: false)]
-    private User $user;
-
-    /**
-     * @var string
-     */
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $url;
-
-    /**
-     * @var string
-     */
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $nameOfSearch;
-
-    /**
-     * @var string|null
-     */
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $title;
-
-    /**
-     * @var string|null
-     */
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $description;
-
-    /**
-     * @var string|null
-     */
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $city;
-
-    /**
-     * @var string|null
-     */
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $country;
-
-    /**
-     * @var Domain|null
-     */
-    #[ORM\ManyToOne(targetEntity: Domain::class)]
-    private ?Domain $domain;
-
-    /**
-     * @var int|null
-     */
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $minSalary;
-
-    /**
-     * @var int|null
-     */
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $maxSalary;
-
-    /**
-     * @var TypeOfContract|null
-     */
-    #[ORM\ManyToOne(targetEntity: TypeOfContract::class)]
-    private ?TypeOfContract $typeOfContract;
-
-    /**
-     * @var string|null
-     */
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $companyName;
-
-    #[ORM\Column(type: 'boolean')]
-    private bool $isActive = true;
-
 
     /**
      * @return int|null
