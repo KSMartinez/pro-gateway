@@ -48,6 +48,12 @@ class Notification
     private bool $isRead = false;
 
     /**
+     * @var NotificationSource|null
+     */
+    #[ORM\ManyToOne(targetEntity: NotificationSource::class)]
+    private ?NotificationSource $source;
+
+    /**
      * @return int|null
      */
     public function getId(): ?int
@@ -127,6 +133,25 @@ class Notification
     public function setIsRead(bool $isRead): self
     {
         $this->isRead = $isRead;
+
+        return $this;
+    }
+
+    /**
+     * @return NotificationSource|null
+     */
+    public function getSource(): ?NotificationSource
+    {
+        return $this->source;
+    }
+
+    /**
+     * @param NotificationSource|null $source
+     * @return $this
+     */
+    public function setSource(?NotificationSource $source): self
+    {
+        $this->source = $source;
 
         return $this;
     }
