@@ -14,6 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ApiResource]
 class NotificationSource
 {
+    const NEW_OFFER = 'NEW_OFFER';
+
     /**
      * @var int|null
      */

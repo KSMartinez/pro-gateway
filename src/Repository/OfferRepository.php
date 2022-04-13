@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Offer;
+use App\Entity\SavedOfferSearch;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -74,4 +75,69 @@ class OfferRepository extends ServiceEntityRepository
         ;
     }
     */
+    /**
+     * @param SavedOfferSearch $search
+     * @return array<mixed>|float|int|string
+     */
+    public function getNumberOfNewOffers(SavedOfferSearch $search): array|float|int|string
+    {
+        $qb = $this->createQueryBuilder('o')
+            ->select('COUNT(o)')
+            ->andWhere('o.isValid = true')
+            // we're only interested in the offers that were posted after the last search happened
+            ->andWhere('o.datePosted > :lastSearch')
+            ->setParameter(':lastSearch', $search->getLastSearch());
+
+        /**
+         * Here we test all the different criteria
+         */
+        if ($search->getTitle()) {
+            $qb->andWhere('o.title LIKE :searchTitle')
+                ->setParameter(':searchTitle', '*' . $search->getTitle() . '*');
+        }
+
+        if ($search->getCity()) {
+            $qb->andWhere('o.city LIKE :searchCity')
+                ->setParameter(':searchCity', $search->getTitle());
+        }
+
+        if ($search->getCompanyName()) {
+            $qb->andWhere('o.companyName LIKE :searchCompany')
+                ->setParameter(':searchCompany', $search->getCompanyName());
+        }
+
+        if ($search->getCountry()) {
+            $qb->andWhere('o.country LIKE :searchCountry')
+                ->setParameter(':searchCountry', $search->getCountry());
+        }
+
+        if ($search->getDescription()) {
+            $qb->andWhere('o.description LIKE :searchDescription')
+                ->setParameter(':searchDescription', '*' . $search->getDescription() . '*');
+        }
+
+        if ($search->getDomain()) {
+            $qb->andWhere('o.domain = :searchDomain')
+                ->setParameter(':searchDomain', $search->getDomain());
+        }
+
+        if ($search->getMaxSalary()) {
+            $qb->andWhere('o.maxSalary <= :searchMaxSalary')
+                ->setParameter(':searchMaxSalary', $search->getMaxSalary());
+        }
+
+        if ($search->getMinSalary()) {
+            $qb->andWhere('o.minSalary >= :searchMinSalary')
+                ->setParameter(':searchMinSalary', $search->getMinSalary());
+        }
+
+        if ($search->getTypeOfContract()) {
+            $qb->andWhere('o.typeOfContract = :searchTypeOfContract')
+                ->setParameter(':searchTypeOfContract', $search->getTypeOfContract());
+        }
+
+        //add any more conditions as needed
+
+        return $qb->getQuery()->getScalarResult();
+    }
 }

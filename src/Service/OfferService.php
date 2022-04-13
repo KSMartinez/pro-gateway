@@ -29,7 +29,6 @@ class OfferService
      */
     public function validateOffer(Offer $offer)
     {
-
         $offer->setIsValid(true);
         $this->entityManager->persist($offer);
         $this->entityManager->flush();

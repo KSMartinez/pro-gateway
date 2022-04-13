@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ApiResource]
 class EmailTemplate
 {
+
     /**
      * @var int|null
      */
@@ -43,9 +44,9 @@ class EmailTemplate
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getMessageTemplate(): ?string
+    public function getMessageTemplate(): string
     {
         return $this->messageTemplate;
     }

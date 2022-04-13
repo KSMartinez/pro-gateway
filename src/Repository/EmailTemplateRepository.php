@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\EmailTemplate;
+use App\Entity\NotificationSource;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -74,4 +75,14 @@ class EmailTemplateRepository extends ServiceEntityRepository
         ;
     }
     */
+
+
+    /**
+     * @param NotificationSource $notificationSource
+     * @return EmailTemplate|null
+     */
+    public function getMessageTemplate(NotificationSource $notificationSource): ?EmailTemplate
+    {
+        return $this->findOneBy(array('notificationSource' => $notificationSource));
+    }
 }
