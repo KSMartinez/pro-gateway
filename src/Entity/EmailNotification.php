@@ -29,13 +29,7 @@ class EmailNotification
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    /**
-     * La fréquence d'envoi des e-mails à l'utilisateur en jours
-     * (1 jour pour tous les jours, 30 jours pour une fois par mois, 15 jours pour deux fois par mois, etc.)
-     * @var int|null
-     */
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $frequency;
+
 
     /**
      * @var string
@@ -88,24 +82,6 @@ class EmailNotification
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getFrequency(): ?int
-    {
-        return $this->frequency;
-    }
-
-    /**
-     * @param int|null $frequency
-     * @return $this
-     */
-    public function setFrequency(?int $frequency): self
-    {
-        $this->frequency = $frequency;
-
-        return $this;
-    }
 
     /**
      * @return string|null

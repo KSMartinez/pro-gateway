@@ -58,6 +58,14 @@ class User implements UserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: EmailNotification::class, orphanRemoval: true)]
     private Collection $emailNotifications;
 
+    /**
+     * La fréquence d'envoi des e-mails à l'utilisateur en jours
+     * (1 jour pour tous les jours, 30 jours pour une fois par mois, 15 jours pour deux fois par mois, etc.)
+     * @var int|null
+     */
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $frequency = 1;
+
     public function __construct()
     {
         $this->notifications = new ArrayCollection();
@@ -201,6 +209,22 @@ class User implements UserInterface
     public function getEmailNotifications(): Collection
     {
         return $this->emailNotifications;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getFrequency(): ?int
+    {
+        return $this->frequency;
+    }
+
+    /**
+     * @param int|null $frequency
+     */
+    public function setFrequency(?int $frequency): void
+    {
+        $this->frequency = $frequency;
     }
 
 }

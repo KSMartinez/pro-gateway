@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\SavedOfferSearchRepository;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -83,6 +85,18 @@ class SavedOfferSearch
     private ?string $companyName;
     #[ORM\Column(type: 'boolean')]
     private bool $isActive = true;
+
+    /**
+     * @var DateTimeInterface|null
+     */
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?DateTimeInterface $lastSearch;
+
+
+    public function __construct()
+    {
+        $this->lastSearch = new DateTime('now');
+    }
 
     /**
      * @return string|null
@@ -301,6 +315,18 @@ class SavedOfferSearch
     public function setIsActive(bool $isActive): self
     {
         $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getLastSearch(): ?DateTimeInterface
+    {
+        return $this->lastSearch;
+    }
+
+    public function setLastSearch(DateTimeInterface $lastSearch): self
+    {
+        $this->lastSearch = $lastSearch;
 
         return $this;
     }
