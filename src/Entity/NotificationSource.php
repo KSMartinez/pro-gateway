@@ -7,7 +7,8 @@ use App\Repository\NotificationSourceRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- *
+ * La source d'une notification (ou d'une notification par courriel).
+ * Il peut s'agir d'alertes d'offres, d'actualités, d'administration, etc.
  */
 #[ORM\Entity(repositoryClass: NotificationSourceRepository::class)]
 #[ApiResource]
