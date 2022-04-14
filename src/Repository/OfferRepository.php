@@ -82,11 +82,11 @@ class OfferRepository extends ServiceEntityRepository
     public function getNumberOfNewOffers(SavedOfferSearch $search): array|float|int|string
     {
         $qb = $this->createQueryBuilder('o')
-            ->select('COUNT(o)')
-            ->andWhere('o.isValid = true')
+                   ->select('COUNT(o)')
+                   ->andWhere('o.isValid = true')
             // we're only interested in the offers that were posted after the last search happened
-            ->andWhere('o.datePosted > :lastSearch')
-            ->setParameter(':lastSearch', $search->getLastSearch());
+                   ->andWhere('o.datePosted > :lastSearch')
+                   ->setParameter(':lastSearch', $search->getLastSearch());
 
         /**
          * Here we test all the different criteria

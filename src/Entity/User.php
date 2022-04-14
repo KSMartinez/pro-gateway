@@ -221,10 +221,12 @@ class User implements UserInterface
 
     /**
      * @param int|null $frequency
+     * @return User
      */
-    public function setFrequency(?int $frequency): void
+    public function setFrequency(?int $frequency): self
     {
         $this->frequency = $frequency;
+        return $this;
     }
 
 }

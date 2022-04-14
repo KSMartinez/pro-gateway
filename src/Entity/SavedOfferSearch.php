@@ -99,155 +99,21 @@ class SavedOfferSearch
     }
 
     /**
-     * @return string|null
-     */
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param string|null $title
-     */
-    public function setTitle(?string $title): void
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param string|null $description
-     */
-    public function setDescription(?string $description): void
-    {
-        $this->description = $description;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getCity(): ?string
-    {
-        return $this->city;
-    }
-
-    /**
-     * @param string|null $city
-     */
-    public function setCity(?string $city): void
-    {
-        $this->city = $city;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getCountry(): ?string
-    {
-        return $this->country;
-    }
-
-    /**
-     * @param string|null $country
-     */
-    public function setCountry(?string $country): void
-    {
-        $this->country = $country;
-    }
-
-    /**
-     * @return Domain|null
-     */
-    public function getDomain(): ?Domain
-    {
-        return $this->domain;
-    }
-
-    /**
-     * @param Domain|null $domain
-     */
-    public function setDomain(?Domain $domain): void
-    {
-        $this->domain = $domain;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getMinSalary(): ?int
-    {
-        return $this->minSalary;
-    }
-
-    /**
-     * @param int|null $minSalary
-     */
-    public function setMinSalary(?int $minSalary): void
-    {
-        $this->minSalary = $minSalary;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getMaxSalary(): ?int
-    {
-        return $this->maxSalary;
-    }
-
-    /**
-     * @param int|null $maxSalary
-     */
-    public function setMaxSalary(?int $maxSalary): void
-    {
-        $this->maxSalary = $maxSalary;
-    }
-
-    /**
-     * @return TypeOfContract|null
-     */
-    public function getTypeOfContract(): ?TypeOfContract
-    {
-        return $this->typeOfContract;
-    }
-
-    /**
-     * @param TypeOfContract|null $typeOfContract
-     */
-    public function setTypeOfContract(?TypeOfContract $typeOfContract): void
-    {
-        $this->typeOfContract = $typeOfContract;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getCompanyName(): ?string
-    {
-        return $this->companyName;
-    }
-
-    /**
-     * @param string|null $companyName
-     */
-    public function setCompanyName(?string $companyName): void
-    {
-        $this->companyName = $companyName;
-    }
-
-    /**
      * @return int|null
      */
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * @param int|null $id
+     * @return SavedOfferSearch
+     */
+    public function setId(?int $id): SavedOfferSearch
+    {
+        $this->id = $id;
+        return $this;
     }
 
     /**
@@ -260,74 +126,247 @@ class SavedOfferSearch
 
     /**
      * @param User $user
-     * @return $this
+     * @return SavedOfferSearch
      */
-    public function setUser(User $user): self
+    public function setUser(User $user): SavedOfferSearch
     {
         $this->user = $user;
-
         return $this;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getUrl(): ?string
+    public function getUrl(): string
     {
         return $this->url;
     }
 
     /**
      * @param string $url
-     * @return $this
+     * @return SavedOfferSearch
      */
-    public function setUrl(string $url): self
+    public function setUrl(string $url): SavedOfferSearch
     {
         $this->url = $url;
-
         return $this;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getNameOfSearch(): ?string
+    public function getNameOfSearch(): string
     {
         return $this->nameOfSearch;
     }
 
     /**
      * @param string $nameOfSearch
-     * @return $this
+     * @return SavedOfferSearch
      */
-    public function setNameOfSearch(string $nameOfSearch): self
+    public function setNameOfSearch(string $nameOfSearch): SavedOfferSearch
     {
         $this->nameOfSearch = $nameOfSearch;
-
         return $this;
     }
 
-    public function getIsActive(): ?bool
+    /**
+     * @return string|null
+     */
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string|null $title
+     * @return SavedOfferSearch
+     */
+    public function setTitle(?string $title): SavedOfferSearch
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string|null $description
+     * @return SavedOfferSearch
+     */
+    public function setDescription(?string $description): SavedOfferSearch
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    /**
+     * @param string|null $city
+     * @return SavedOfferSearch
+     */
+    public function setCity(?string $city): SavedOfferSearch
+    {
+        $this->city = $city;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    /**
+     * @param string|null $country
+     * @return SavedOfferSearch
+     */
+    public function setCountry(?string $country): SavedOfferSearch
+    {
+        $this->country = $country;
+        return $this;
+    }
+
+    /**
+     * @return Domain|null
+     */
+    public function getDomain(): ?Domain
+    {
+        return $this->domain;
+    }
+
+    /**
+     * @param Domain|null $domain
+     * @return SavedOfferSearch
+     */
+    public function setDomain(?Domain $domain): SavedOfferSearch
+    {
+        $this->domain = $domain;
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getMinSalary(): ?int
+    {
+        return $this->minSalary;
+    }
+
+    /**
+     * @param int|null $minSalary
+     * @return SavedOfferSearch
+     */
+    public function setMinSalary(?int $minSalary): SavedOfferSearch
+    {
+        $this->minSalary = $minSalary;
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getMaxSalary(): ?int
+    {
+        return $this->maxSalary;
+    }
+
+    /**
+     * @param int|null $maxSalary
+     * @return SavedOfferSearch
+     */
+    public function setMaxSalary(?int $maxSalary): SavedOfferSearch
+    {
+        $this->maxSalary = $maxSalary;
+        return $this;
+    }
+
+    /**
+     * @return TypeOfContract|null
+     */
+    public function getTypeOfContract(): ?TypeOfContract
+    {
+        return $this->typeOfContract;
+    }
+
+    /**
+     * @param TypeOfContract|null $typeOfContract
+     * @return SavedOfferSearch
+     */
+    public function setTypeOfContract(?TypeOfContract $typeOfContract): SavedOfferSearch
+    {
+        $this->typeOfContract = $typeOfContract;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCompanyName(): ?string
+    {
+        return $this->companyName;
+    }
+
+    /**
+     * @param string|null $companyName
+     * @return SavedOfferSearch
+     */
+    public function setCompanyName(?string $companyName): SavedOfferSearch
+    {
+        $this->companyName = $companyName;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
     {
         return $this->isActive;
     }
 
-    public function setIsActive(bool $isActive): self
+    /**
+     * @param bool $isActive
+     * @return SavedOfferSearch
+     */
+    public function setIsActive(bool $isActive): SavedOfferSearch
     {
         $this->isActive = $isActive;
-
         return $this;
     }
 
-    public function getLastSearch(): ?DateTimeInterface
+    /**
+     * @return DateTime|DateTimeInterface|null
+     */
+    public function getLastSearch(): DateTime|DateTimeInterface|null
     {
         return $this->lastSearch;
     }
 
-    public function setLastSearch(DateTimeInterface $lastSearch): self
+    /**
+     * @param DateTime|DateTimeInterface|null $lastSearch
+     * @return SavedOfferSearch
+     */
+    public function setLastSearch(DateTime|DateTimeInterface|null $lastSearch): SavedOfferSearch
     {
         $this->lastSearch = $lastSearch;
-
         return $this;
     }
+
+
 }

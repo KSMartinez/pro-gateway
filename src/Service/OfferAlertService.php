@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use _PHPStan_565248deb\Nette\Neon\Exception;
 use App\Entity\EmailNotification;
 use App\Entity\NotificationSource;
 use App\Entity\SavedOfferSearch;
@@ -11,6 +10,7 @@ use App\Repository\NotificationSourceRepository;
 use App\Repository\OfferRepository;
 use App\Repository\SavedOfferSearchRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 
 class OfferAlertService
 {
@@ -36,7 +36,7 @@ class OfferAlertService
             //we create a new email notification if we find there are new offers. We don't care if notifications already exists.
             //we will worry about that when sending out the emails.
             if ($numberOfNewOffers > 0) {
-                //@phpstan-ignore-next-line todo remove this
+                //@phpstan-ignore-next-line todo remove this. Issue with the type of numberOfNewOffers
                 $this->createEmailNotification($search, $numberOfNewOffers);
             }
         }
