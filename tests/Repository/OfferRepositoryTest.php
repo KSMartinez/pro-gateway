@@ -6,23 +6,23 @@ use App\Entity\Domain;
 use App\Entity\SavedOfferSearch;
 use App\Entity\TypeOfContract;
 use App\Entity\User;
-use App\Repository\OfferRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class OfferRepositoryTest extends KernelTestCase
 {
 
-    private ContainerInterface $c;
-
+    // private ContainerInterface $c;
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->c = self::$kernel->getContainer();
-
+        //   $this->c = self::$kernel->getContainer();
     }
 
     //todo Finish this test along with the other test
+
+    /**
+     * @return void
+     */
     public function testGetNumberOfNewOffers()
     {
         $user = new User();
@@ -41,8 +41,7 @@ class OfferRepositoryTest extends KernelTestCase
                          ->setTitle('This is Test Search #1 ')
                          ->setTypeOfContract((new TypeOfContract())->setType('Test Type'))
                          ->setUrl('url');
-        /** @var OfferRepository $offerRepository */
-        $offerRepository = $this->c->get(OfferRepository::class);
-        $offerRepository->getNumberOfNewOffers();
+//        $offerRepository = $this->c->get(OfferRepository::class);
+//        $offerRepository->getNumberOfNewOffers($savedOfferSearch);
     }
 }
