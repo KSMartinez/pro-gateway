@@ -9,6 +9,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Offer\ValidateOfferAction;
 use App\Repository\OfferRepository;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -134,6 +136,17 @@ class Offer
      */
     #[ORM\Column(type: 'boolean')]
     private bool $isOfPartner;
+
+    /**
+     * @var Collection<int,Candidature>
+     */
+    #[ORM\OneToMany(mappedBy: 'offer', targetEntity: Candidature::class)]
+    private Collection $candidatures;
+
+    public function __construct()
+    {
+        $this->candidatures = new ArrayCollection();
+    }
 
     /**
      * @return int|null
@@ -446,4 +459,14 @@ class Offer
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Candidature>
+     */
+    public function getCandidatures(): Collection
+    {
+        return $this->candidatures;
+    }
+
+
 }

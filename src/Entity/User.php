@@ -66,11 +66,18 @@ class User implements UserInterface
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $frequency = 1;
 
+    /**
+     * @var Collection<int, Candidature>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Candidature::class, orphanRemoval: true)]
+    private Collection $candidatures;
+
     public function __construct()
     {
         $this->notifications = new ArrayCollection();
         $this->savedOfferSearches = new ArrayCollection();
         $this->emailNotifications = new ArrayCollection();
+        $this->candidatures = new ArrayCollection();
     }
 
     /**
@@ -227,6 +234,14 @@ class User implements UserInterface
     {
         $this->frequency = $frequency;
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Candidature>
+     */
+    public function getCandidatures(): Collection
+    {
+        return $this->candidatures;
     }
 
 }
