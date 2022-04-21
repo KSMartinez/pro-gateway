@@ -7,12 +7,13 @@ use App\Repository\GroupStatusRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- *
+ * //todo refactor with string as ID
  */
 #[ORM\Entity(repositoryClass: GroupStatusRepository::class)]
 #[ApiResource]
 class GroupStatus
 {
+    const EN_ATTENTE = 'EN_ATTENTE';
     /**
      * @var int|null
      */

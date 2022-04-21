@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\Group\ListGroupDemandsAction;
 use App\Repository\GroupRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,7 +13,14 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
-#[ApiResource]
+#[ApiResource(collectionOperations: [
+    'get', 'post',
+    'list_group_demands' => [
+        'method' => 'get',
+        'path' => '/groups/demandesGroupe',
+        'controller' => ListGroupDemandsAction::class
+    ]
+])]
 class Group
 {
     /**
