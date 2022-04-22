@@ -29,4 +29,9 @@ final class Version20220411123340 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('DROP TABLE notification');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

@@ -36,4 +36,9 @@ final class Version20220323165924 extends AbstractMigration
         $this->addSql('DROP TABLE offer');
         $this->addSql('DROP TABLE type_of_contract');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

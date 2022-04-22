@@ -32,4 +32,9 @@ final class Version20220408155708 extends AbstractMigration
         $this->addSql('DROP INDEX UNIQ_B66FFE92A76ED395 ON cv');
         $this->addSql('ALTER TABLE cv DROP user_id');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

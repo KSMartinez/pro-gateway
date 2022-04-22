@@ -46,4 +46,9 @@ final class Version20220413145544 extends AbstractMigration
         $this->addSql('ALTER TABLE notification DROP source_id');
         $this->addSql('ALTER TABLE user DROP frequency');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

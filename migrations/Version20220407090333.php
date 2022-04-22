@@ -28,4 +28,9 @@ final class Version20220407090333 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('DROP TABLE cv');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }
