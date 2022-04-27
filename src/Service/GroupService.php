@@ -3,7 +3,6 @@
 namespace App\Service;
 use App\Entity\Group;
 use App\Entity\GroupStatus;
-use App\Entity\NotificationSource;
 use App\Model\GroupDemand;
 use App\Repository\GroupRepository;
 use App\Repository\GroupStatusRepository;
@@ -45,7 +44,7 @@ class GroupService
 
 //        $this->notificationService->createNotification($groupDemand->getNotificationMessage(),
 //                                                       NotificationSource::GROUP_DEMAND, $group->getCreatedBy());
-        $this->entityManager->persist($groupDemand);
+        $this->entityManager->persist($group);
         $this->entityManager->flush();
         return $group;
     }

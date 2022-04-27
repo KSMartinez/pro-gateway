@@ -90,7 +90,44 @@ class GroupServiceTest extends KernelTestCase
      */
     public function testGetGroupDemands()
     {
+        $this->entityManager->getConnection()->beginTransaction();
+        $groupStatusEnAttente = new GroupStatus();
+        $groupStatusEnAttente->setStatus(GroupStatus::EN_ATTENTE);
+        $this->entityManager->persist($groupStatusEnAttente);
 
+
+        $groupStatusConfirmed = new GroupStatus();
+        $groupStatusConfirmed->setStatus(GroupStatus::CONFIRME);
+        $this->entityManager->persist($groupStatusConfirmed);
+
+        $user = new User();
+        $user->setFrequency(30)
+             ->setEmail('test@test.com');
+        $this->entityManager->persist($user);
+
+        $group = new Group();
+        $group->setGroupStatus($groupStatusEnAttente)
+              ->setName('Test Group')
+              ->setDescription('This is a test group')
+              ->setCreatedBy($user)
+              ->setDateCreated(new DateTime('now'));
+        $this->entityManager->persist($group);
+
+        $this->entityManager->flush();
+
+        $groupDemand = new GroupDemand();
+        $groupDemand->setGroup($group)
+                    ->setNotificationMessage("This group was confirmed");
+
+        $groupService = $this->c->get(GroupService::class);
+        $groupService->validateGroupDemand($groupDemand);
+
+        $groupRepo = $this->entityManager->getRepository(Group::class);
+        $group = $groupRepo->find($group->getId());
+
+        self::assertNotNull($group);
+        self::assertEquals(GroupStatus::CONFIRME, $group->getGroupStatus()->getStatus());
+        $this->entityManager->getConnection()->rollBack();
     }
 
     /**
