@@ -2,29 +2,41 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use App\Controller\User\CharteDutilisationAction;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Validator\Constraints as Assert;  
 
 /**
  *
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource]
+#[ApiResource(itemOperations: [
+    'get','put','delete', 'patch',
+    'charte_user' => [  
+        'method' => 'POST',  
+        'path' => '/charteAction/{id}',     
+        'controller' => CharteDutilisationAction::class,
+    ],  
+]
+)]
 class User implements UserInterface
 {
     /**
-     * @var int|null
+     * @var int|null 
      */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id;
+   
 
+     
     /**
      * @var string
      */
@@ -34,7 +46,7 @@ class User implements UserInterface
     /**
      * @var string[]
      */
-    #[ORM\Column(type: 'json')]
+    #[ORM\Column(type: 'json')]  
     private array $roles = [];
 
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: CV::class, cascade: ['persist', 'remove'])]
@@ -65,6 +77,14 @@ class User implements UserInterface
      */
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $frequency = 1;
+
+
+    /**
+     * @var boolean 
+     */  
+    #[ORM\Column(type: 'boolean',  nullable: false)]
+    private ?bool $charteSigned = false;       
+
 
     public function __construct()
     {
@@ -228,5 +248,28 @@ class User implements UserInterface
         $this->frequency = $frequency;
         return $this;
     }
+ 
+      /**
+     * Set charte_signed
+     *
+     * @param boolean $charte_signed
+     *
+     * @return User
+     */
+    public function setCharteSigned($charte_signed) {
+        $this->charteSigned = $charte_signed;
+  
+        return $this;
+    }
+
+    /**
+     * Get charte_signed
+     *
+     * @return boolean
+     */
+    public function getCharteSigned() {
+        return $this->charteSigned;
+    }
+
 
 }
