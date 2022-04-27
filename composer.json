@@ -85,7 +85,7 @@
         "post-update-cmd": [
             "@auto-scripts"
         ],
-        "stan": "phpstan analyse -c phpstan.neon src tests --level max --no-progress"
+        "stan": "phpstan analyse -c phpstan.neon src --level max --no-progress"
     },
     "conflict": {
         "symfony/symfony": "*"
