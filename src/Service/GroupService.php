@@ -7,10 +7,12 @@ use App\Entity\NotificationSource;
 use App\Model\GroupDemand;
 use App\Repository\GroupRepository;
 use App\Repository\GroupStatusRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 
 class GroupService
 {
-    public function __construct(private GroupRepository $groupRepository, private GroupStatusRepository $groupStatusRepository, private NotificationService $notificationService)
+    public function __construct(private EntityManagerInterface $entityManager, private GroupRepository $groupRepository, private GroupStatusRepository $groupStatusRepository)
     {
     }
 
@@ -26,19 +28,43 @@ class GroupService
     /**
      * @param GroupDemand $groupDemand
      * @return Group
+     * @throws Exception
      */
     public function validateGroupDemand(GroupDemand $groupDemand): Group
     {
         $groupConfirmedStatus = $this->groupStatusRepository->findOneBy(array('status' => GroupStatus::CONFIRME));
-        $groupDemand->getGroup()->setGroupStatus($groupConfirmedStatus);
-        $this->notificationService->createNotification($groupDemand->getNotificationMessage(), NotificationSource::GROUP_DEMAND);
-        return $groupDemand;
+        if (!$groupConfirmedStatus){
+            throw new Exception('GroupStatus with label ' . GroupStatus::CONFIRME . ' was not found in the table. Please add it correctly.');
+        }
+        $group = $groupDemand->getGroup();
+        $group->setGroupStatus($groupConfirmedStatus);
+
+        if (!$group->getCreatedBy()){
+            throw new Exception("Group createdBy is null. Cannot notify user");
+        }
+
+//        $this->notificationService->createNotification($groupDemand->getNotificationMessage(),
+//                                                       NotificationSource::GROUP_DEMAND, $group->getCreatedBy());
+        $this->entityManager->persist($groupDemand);
+        $this->entityManager->flush();
+        return $group;
     }
 
-    public function rejectGroupDemand(Group $groupDemand): Group
+    /**
+     * @param GroupDemand $groupDemand
+     * @return Group
+     * @throws Exception
+     */
+    public function rejectGroupDemand(GroupDemand $groupDemand): Group
     {
         $groupRefusedStatus = $this->groupStatusRepository->findOneBy(array('status' => GroupStatus::REFUSE));
-        $groupDemand->setGroupStatus($groupRefusedStatus);
-        return $groupDemand;
+        if (!$groupRefusedStatus){
+            throw new Exception('GroupStatu with label ' . GroupStatus::REFUSE . ' was not found in the table. Please add it correctly.');
+        }
+        $group = $groupDemand->getGroup();
+        $group->setGroupStatus($groupRefusedStatus);
+        $this->entityManager->persist($group);
+        $this->entityManager->flush();
+        return $group;
     }
 }

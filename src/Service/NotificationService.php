@@ -18,7 +18,12 @@ class NotificationService
     /**
      * A new notification is created for each notification.
      * //todo review squashing notifications together especially for Offers. Make new function that creates unique notifications?
+     *
+     * @param string $notificationMessage
+     * @param string $source
+     * @param User   $user
      * @throws Exception
+     * @return void
      */
     public function createNotification(string $notificationMessage, string $source, User $user)
     {
