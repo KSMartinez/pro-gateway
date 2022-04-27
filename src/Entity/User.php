@@ -4,13 +4,14 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use App\Controller\User\UpdateProfilAction;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Controller\User\CharteDutilisationAction;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;  
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  *
@@ -22,7 +23,12 @@ use Symfony\Component\Validator\Constraints as Assert;
         'method' => 'POST',  
         'path' => '/charteAction/{id}',     
         'controller' => CharteDutilisationAction::class,
-    ],  
+    ], 
+    'updateProfil_user' => [  
+        'method' => 'PUT',  
+        'path' => '/updateProfil/user/{id}',     
+        'controller' => UpdateProfilAction::class,  
+    ],   
 ]
 )]
 class User implements UserInterface
@@ -83,7 +89,7 @@ class User implements UserInterface
      * @var boolean 
      */  
     #[ORM\Column(type: 'boolean',  nullable: false)]
-    private ?bool $charteSigned = false;       
+    private bool $charteSigned = false;       
 
 
     public function __construct()

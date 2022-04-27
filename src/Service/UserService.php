@@ -27,7 +27,7 @@ class UserService
      * @param User $user
      * @return User  
      */
-    public function charteUtilisation(User $user, $charteSigned)
+    public function charteUtilisation(User $user, bool $charteSigned)
     {
     
        
@@ -50,6 +50,27 @@ class UserService
         # According to the $user->getCharteSigned(), the front gonna do the redirection like this : 
         // if $user->getCharteSigned() == true => return $this->redirectToRoute('homepage');
         // if $user->getCharteSigned() == false => return $this->redirectToRoute('profil');  
+
+        return $user;       
+
+    }  
+
+
+    
+    /**    
+     * @param User $user
+     * @return User  
+     */
+    public function update(User $user)
+    {
+    
+
+        # The validation of each data gonna be done on the front 
+        # We just need to persist and flush    
+
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();  
+
 
         return $user;       
 
