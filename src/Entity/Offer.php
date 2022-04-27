@@ -142,6 +142,15 @@ class Offer
     #[ORM\OneToMany(mappedBy: 'offer', targetEntity: Candidature::class)]
     private Collection $candidatures;
 
+    /**
+     * @var string
+     */
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $offerId;
+
+    /**
+     *
+     */
     public function __construct()
     {
         $this->candidatures = new ArrayCollection();
@@ -465,6 +474,25 @@ class Offer
     public function getCandidatures(): Collection
     {
         return $this->candidatures;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOfferId(): ?string
+    {
+        return $this->offerId;
+    }
+
+    /**
+     * @param string $offerId
+     * @return $this
+     */
+    public function setOfferId(string $offerId): self
+    {
+        $this->offerId = $offerId;
+
+        return $this;
     }
 
 
