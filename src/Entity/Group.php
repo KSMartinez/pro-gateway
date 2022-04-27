@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\Group\ListGroupDemandsAction;
+use App\Controller\Group\ValidateGroupDemandAction;
+use App\Model\GroupDemand;
 use App\Repository\GroupRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,14 +15,24 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
-#[ApiResource(collectionOperations: [
-    'get', 'post',
-    'list_group_demands' => [
-        'method' => 'get',
-        'path' => '/groups/demandesGroupe',
-        'controller' => ListGroupDemandsAction::class
-    ]
-])]
+#[ApiResource(
+    collectionOperations: [
+        'get', 'post',
+        'list_group_demands' => [
+            'method' => 'get',
+            'path' => '/groups/demandes/',
+            'controller' => ListGroupDemandsAction::class
+        ]],
+    itemOperations: [
+        'get','put','patch','delete',
+        'validate_group_demand' => [
+            'method' => 'post',
+            'path' => '/groups/demande/{id}/validate',
+            'input'=> GroupDemand::class,
+            'controller'  => ValidateGroupDemandAction::class
+        ]
+    ])
+]
 class Group
 {
     /**
@@ -55,6 +67,12 @@ class Group
     #[ORM\ManyToOne(targetEntity: GroupStatus::class)]
     #[ORM\JoinColumn(nullable: false)]
     private GroupStatus $groupStatus;
+
+    /**
+     * @var User|null
+     */
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    private ?User $createdBy;
 
     /**
      * @return int|null
@@ -136,6 +154,18 @@ class Group
     public function setGroupStatus(GroupStatus $groupStatus): self
     {
         $this->groupStatus = $groupStatus;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): self
+    {
+        $this->createdBy = $createdBy;
 
         return $this;
     }

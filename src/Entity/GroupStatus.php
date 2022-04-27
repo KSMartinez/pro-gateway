@@ -14,6 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
 class GroupStatus
 {
     const EN_ATTENTE = 'EN_ATTENTE';
+    const CONFIRME = 'CONFIRME';
+    const REFUSE = 'REFUSE';
     /**
      * @var int|null
      */

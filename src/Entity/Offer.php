@@ -22,8 +22,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 #[ApiResource(itemOperations: [
     'get','put','delete', 'patch',
-    'validate_offer' => [
-        'method' => 'POST',
+    'validate_offer' => ['method' => 'POST',
         'path' => '/offers/{id}/validate',
         'controller' => ValidateOfferAction::class,
     ],
