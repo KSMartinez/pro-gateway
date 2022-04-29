@@ -4,9 +4,13 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\CV\UpdateCVAction;
 use App\Repository\CVRepository;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
@@ -15,31 +19,53 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  */
 #[ORM\Entity(repositoryClass: CVRepository::class)]
 #[ApiResource(
-    collectionOperations: [
-        'get',
-        'post' => [
+       collectionOperations: [
+           'get',
+           'post' => [
+               'input_formats' => [
+                   'multipart' => ['multipart/form-data'],
+               ],
+
+           ],
+       ],
+       itemOperations      : [
+       'get', 'delete','put',
+       'updateFile' => [
+           'method' => 'POST',
+           'path' => '/cvs/{id}/update',
+           'openapi_context' => [
+               'summary'     => 'Use this endpoint to update only the file of the CV. Use the PUT endpoint for all other updating',
+               'description' => "# Pop a great rabbit picture by color!\n\n![A great rabbit]"
+               ],
+           'controller' => UpdateCVAction::class,
+           'denormalization_context' => ['groups' => ['cv:update']],
+           'input_formats' => [
+               'multipart' => ['multipart/form-data'],
+           ]
+
+        ],
+        'patch' => [
             'input_formats' => [
                 'multipart' => ['multipart/form-data'],
-            ],
-        ],
-    ],
-    shortName: "cvs",
-    denormalizationContext: [
-        'groups' => [
-            'cv:write'
+            ]
         ]
-    ],
-    normalizationContext: [
-        "groups" => [
-            "cv:read"
-        ]
-    ],
+       ],
+       shortName: "cvs", denormalizationContext: [
+           'groups' => [
+               'cv:write', 'cv:update'
+           ]
+       ], normalizationContext: [
+           "groups" => [
+               "cv:read"
+           ]
+       ]
 )]
 class CV
 {
     /**
      * @var int|null
      */
+    #[Groups(["cv:read", "cv:write"])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -71,7 +97,7 @@ class CV
      */
     #[Groups(["cv:read"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $fileLink = null;
+    private ?string $fileLink = "";
 
     #[ApiProperty(iri: 'http://schema.org/contentUrl')]
     #[Groups(['cv:read'])]
@@ -81,13 +107,27 @@ class CV
     /**
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="fileLink")
      */
-    #[Groups(['cv:write'])]
+    #[Groups(['cv:write', 'cv:update'])]
     public ?File $file = null;
 
+    #[Groups(["cv:read", "cv:write"])]
     #[ORM\OneToOne(inversedBy: 'cV', targetEntity: User::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
+    /**
+     * This field is techincally not needed. But we need this to update the file of the CV.
+     * This is a bug with VichUploaderBundle. Refer this link
+     * https://github.com/dustin10/VichUploaderBundle/issues/8
+     * @var DateTimeInterface
+     */
+    #[ORM\Column(type: 'date')]
+    private DateTimeInterface $updatedAt;
+
+    public function __construct()
+    {
+        $this->updatedAt = new DateTime('now');
+    }
 
     /**
      * @return string|null
@@ -206,6 +246,18 @@ class CV
     public function setUser(User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
