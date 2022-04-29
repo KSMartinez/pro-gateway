@@ -57,6 +57,7 @@ final class OfferFactory extends ModelFactory
             'isValid' => self::faker()->boolean,
             'isPublic' => self::faker()->boolean(),
             'isOfPartner' => self::faker()->boolean(),
+            'offerId' => self::faker()->uuid()
         ];
     }
 
