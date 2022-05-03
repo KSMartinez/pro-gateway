@@ -4,11 +4,16 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use App\Controller\User\UserListAction;
 use App\Controller\User\UpdateProfilAction;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\User\UpdatePictureAction;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Controller\User\CharteDutilisationAction;
+use Symfony\Component\HttpFoundation\File\File;  
+use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;  
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;  
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -17,19 +22,40 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
  *
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource(itemOperations: [
-    'get','put','delete', 'patch',
-    'charte_user' => [  
-        'method' => 'POST',  
-        'path' => '/charteAction/{id}',     
-        'controller' => CharteDutilisationAction::class,
-    ], 
-    'updateProfil_user' => [  
-        'method' => 'PUT',  
-        'path' => '/updateProfil/user/{id}',     
-        'controller' => UpdateProfilAction::class,  
+#[ApiResource( 
+    
+    itemOperations      : [
+        'get','put','delete', 'patch', 
+        'charte_user' => [  
+            'method' => 'POST',  
+            'path' => '/charteAction/{id}',     
+            'controller' => CharteDutilisationAction::class,
+        ], 
+        'updatePicture' => [
+            'method' => 'POST',
+            'path' => '/user/{id}/updatePicture',
+            'openapi_context' => [
+                'summary'     => 'Use this endpoint to update only the picture of the user. Use the PUT endpoint for all other updating',
+                'description' => "# Pop a great rabbit picture by color!\n\n![A great rabbit]"
+                ],
+            'controller' => UpdatePictureAction::class,
+            'denormalization_context' => ['groups' => ['cv:updatePicture']],
+            'input_formats' => [
+                'multipart' => ['multipart/form-data'],  
+            ]
+ 
+         ],
+        ], 
+    collectionOperations: [
+    'get',
+    'post', 
+    'annuaire_list' => [  
+        'method' => 'GET',  
+        'path' => '/annuaireList',     
+        'controller' => UserListAction::class,   
     ],   
-]
+],   
+   
 )]
 class User implements UserInterface
 {
@@ -41,7 +67,7 @@ class User implements UserInterface
     #[ORM\Column(type: 'integer')]
     private ?int $id;
    
-
+  
      
     /**
      * @var string
@@ -89,9 +115,47 @@ class User implements UserInterface
      * @var boolean 
      */  
     #[ORM\Column(type: 'boolean',  nullable: false)]
-    private bool $charteSigned = false;       
+    private bool $charteSigned = false;
 
 
+    #[Groups(["cv:write"])]
+    #[ORM\Column(type: 'text', nullable: true)]
+    private $contact_details;
+
+    #[Groups(["cv:read", "cv:write"])]
+    #[ORM\Column(type: 'date', nullable: true)]
+    private $birthday;
+
+    #[Groups(["cv:read", "cv:write"])]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $telephone;
+
+    #[Groups(["cv:write"])]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $firstname;
+
+    #[Groups(["cv:write"])]
+    #[ORM\Column(type: 'string', length: 255)]
+    private $surname;       
+
+     /**
+     * @Vich\UploadableField(mapping="media_object", fileNameProperty="imageLink")
+     */
+    #[Groups(['cv:updatePicture'])]
+    public ?File $image = null;      
+
+
+     /**
+     * @var string|null
+     */
+    #[Groups(["cv:read"])]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $imageLink = null;
+
+   
+    
+    
+  
     public function __construct()
     {
         $this->notifications = new ArrayCollection();
@@ -276,6 +340,95 @@ class User implements UserInterface
     public function getCharteSigned() {
         return $this->charteSigned;
     }
+
+    public function getContactDetails(): ?string
+    {
+        return $this->contact_details;
+    }
+
+    public function setContactDetails(?string $contact_details): self
+    {
+        $this->contact_details = $contact_details;
+
+        return $this;
+    }
+
+    public function getBirthday(): ?\DateTimeInterface
+    {
+        return $this->birthday;
+    }
+
+    public function setBirthday(?\DateTimeInterface $birthday): self
+    {
+        $this->birthday = $birthday;
+
+        return $this;
+    }
+
+    public function getTelephone(): ?string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(?string $telephone): self
+    {
+        $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    public function getFirstname(): ?string
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname(?string $firstname): self
+    {
+        $this->firstname = $firstname;
+
+        return $this;
+    }
+
+    public function getSurname(): ?string
+    {
+        return $this->surname;
+    }
+
+    public function setSurname(string $surname): self
+    {
+        $this->surname = $surname;
+
+        return $this;
+    }
+
+     /**
+     * @return File|null
+     */
+    public function getFile(): ?File
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param File|null $file
+     */
+    public function setFile(?File $image): void
+    {  
+        $this->image = $image;
+    }
+
+    public function getImageLink(): ?string
+    {
+        return $this->imageLink;
+    }
+
+    public function setImageLink(?string $imageLink): self
+    {
+        $this->imageLink = $imageLink;
+   
+        return $this;
+    }      
+
 
 
 }

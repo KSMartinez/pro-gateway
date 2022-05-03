@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity; 
 
-use ApiPlatform\Core\Annotation\ApiProperty;
-use ApiPlatform\Core\Annotation\ApiResource;
+use DateTimeInterface;
 use App\Repository\CVRepository;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+
 
 /**
  * @Vich\Uploadable
@@ -22,7 +24,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
                 'multipart' => ['multipart/form-data'],
             ],
         ],
-    ],
+    ],  
     shortName: "cvs",
     denormalizationContext: [
         'groups' => [
@@ -34,6 +36,9 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             "cv:read"
         ]
     ],
+
+   
+
 )]
 class CV
 {
@@ -206,7 +211,18 @@ class CV
     public function setUser(User $user): self
     {
         $this->user = $user;
+  
+        return $this;
+    }
+
+    public function setUpdatedAt(DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
+
+     
+
+
 }

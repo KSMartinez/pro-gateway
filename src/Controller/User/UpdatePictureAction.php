@@ -10,20 +10,20 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 /**
- * Class CharteDutilisationAction
+ * Class UserListAction
  * @package App\Controller\User
  */
 #[AsController]
-class UpdateProfilAction extends AbstractController
+class UpdatePictureAction extends AbstractController
 {
-     
+
     /**
      * @var UserService
      */
     private UserService $userService;
 
     /**
-     * CharteDutilisationAction constructor.
+     * UpdatePictureAction constructor.
      * @param UserService $userService
      */
     public function __construct(UserService $userService)
@@ -34,13 +34,11 @@ class UpdateProfilAction extends AbstractController
 
     /**
      * @param User $data
-     * @return User   
-     */   
-    public function __invoke(User $data): User 
+     * @return User
+     * @throws Exception
+     */
+    public function __invoke(User $data): User
     {
-  
-      return  $this->userService->update($data);      
-
-
-    }       
-}   
+        return $this->userService->updatePicture($data);
+    }
+}     

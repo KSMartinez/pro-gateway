@@ -4,7 +4,9 @@
 namespace App\Service;
 
 
+use Exception;
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class UserService
@@ -15,12 +17,21 @@ class UserService
      */
     private EntityManagerInterface $entityManager;
 
+
+    /**
+     * @var UserRepository
+     */
+    private UserRepository $userRepository;
+
+
+
     /**
      * @param EntityManagerInterface $entityManager
      */
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, UserRepository $userRepository)
     {
         $this->entityManager = $entityManager;
+        $this->userRepository = $userRepository; 
     }
 
     /**
@@ -55,26 +66,45 @@ class UserService
 
     }  
 
-
-    
-    /**    
+    /**   
      * @param User $user
      * @return User  
+     * @throws Exception
      */
-    public function update(User $user)
+    public function updatePicture(User $user)
     {
-    
 
-        # The validation of each data gonna be done on the front 
-        # We just need to persist and flush    
-
+        if (!$user->getId()) {
+            throw new Exception('The user should have an id for updating');
+        }
+        if (!$this->userRepository->find($user->getId())) {
+            throw new Exception('The user should have an id for updating');
+   
+        }  
+        
         $this->entityManager->persist($user);
-        $this->entityManager->flush();  
-
-
+        $this->entityManager->flush();
         return $user;       
 
-    }  
 
-   
+    }
+
+    
+    /**
+     * @param 
+     * @return Array
+     */
+    public function userList()
+    {
+ 
+       
+        return $this->userRepository->annuaireList(); 
+        
+     
+
+    }
+
+    
+
+
 }
