@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use DateTime;
+use DateTimeInterface;
+
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use App\Controller\User\UserListAction;
@@ -9,13 +12,16 @@ use App\Controller\User\UpdateProfilAction;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\User\UpdatePictureAction;
+use App\Controller\User\checkFilledDatasAction;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Controller\User\CharteDutilisationAction;
 use Symfony\Component\HttpFoundation\File\File;  
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;  
+use App\Controller\User\ChangeBirthdayVisibilityAction;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;  
+use App\Controller\User\ChangeCityCountryVisibilityAction;         
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
@@ -24,6 +30,17 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource( 
     
+    shortName: "users",
+    denormalizationContext: [
+        'groups' => [
+            'user:write'
+        ]
+    ],  
+    // normalizationContext: [
+    //     "groups" => [
+    //         "user:read"
+    //     ]
+    // ],
     itemOperations      : [
         'get','put','delete', 'patch', 
         'charte_user' => [  
@@ -39,21 +56,45 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
                 'description' => "# Pop a great rabbit picture by color!\n\n![A great rabbit]"
                 ],
             'controller' => UpdatePictureAction::class,
-            'denormalization_context' => ['groups' => ['cv:updatePicture']],
+            'denormalization_context' => ['groups' => ['user:updatePicture']],
             'input_formats' => [
                 'multipart' => ['multipart/form-data'],  
             ]
  
          ],
+
+         'checkFilledDatas' => [  
+            'method' => 'GET',  
+            'path' => '/checkFilledDatas/{id}',     
+            'controller' => checkFilledDatasAction::class,   
+        ],  
+
+        //  'birthday_visibility' => [  
+        //     'method' => 'PUT',  
+        //     'path' => '/changeBirthdayVisibility/user/{id}',             
+        //     'controller' => changeBirthdayVisibilityAction::class,   
+        // ],  
+        
+        // 'cityAndCountry_visibility' => [       
+        //     'method' => 'PUT',  
+        //     'path' => '/changeCityAndCountryVisibility/user/{id}',             
+        //     'controller' => changeCityCountryVisibilityAction::class,   
+        // ],  
+            
+    
+
         ], 
     collectionOperations: [
     'get',
-    'post', 
+    'post',  
     'annuaire_list' => [  
         'method' => 'GET',  
         'path' => '/annuaireList',     
         'controller' => UserListAction::class,   
-    ],   
+    ],
+ 
+
+
 ],   
    
 )]
@@ -70,14 +111,15 @@ class User implements UserInterface
   
      
     /**
-     * @var string
+     * @var string  
      */
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private string $email;
 
     /**
      * @var string[]
-     */
+     */   
     #[ORM\Column(type: 'json')]  
     private array $roles = [];
 
@@ -118,43 +160,144 @@ class User implements UserInterface
     private bool $charteSigned = false;
 
 
-    #[Groups(["cv:write"])]
-    #[ORM\Column(type: 'text', nullable: true)]
-    private $contact_details;
-
-    #[Groups(["cv:read", "cv:write"])]
+      /**
+     * @var DateTimeInterface|null
+     */    
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'date', nullable: true)]
     private $birthday;
 
-    #[Groups(["cv:read", "cv:write"])]
+    /**
+     * @var string|null
+     */
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $telephone;
 
-    #[Groups(["cv:write"])]
+
+    /**
+     * @var string|null
+     */ 
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $firstname;
 
-    #[Groups(["cv:write"])]
+      /**
+     * @var string 
+     */ 
+    #[Groups(["user:write"])] 
     #[ORM\Column(type: 'string', length: 255)]
     private $surname;       
 
      /**
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="imageLink")
      */
-    #[Groups(['cv:updatePicture'])]
+    #[Groups(['user:updatePicture'])]
     public ?File $image = null;      
 
 
      /**
-     * @var string|null
-     */
-    #[Groups(["cv:read"])]
+     * @var string 
+     */ 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $imageLink = null;
+    private ?string $imageLink;
 
+    
+     /**
+     * @var string 
+     */  
+    #[Groups(["user:write"])]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $profilTitle;
+
+
+    /**
+     * @var string 
+     */  
+    #[Groups(["user:write"])]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $useFirstname;
+
+
+     /**
+     * @var string 
+     */  
+    #[Groups(["user:write"])]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $useSurname;
+    
+
+      /**
+     * @var string|null
+     */ 
+    #[Groups(["user:write"])]
+    #[ORM\Column(type: 'text', nullable: true)]
+    private $profilDescription;
+
+  
+     /**
+     * @var boolean  
+     */  
+    #[Groups(['user:write'])]    
+    #[ORM\Column(type: 'boolean')]
+    private $birthdayIsPublic;
+
+ 
+     /**
+     * @var string 
+     */   
+    #[Groups(["user:write"])]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $address;
+
+     /**
+     * @var string 
+     */
+    #[Groups(["user:write"])]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]    
+    private $city;
+
+     /**
+     * @var string 
+     */
+    #[Groups(["user:write"])] 
+    #[ORM\Column(type: 'string', length: 255)]
+    private $country;
    
-    
-    
+     /**    
+     * @var boolean 
+     */
+    #[Groups(["user:write"])] 
+    #[ORM\Column(type: 'boolean')]
+    private $cityAndCountryIsPublic;
+
+     /**
+     * @var boolean 
+     */  
+    #[Groups(["user:write"])] 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $mailIsPublic;
+
+
+     /**
+     * @var boolean 
+     */  
+    #[Groups(["user:write"])] 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $telephoneIsPublic;
+
+
+     /**
+     * @var boolean 
+     */  
+    #[Groups(["user:write"])] 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $addressIsPublic; 
+  
+        
+           
+        
+
   
     public function __construct()
     {
@@ -341,17 +484,7 @@ class User implements UserInterface
         return $this->charteSigned;
     }
 
-    public function getContactDetails(): ?string
-    {
-        return $this->contact_details;
-    }
-
-    public function setContactDetails(?string $contact_details): self
-    {
-        $this->contact_details = $contact_details;
-
-        return $this;
-    }
+   
 
     public function getBirthday(): ?\DateTimeInterface
     {
@@ -410,7 +543,7 @@ class User implements UserInterface
     }
 
     /**
-     * @param File|null $file
+     * @param File|null $image 
      */
     public function setFile(?File $image): void
     {  
@@ -426,6 +559,150 @@ class User implements UserInterface
     {
         $this->imageLink = $imageLink;
    
+        return $this;
+    }
+
+    public function getProfilTitle(): ?string
+    {
+        return $this->profilTitle;
+    }
+
+    public function setProfilTitle(?string $profilTitle): self
+    {
+        $this->profilTitle = $profilTitle;
+
+        return $this;
+    }
+
+    public function getUseFirstname(): ?string
+    {
+        return $this->useFirstname;
+    }
+
+    public function setUseFirstname(?string $useFirstname): self
+    {
+        $this->useFirstname = $useFirstname;
+
+        return $this;
+    }
+
+    public function getUseSurname(): ?string
+    {
+        return $this->useSurname;
+    }
+
+    public function setUseSurname(?string $useSurname): self
+    {
+        $this->useSurname = $useSurname;
+
+        return $this;
+    }
+
+    public function getProfilDescription(): ?string
+    {
+        return $this->profilDescription;
+    }
+
+    public function setProfilDescription(?string $profilDescription): self
+    {
+        $this->profilDescription = $profilDescription;
+
+        return $this;
+    }
+
+    public function getBirthdayIsPublic(): ?bool
+    {
+        return $this->birthdayIsPublic;
+    }
+
+    public function setBirthdayIsPublic(bool $birthdayIsPublic): self
+    {
+        $this->birthdayIsPublic = $birthdayIsPublic;
+
+        return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?string $address): self
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $city): self
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(string $country): self
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getCityAndCountryIsPublic(): ?bool
+    {
+        return $this->cityAndCountryIsPublic;
+    }
+
+    public function setCityAndCountryIsPublic(bool $cityAndCountryIsPublic): self
+    {
+        $this->cityAndCountryIsPublic = $cityAndCountryIsPublic;
+
+        return $this;
+    }
+
+    public function getMailIsPublic(): ?bool
+    {
+        return $this->mailIsPublic;
+    }
+
+    public function setMailIsPublic(?bool $mailIsPublic): self
+    {
+        $this->mailIsPublic = $mailIsPublic;
+
+        return $this;
+    }
+
+    public function getTelephoneIsPublic(): ?bool
+    {
+        return $this->telephoneIsPublic;
+    }
+
+    public function setTelephoneIsPublic(?bool $telephoneIsPublic): self
+    {
+        $this->telephoneIsPublic = $telephoneIsPublic;
+
+        return $this;
+    }
+
+    public function getAddressIsPublic(): ?bool
+    {
+        return $this->addressIsPublic;
+    }
+
+    public function setAddressIsPublic(?bool $addressIsPublic): self
+    {
+        $this->addressIsPublic = $addressIsPublic;
+
         return $this;
     }      
 

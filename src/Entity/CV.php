@@ -88,7 +88,9 @@ class CV
      */
     #[Groups(['cv:write'])]
     public ?File $file = null;
+    
 
+    #[Groups(['cv:write'])]
     #[ORM\OneToOne(inversedBy: 'cV', targetEntity: User::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
@@ -215,13 +217,7 @@ class CV
         return $this;
     }
 
-    public function setUpdatedAt(DateTimeInterface $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
+     
      
 
 

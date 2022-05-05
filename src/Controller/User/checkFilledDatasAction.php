@@ -11,11 +11,11 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * Class UserListAction
+ * Class checkFilledDatasAction
  * @package App\Controller\User
  */
 #[AsController]
-class UpdatePictureAction extends AbstractController
+class checkFilledDatasAction extends AbstractController
 {
 
     /**
@@ -24,7 +24,7 @@ class UpdatePictureAction extends AbstractController
     private UserService $userService;
 
     /**
-     * UpdatePictureAction constructor.
+     * checkFilledDatasAction constructor.
      * @param UserService $userService
      */
     public function __construct(UserService $userService)
@@ -35,11 +35,11 @@ class UpdatePictureAction extends AbstractController
 
     /**
      * @param User $data  
-     * @return User
+     * @return bool
      * @throws Exception
      */
-    public function __invoke(User $data): User
+    public function __invoke(User $data): bool
     {
-        return $this->userService->updatePicture($data);
+        return $this->userService->checkFilledDatas($data);
     }
-}     
+}         

@@ -76,7 +76,10 @@ class UserRepository extends ServiceEntityRepository
     */
 
      
-    public function annuaireList(): ?Array
+    /**
+     * @return array<User>  
+     */ 
+    public function annuaireList(): Array   
     {
         return $this->createQueryBuilder('u')
             ->andWhere('u.charteSigned = :val')

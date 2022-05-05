@@ -34,10 +34,9 @@ class UserListAction extends AbstractController
 
 
     /**
-     * @param  
-     * @return Array   
+     * @return Array<User>     
      */   
-    public function __invoke(): Array 
+    public function __invoke() 
     {
             
       return  $this->userService->userList();      

@@ -7,6 +7,7 @@ namespace App\Service;
 use DateTime;
 use Exception;  
 use App\Entity\CV;
+use App\Repository\CVRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\File; 
 
@@ -18,16 +19,22 @@ class CvService
      */
     private EntityManagerInterface $entityManager;
 
+     /**  
+     * @var CvRepository 
+     */
+    private CVRepository $cVRepository;   
+
     /**
      * @param EntityManagerInterface $entityManager
      */
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, CVRepository $cVRepository)
     {
         $this->entityManager = $entityManager;
+        $this->cVRepository = $cVRepository; 
     }
 
     /**
-     * @param File $cv
+     * @param File $file
      * @return CV
      */
     public function upload(File $file)
@@ -57,7 +64,7 @@ class CvService
             throw new Exception('The CV should have an id for updating');
 
         }
-        $cv->setUpdatedAt(new DateTime('now'));
+        //$cv->setUpdatedAt(new DateTime('now'));
         $this->entityManager->persist($cv);
         $this->entityManager->flush();
         return $cv;

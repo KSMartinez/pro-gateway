@@ -1,0 +1,307 @@
+[33mcommit ba1377cf67bc802eb1c3cd745d30e2312dbabad3[m[33m ([m[1;36mHEAD -> [m[1;32mmartinez_sprint1[m[33m)[m
+Author: santiago.kamga <santiago.kamga@actimage.com>
+Date:   Tue May 3 11:49:23 2022 +0200
+
+    sprint 1 : charte utilisateur, upload image, creation de profil, access annuaire (liste des etudiants)
+
+[33mcommit 3215b01d63949e5c4204fda5bac65ac7300224be[m
+Author: santiago.kamga <santiago.kamga@actimage.com>
+Date:   Wed Apr 27 16:17:42 2022 +0200
+
+    Profil : Action 1 - Modifier son profil
+
+[33mcommit 046bae2d4eb9a58ea8326bc2e28a7e18d2d04375[m
+Author: santiago.kamga <santiago.kamga@actimage.com>
+Date:   Wed Apr 27 10:44:41 2022 +0200
+
+    Sprint 1 : Profil - Charte Utilisateur
+
+[33mcommit 9881525233f4846d010f00a8e809a2b766a3fd5c[m
+Author: santiago.kamga <santiago.kamga@actimage.com>
+Date:   Tue Apr 19 12:22:10 2022 +0200
+
+    Added phpstan-extension to allowed extensions
+
+[33mcommit ae4a7a0bffdd1458083ccafa329116b700ad3e66[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Fri Apr 22 11:51:48 2022 +0200
+
+    Fixtures for different entities related to Job Board
+
+[33mcommit 80a68a7fd7b87948f44e760c06001d5625eb4312[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Fri Apr 22 11:48:57 2022 +0200
+
+    Migration for email_template table
+
+[33mcommit 77915f4ec789d778f0ac48681101d33efed1853a[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Fri Apr 22 11:19:08 2022 +0200
+
+    Modified migration files to remove 'No active transactions' error ...
+     This error is caused by how migrations work and is introduced by PHP8. Currently there is no fix so for the moment we do this temporarily. I don't think transactions are required here so we should be good to go
+
+[33mcommit e6ec8fab0ab56ae3090c86f2bc44f0cc004f9335[m
+Author: root <root@act-rec-dck01.act>
+Date:   Tue Apr 19 11:17:31 2022 +0200
+
+    Added DockerFile for test server
+
+[33mcommit 5998439e9cbae42f8fbfe25552170ac26cde9d86[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Thu Apr 14 14:10:15 2022 +0200
+
+    Tests for OfferAlertService and OfferRepository. Unfinished.
+
+[33mcommit c40972f55bd3afe223007d32f5dc02764b1b7962[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Thu Apr 14 12:08:00 2022 +0200
+
+    Added Command to check if there are new offers that match user's saved search. This command can be used by a cron job
+
+[33mcommit c48353f3fb1cdad45f847ca947df75186aab2917[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Apr 13 17:59:55 2022 +0200
+
+    Created the service to check for saved offer searches and notify the user if any new offers have been created since the last search.
+
+[33mcommit 40abb20c4f74f0b4958eb345a73088a706899716[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Apr 13 17:11:53 2022 +0200
+
+    Added an email template table to store the email template for various notifcation sources
+
+[33mcommit 3a6494b3754feea89096302cb6a1ddb05eac76c9[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Apr 13 17:04:24 2022 +0200
+
+    Moved frequency from email notification to User ...
+     as this seems more like a user preference for all email notifications. So it makes no sense to put it in email notifications as many emails notifications will be created for each user. A last search field was added to SavedSearch entity to record the last time a search was performed which can be compared with the date an offer was posted on to find new offers since the last search was performed. Previous migrations were deleted and one migration to replace with the new changes was also added.
+
+[33mcommit 441f5049392dbc5f7c332753613e39fc7d04a53f[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Apr 13 16:06:30 2022 +0200
+
+    Added a last searched at column in SavedofferSearch table to save the date of time the last time the search ran for notifications
+
+[33mcommit 49aa7857af15a36f842ae9e96509c30c2c0ecb81[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Apr 13 15:35:23 2022 +0200
+
+    Added email notification table for creating notifications by email
+
+[33mcommit f9cdd0170591dd3831d99c5f038fe737a86996b7[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Tue Apr 12 16:07:56 2022 +0200
+
+    Rearranged code in SavedOfferSearch. Cosmetic changes only
+
+[33mcommit 1231cfb60782a996ceefc44e7d149b24260b2e75[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Tue Apr 12 16:03:56 2022 +0200
+
+    NotificationSource table addded to keep track of what is creating the new notification
+
+[33mcommit 3b95408c0b4a97b1ab05dba19ba627112a158515[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Mon Apr 11 17:13:57 2022 +0200
+
+    Added table to save offer searches. The URLS of the search is saved so that it can be reproduced later
+
+[33mcommit c84bc5e94f6992d5b8b1f8c2a1aa1fbd88d8f9c4[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Mon Apr 11 16:19:31 2022 +0200
+
+    Added filter and sort on date published to Offer
+
+[33mcommit f2e5dc91ec813efcfd23248916dbe7df65ebfcce[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Mon Apr 11 14:40:57 2022 +0200
+
+    Added notification and migration
+
+[33mcommit 2ac7da25d9068e790effd218d14466c7da8e5388[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Fri Apr 8 17:58:09 2022 +0200
+
+    Added User relation to CV
+
+[33mcommit b8270356fcc6ebba682357170b860823f8534a1a[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Fri Apr 8 16:49:07 2022 +0200
+
+    Created CV entity and API along with decoders and normalizers
+
+[33mcommit 906031c73c9d03d979f2866bb490eab21a63a862[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Thu Apr 7 11:16:04 2022 +0200
+
+    Added VichUploaderBundle to handle file uploads and link it to the database
+
+[33mcommit f54bcce0c9e98a7cf1544a396af44523f169a66c[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Thu Apr 7 11:04:23 2022 +0200
+
+    Added the CV entity and the migrations
+
+[33mcommit 9f0b81fe36d43b84bba3db8e1093e2624b34274a[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Apr 6 16:58:25 2022 +0200
+
+    Added User Entity and created the migrations for the table. Security yaml was modified by Flex
+
+[33mcommit 9b32533cd58a952abdb33dfa843129b8109c7c02[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Apr 6 15:02:32 2022 +0200
+
+    Added prehooks
+
+[33mcommit 2605e751ba898520ddbb12e2bc1148b03b605441[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Apr 6 12:54:39 2022 +0000
+
+    Update README.md
+
+[33mcommit fe2b028ea1e5feb34565dd8ba215926fe9a18c23[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Apr 6 12:44:26 2022 +0000
+
+    Add README.md
+
+[33mcommit ceda0f77b6fec396bcbe3d1eb159063248ec9808[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Apr 6 14:23:56 2022 +0200
+
+    Added sample test with the hopes that there will be some amount of testing
+
+[33mcommit 83d4a7e9f61eae4446f9d542ec41004d4826f0aa[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Apr 6 11:01:02 2022 +0200
+
+    Added Logger bundle
+
+[33mcommit 18465208633bb6106b42effcc0808ca6f353892d[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Thu Mar 31 15:56:36 2022 +0200
+
+    Added Browser Kit and HttpFoundation bundles
+
+[33mcommit 3efb817cbbf7a5cc7527358b52fe88f4cb2a1222[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Thu Mar 31 15:00:58 2022 +0200
+
+    Removed the nelmio Swagger bundle as API Platform takes care of this now
+
+[33mcommit 7df763c406822fff66a8a47d5b224ed15dde640e[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Mar 30 17:42:45 2022 +0200
+
+    Added validate offer action to API
+
+[33mcommit 0ca88cba6da9abb51803c96e85dd8ee3c11315d2[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Thu Mar 24 10:08:10 2022 +0100
+
+    Added entities Domain, Offer, and TypeOfContract and migration
+
+[33mcommit 20ae04b939ece9f98ddc6585b20d618078660ff6[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Mar 23 17:31:09 2022 +0100
+
+    Added API Platform Bundle
+
+[33mcommit eeafca97087f4553a3ea9f5bf1187f43b1608aa4[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Mar 23 16:29:38 2022 +0100
+
+    Created factories and fixtures for Offers using Foundry
+
+[33mcommit 6a640389ec127a1f4e909a50bbf5742a0943a39b[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Mar 23 15:50:48 2022 +0100
+
+    Added the Foundry bundle for faking fixtures
+
+[33mcommit ea775095c0b741aba58e087a0be7a0c53b5a0b2c[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Mar 23 15:38:58 2022 +0100
+
+    Added the orm-fixture bundle for fixtures
+
+[33mcommit 3aa7f7dc37bc5c6d8edfcec20a2a182923e107d9[m[33m ([m[1;31morigin/master[m[33m)[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Mar 23 14:51:48 2022 +0100
+
+    Changed php level in composer
+
+[33mcommit 9271d20a3c09c1389716d51eddaae037359388da[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Mar 23 14:25:57 2022 +0100
+
+    Added Maker bundle
+
+[33mcommit ef86c97a1744d111b889259a8ae62e07b6ff8add[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Mar 23 11:57:09 2022 +0100
+
+    Added Nelmio Bundle for Swagger Documentation
+
+[33mcommit daceb68836b3163e5f1313967bed93cd5dcaaf60[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Mar 23 11:22:25 2022 +0100
+
+    Added pre-commit hooks
+
+[33mcommit 532dc20523a0df9274d257230148249bbe94d2ee[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Wed Mar 23 10:49:30 2022 +0100
+
+    Added docker compose file for mysql container
+
+[33mcommit 1c771ba99b607ac6081568ff26cde0b0cbd79632[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Tue Mar 22 17:57:18 2022 +0100
+
+    Installed PHPUnit
+
+[33mcommit e4054afbdf4b48a02ae07c27681218dfa949c4f6[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Tue Mar 22 17:55:20 2022 +0100
+
+    Configured PHPStan for Symfony and Doctrine
+
+[33mcommit f4431e7d5205c9f7f9a46ea1b2fd719944a15785[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Tue Mar 22 17:47:59 2022 +0100
+
+    Configured PHPStan for Doctrine
+
+[33mcommit e5c864ff4c369c9c3ee852e554591f9a0bffe681[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Tue Mar 22 17:46:27 2022 +0100
+
+    Installed Doctrine
+
+[33mcommit 7100bbcd82e41e35733f49a57629cc167cfcd91b[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Tue Mar 22 17:45:01 2022 +0100
+
+    Added PhpStan extension for Doctrine
+
+[33mcommit 4a5006e029ebc8441e636df549fcae643ada1812[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Tue Mar 22 17:44:43 2022 +0100
+
+    Configured PHPStan for Symfony
+
+[33mcommit 357e7a7740e55b1a4edf9e740b4cee9ff49d7f13[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Tue Mar 22 17:40:29 2022 +0100
+
+    Installed PHPStan for code scan
+
+[33mcommit 0117ecd89310afcb2206814a1f6a9e5036082a92[m
+Author: Akhil Muraleedharan <akhil.muraleedharan@actimage.com>
+Date:   Tue Mar 22 17:33:46 2022 +0100
+
+    Inital commit. Initialized new project with composer

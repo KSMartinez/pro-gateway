@@ -36,7 +36,7 @@ class ImportCvAction extends AbstractController
  
 
     /**
-     * @param File 
+     * @param File $file 
      * @return CV   
      */   
     public function __invoke(File $file): CV   
