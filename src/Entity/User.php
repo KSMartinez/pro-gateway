@@ -12,6 +12,7 @@ use App\Controller\User\UpdateProfilAction;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\User\UpdatePictureAction;
+use App\Controller\User\RejectedCharteAction;
 use App\Controller\User\checkFilledDatasAction;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Controller\User\CharteDutilisationAction;
@@ -69,6 +70,12 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             'controller' => checkFilledDatasAction::class,   
         ],  
 
+        'rejectedCharteAction' => [  
+            'method' => 'PUT',  
+            'path' => '/rejectedCharteAction/{id}',     
+            'controller' => RejectedCharteAction::class,   
+        ],  
+   
         //  'birthday_visibility' => [  
         //     'method' => 'PUT',  
         //     'path' => '/changeBirthdayVisibility/user/{id}',             
@@ -204,7 +211,7 @@ class User implements UserInterface
 
     
      /**
-     * @var string 
+     * @var string|null 
      */  
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -212,7 +219,7 @@ class User implements UserInterface
 
 
     /**
-     * @var string 
+     * @var string|null  
      */  
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -220,7 +227,7 @@ class User implements UserInterface
 
 
      /**
-     * @var string 
+     * @var string|null 
      */  
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -244,14 +251,14 @@ class User implements UserInterface
 
  
      /**
-     * @var string 
+     * @var string|null  
      */   
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $address;
 
      /**
-     * @var string 
+     * @var string|null 
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]    
@@ -272,7 +279,7 @@ class User implements UserInterface
     private $cityAndCountryIsPublic;
 
      /**
-     * @var boolean 
+     * @var boolean|null 
      */  
     #[Groups(["user:write"])] 
     #[ORM\Column(type: 'boolean', nullable: true)]
@@ -280,7 +287,7 @@ class User implements UserInterface
 
 
      /**
-     * @var boolean 
+     * @var boolean|null  
      */  
     #[Groups(["user:write"])] 
     #[ORM\Column(type: 'boolean', nullable: true)]
@@ -288,22 +295,49 @@ class User implements UserInterface
 
 
      /**
-     * @var boolean 
+     * @var boolean|null 
      */  
     #[Groups(["user:write"])] 
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $addressIsPublic; 
-  
-        
-           
-        
+    private $addressIsPublic;
 
-  
+    #[Groups(["user:write"])] 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $datasVisibleForAllMembers;
+
+    #[Groups(["user:write"])] 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $datasVisibleForAnnuaire;
+
+    #[Groups(["user:write"])] 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $datasPublic;
+
+    #[Groups(["user:write"])] 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $datasAllPrivate;
+
+    #[Groups(["user:write"])] 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $newsLetterNotification;
+
+    #[Groups(["user:write"])] 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $rejectedCharte;
+
+
+    #[Groups(["user:write"])]
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $availableToWork;
+
+   
+     
     public function __construct()
     {
         $this->notifications = new ArrayCollection();
         $this->savedOfferSearches = new ArrayCollection();
         $this->emailNotifications = new ArrayCollection();
+     
     }
 
     /**
@@ -704,8 +738,94 @@ class User implements UserInterface
         $this->addressIsPublic = $addressIsPublic;
 
         return $this;
-    }      
+    }
+
+    public function getDatasVisibleForAllMembers(): ?bool
+    {
+        return $this->datasVisibleForAllMembers;
+    }
+
+    public function setDatasVisibleForAllMembers(?bool $datasVisibleForAllMembers): self
+    {
+        $this->datasVisibleForAllMembers = $datasVisibleForAllMembers;
+
+        return $this;
+    }
+
+    public function getDatasVisibleForAnnuaire(): ?bool
+    {
+        return $this->datasVisibleForAnnuaire;
+    }
+
+    public function setDatasVisibleForAnnuaire(?bool $datasVisibleForAnnuaire): self
+    {
+        $this->datasVisibleForAnnuaire = $datasVisibleForAnnuaire;
+
+        return $this;
+    }
+
+    public function getDatasPublic(): ?bool
+    {
+        return $this->datasPublic;
+    }
+
+    public function setDatasPublic(?bool $datasPublic): self
+    {
+        $this->datasPublic = $datasPublic;
+
+        return $this;
+    }
+
+    public function getDatasAllPrivate(): ?bool
+    {
+        return $this->datasAllPrivate;
+    }
+
+    public function setDatasAllPrivate(?bool $datasAllPrivate): self
+    {
+        $this->datasAllPrivate = $datasAllPrivate;
+
+        return $this;
+    }
+
+    public function getNewsLetterNotification(): ?bool
+    {
+        return $this->newsLetterNotification;
+    }
+
+    public function setNewsLetterNotification(?bool $newsLetterNotification): self
+    {
+        $this->newsLetterNotification = $newsLetterNotification;
+
+        return $this;
+    }
+
+    public function getRejectedCharte(): ?bool
+    {
+        return $this->rejectedCharte;
+    }
+
+    public function setRejectedCharte(?bool $rejectedCharte): self
+    {
+        $this->rejectedCharte = $rejectedCharte;
+
+        return $this;
+    }
+
+    public function getAvailableToWork(): ?bool
+    {
+        return $this->availableToWork;
+    }
+
+    public function setAvailableToWork(?bool $availableToWork): self
+    {
+        $this->availableToWork = $availableToWork;
+
+        return $this;
+    }
+
+    
 
 
-
+   
 }

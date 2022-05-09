@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use DateTimeInterface;
 use App\Repository\CVRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -50,27 +52,7 @@ class CV
     #[ORM\Column(type: 'integer')]
     private ?int $id;
 
-    /**
-     * @var string|null
-     */
-    #[Groups(["cv:read", "cv:write"])]
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $experience;
-
-    /**
-     * @var string|null
-     */
-    #[Groups(["cv:read", "cv:write"])]
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $education;
-
-    /**
-     * @var string|null
-     */
-    #[Groups(["cv:read", "cv:write"])]
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $skills;
-
+    
     /**
      * @var string|null
      */
@@ -88,13 +70,22 @@ class CV
      */
     #[Groups(['cv:write'])]
     public ?File $file = null;
-    
+
 
     #[Groups(['cv:write'])]
     #[ORM\OneToOne(inversedBy: 'cV', targetEntity: User::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
+   
+   
+
+
+    public function __construct()
+    {
+        
+    }
+ 
 
     /**
      * @return string|null
@@ -137,61 +128,10 @@ class CV
         return $this->id;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getExperience(): ?string
-    {
-        return $this->experience;
-    }
+   
+   
 
-    /**
-     * @param string|null $experience
-     * @return $this
-     */
-    public function setExperience(?string $experience): self
-    {
-        $this->experience = $experience;
 
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getEducation(): ?string
-    {
-        return $this->education;
-    }
-
-    /**
-     * @param string|null $education
-     * @return $this
-     */
-    public function setEducation(?string $education): self
-    {
-        $this->education = $education;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getSkills(): ?string
-    {
-        return $this->skills;
-    }
-
-    /**
-     * @param string|null $skills
-     * @return $this
-     */
-    public function setSkills(?string $skills): self
-    {
-        $this->skills = $skills;
-        return $this;
-    }
 
     public function getFileLink(): ?string
     {
@@ -204,12 +144,12 @@ class CV
 
         return $this;
     }
-
+  
     public function getUser(): ?User
     {
         return $this->user;
     }
-
+  
     public function setUser(User $user): self
     {
         $this->user = $user;
@@ -217,8 +157,6 @@ class CV
         return $this;
     }
 
-     
-     
-
-
+  
+         
 }

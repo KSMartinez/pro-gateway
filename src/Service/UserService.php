@@ -155,7 +155,35 @@ class UserService
     
     }
 
+      
+    /**
+     * @param User $user 
+     * @return User 
+     * @throws Exception
+     */ 
+    public function rejectedCharte(User $user){
 
+        if (!$user->getId()) {   
+            throw new Exception('The user should have an id for updating');
+        }
+        if (!$this->userRepository->find($user->getId())) {
+            throw new Exception('The user should have an id for updating');
+   
+        }    
+
+        $user->setCharteSigned(false);
+        $user->setRejectedCharte(true);
+        // $this->entityManager->persist($user);   
+        $this->entityManager->flush();
+        return $user;          
+          
+            
+
+    }
+    
+
+
+    
     // /**   
     //  * @param User $user
     //  * @return User  
@@ -202,7 +230,7 @@ class UserService
         
     //     $visible = !$user->getCityAndCountryIsPublic();   
         
-    
+
     //     $user->setCityAndCountryIsPublic($visible); 
     //     $this->entityManager->persist($user);
     //     $this->entityManager->flush();
@@ -210,7 +238,7 @@ class UserService
    
     // }
 
-    
+
 
 
 }
