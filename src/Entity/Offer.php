@@ -24,6 +24,7 @@ use Doctrine\ORM\Mapping as ORM;
     'get','put','delete', 'patch',
     'validate_offer' => ['method' => 'POST',
         'path' => '/offers/{id}/validate',
+        'security' => 'is_granted("ROLE_ADMIN")',
         'controller' => ValidateOfferAction::class,
     ],
 ]
