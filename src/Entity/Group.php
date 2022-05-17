@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\Group\ListGroupDemandsAction;
+use App\Controller\Group\RejectGroupDemandAction;
 use App\Controller\Group\ValidateGroupDemandAction;
 use App\Model\GroupDemand;
 use App\Repository\GroupRepository;
@@ -28,8 +29,16 @@ use Doctrine\ORM\Mapping as ORM;
         'validate_group_demand' => [
             'method' => 'post',
             'path' => '/groups/demande/{id}/validate',
+            'security' => 'is_granted("ROLE_ADMIN")',
             'input'=> GroupDemand::class,
             'controller'  => ValidateGroupDemandAction::class
+        ],
+        'reject_group_demand' => [
+            'method' => 'post',
+            'path' => '/groups/demande/{id}/refuse',
+            'security' => 'is_granted("ROLE_ADMIN")',
+            'input' => GroupDemand::class,
+            'controller' => RejectGroupDemandAction::class
         ]
     ])
 ]

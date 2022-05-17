@@ -130,11 +130,11 @@ class GroupServiceTest extends KernelTestCase
         $this->entityManager->getConnection()->rollBack();
     }
 
-    /**
-     * @return void
-     */
-    public function testValidateGroupDemand()
-    {
-
-    }
+//    /**
+//     * @return void
+//     */
+//    public function testValidateGroupDemand()
+//    {
+//
+//    }
 }
