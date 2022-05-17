@@ -29,21 +29,21 @@ class Application
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id;
 
 
      /**
      * @var string|null
      */   
     #[ORM\Column(type: 'text', nullable: true)]
-    private $description;
+    private ?string $description;
 
      /**
      * @var User 
      */
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'applications')]
     #[ORM\JoinColumn(nullable: false)]
-    private $user;
+    private User $user;
 
 
     
@@ -52,7 +52,7 @@ class Application
      */
     #[ORM\ManyToOne(targetEntity: Offer::class, inversedBy: 'applications')]
     #[ORM\JoinColumn(nullable: false)]
-    private $offer;
+    private Offer $offer;
 
     public function getId(): ?int
     {

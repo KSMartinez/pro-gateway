@@ -201,7 +201,7 @@ class Offer
      * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $validationInPending;
+    private ?bool $validationInPending;
 
 
     /**
@@ -209,90 +209,90 @@ class Offer
      */
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'offers')]
     #[ORM\JoinColumn(nullable: false)]
-    private $user;
+    private User $user;
 
 
     /**
      * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $validationCompleted;
+    private ?bool $validationCompleted;
 
 
     /**
      * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $isArchived;
+    private ?bool $isArchived;
 
 
     /**
      * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $isProvided;
+    private ?bool $isProvided;
 
 
     /**
      * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $isRejected;
+    private ?bool $isRejected;
 
 
     /**
      * @var int|null
      */
     #[ORM\Column(type: 'integer', nullable: true)]
-    private $views;
+    private ?int $views;
 
 
     /**
      * @var int|null
      */
     #[ORM\Column(type: 'integer', nullable: true)]
-    private $numberOfApplications;
+    private ?int $numberOfApplications;
 
 
     /**
      * @var DateTimeImmutable|null
      */
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private $publishedAt;
+    private ?DateTimeImmutable $publishedAt;
 
 
     /**
      * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $isExpired;
+    private ?bool $isExpired;
 
 
     /**
      * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $inReactivation;
+    private ?bool $inReactivation;
 
 
     /**
      * @var DateTimeImmutable|null
      */
     #[ORM\Column(type: 'date_immutable', nullable: true)]
-    private $dateReactivated;
+    private ?DateTimeImmutable $dateReactivated;
 
     /**
      * @var Collection<int, Application>
      */
     #[ORM\OneToMany(mappedBy: 'offer', targetEntity: Application::class)]
-    private $applications;
+    private Collection|ArrayCollection $applications;
 
 
     /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $experience;
+    private ?string $experience;
 
 
     # Add a logo to an offer was optional but not detailled in the spec, so we'll fix the problem
