@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\User;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\OfferRepository;
@@ -16,6 +17,7 @@ use App\Controller\Offer\ReactivateOfferAction;
 use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Controller\Offer\UpdateIsExpiredOfferAction;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;  
 use App\Controller\Offer\UpdateAndSetPublishedAtAction;
 use App\Controller\Offer\CreateOfferWithNotificationAction;
@@ -49,7 +51,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
         'path' => '/offers/{id}/updateIsExpired',
         'controller' => UpdateIsExpiredOfferAction::class,
     ], 
-    'offer_Response' => [
+    'offer_Response' => [  
         'method' => 'POST',  
         'path' => '/offers/{id}/offerResponse',
         'controller' => OfferResponseAction::class,
@@ -244,16 +246,22 @@ class Offer
 
     
      
+    /**
+     * @var int|null                
+     */
     #[ORM\Column(type: 'integer', nullable: true)]
     private $views;
 
 
+    /**
+     * @var int|null                
+     */   
     #[ORM\Column(type: 'integer', nullable: true)]
     private $numberOfApplications;
 
-    
+      
      /**
-     * @var bool|null               
+     * @var DateTimeImmutable|null               
      */
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private $publishedAt;
@@ -266,12 +274,23 @@ class Offer
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $isExpired;
 
+     
+     /**
+     * @var bool|null               
+     */  
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $inReactivation;
 
+     
+     /**
+     * @var DateTimeImmutable|null                  
+     */     
     #[ORM\Column(type: 'date_immutable', nullable: true)]
     private $dateReactivated;
-
+   
+     /**
+     * @var Collection<int, Application>
+     */
     #[ORM\OneToMany(mappedBy: 'offer', targetEntity: Application::class)]
     private $applications;
 
@@ -638,7 +657,7 @@ class Offer
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
@@ -716,6 +735,7 @@ class Offer
 
         return $this;
     }
+
 
     public function getPublishedAt(): ?\DateTimeImmutable
     {
@@ -808,7 +828,7 @@ class Offer
         if ($this->applications->removeElement($application)) {
             // set the owning side to null (unless already changed)
             if ($application->getOffer() === $this) {
-                $application->setOffer(null);
+                $application->setOffer($this);
             }
         }
 
@@ -849,7 +869,7 @@ class Offer
     }
   
     /**
-     * @param File|null $file
+     * @param File|null $logoFile
      */
     public function setLogoFile(?File $logoFile): void
     {

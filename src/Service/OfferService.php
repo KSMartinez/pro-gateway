@@ -80,7 +80,7 @@ class OfferService
     }  
    
     /**  
-     * @param Offer $data  
+     * @param Offer $offer  
      * @return void   
      */
     public function UpdateIsExpiredOffer(Offer $offer){
@@ -109,7 +109,7 @@ class OfferService
 
     
     /**  
-     * @param Offer $data  
+     * @param Offer $offer  
      * @return void   
      */
     public function createOfferWithNotification(Offer $offer){

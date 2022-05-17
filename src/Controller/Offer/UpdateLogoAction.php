@@ -25,7 +25,7 @@ class UpdateLogoAction extends AbstractController
 
     /**  
      * UpdateLogoAction constructor.
-     * @param OfferService $userService
+     * @param OfferService $offerService  
      */
     public function __construct(OfferService $offerService)
     {
