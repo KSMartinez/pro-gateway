@@ -17,6 +17,14 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ApiResource]
 class User implements UserInterface
 {
+    const ROLE_ADMIN = 'ROLE_ADMIN';
+    const ROLE_ETUDIANT = 'ROLE_ETUDIANT';
+    const ROLE_PERSONNEL = 'ROLE_PERSONNEL';
+    const ROLE_ETUDIANT_NON_INSCRIT = 'ROLE_ETUDIANT_NI';
+    const ROLE_ALUMNI = 'ROLE_ALIMNI';
+    const ROLE_ALUMNI_NON_REPERTORIE = 'ROLE_ALUMNI_NR';
+    const ROLE_ENSEIGNANT = 'ROLE_ENSEIGNANT';
+
     /**
      * @var int|null
      */
