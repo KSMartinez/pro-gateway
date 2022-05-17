@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
  * @package App\Controller\Offer
  */
 #[AsController]
-class UpdateAndSetPublishedAtAction extends AbstractController
+class UpdateOfferAction extends AbstractController
 {
 
     /**

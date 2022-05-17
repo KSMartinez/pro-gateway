@@ -2,96 +2,92 @@
 
 namespace App\Entity;
 
-use App\Entity\User;
-use DateTimeImmutable;
-use DateTimeInterface;
-use Doctrine\ORM\Mapping as ORM;
-use App\Repository\OfferRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
-use App\Controller\Offer\UpdateLogoAction;
-use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Controller\Offer\OfferResponseAction;
-use App\Controller\Offer\ValidateOfferAction;
-use App\Controller\Offer\ReactivateOfferAction;
-use Symfony\Component\HttpFoundation\File\File;
-use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Serializer\Annotation\Groups;
-use App\Controller\Offer\UpdateIsExpiredOfferAction;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;  
-use App\Controller\Offer\UpdateAndSetPublishedAtAction;
-use App\Controller\Offer\CreateOfferWithNotificationAction;
-use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\Offer\CreateOfferWithNotificationAction;
+use App\Controller\Offer\OfferResponseAction;
+use App\Controller\Offer\UpdateOfferAction;
+use App\Controller\Offer\UpdateIsExpiredOfferAction;
+use App\Controller\Offer\UpdateLogoAction;
+use App\Controller\Offer\ValidateOfferAction;
+use App\Repository\OfferRepository;
+use DateTimeImmutable;
+use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
-  
-
-/** 
+/**
  * Class Offer
+ *
  * @package App\Entity
- * @ApiFilter(SearchFilter::class, properties={"title": "partial", "description": "partial", "city":"exact", "country":"exact", "domain":"exact"})
+ * @ApiFilter(SearchFilter::class, properties={"title": "partial", "description": "partial", "city":"exact",
+ *     "country":"exact", "domain":"exact"})
  * @ApiFilter(OrderFilter::class, properties={"datePosted" : "DESC"})
  */
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
-#[ApiResource(itemOperations: [
-    'get','put','delete', 'patch',
-    'validate_offer' => [
-        'method' => 'POST',
-        'path' => '/offers/{id}/validate',
-        'controller' => ValidateOfferAction::class,
+#[ApiResource(
+    collectionOperations: [
+        'createOfferWithNotification' => [
+            'method' => 'POST',
+            'path' => '/offers/createOfferWithNotification',
+            'controller' => CreateOfferWithNotificationAction::class,
+        ],
     ],
-    'update_andSetPublishedAt' => [
-        'method' => 'PUT',
-        'path' => '/offers/{id}/updateAndSetPublishedAt',
-        'controller' => UpdateAndSetPublishedAtAction::class,
-    ], 
-    'update_IsExpired' => [
-        'method' => 'PUT',  
-        'path' => '/offers/{id}/updateIsExpired',
-        'controller' => UpdateIsExpiredOfferAction::class,
-    ], 
-    'offer_Response' => [  
-        'method' => 'POST',  
-        'path' => '/offers/{id}/offerResponse',
-        'controller' => OfferResponseAction::class,
-    ], 
+    itemOperations: [
+        'get', 'put', 'delete', 'patch',
+        'validate_offer' => ['method' => 'POST',
+            'path' => '/offers/{id}/validate',
+            'security' => 'is_granted("ROLE_ADMIN")',
+            'controller' => ValidateOfferAction::class,
+        ],
+        'update_offer' => [
+            'method' => 'PUT',
+            'path' => '/offers/{id}/',
+            'controller' => UpdateOfferAction::class,
+        ],
+        'update_IsExpired' => [
+            'method' => 'PUT',
+            'path' => '/offers/{id}/updateIsExpired',
+            'controller' => UpdateIsExpiredOfferAction::class,
+        ],
+        'offer_Response' => [
+            'method' => 'POST',
+            'path' => '/offers/{id}/offerResponse',
+            'controller' => OfferResponseAction::class,
+        ],
 
-    'UpdateLogo' => [
-        'method' => 'POST',
-        'path' => '/offer/{id}/UpdateLogo',
-        'openapi_context' => [
-            'summary'     => 'Use this endpoint to update only the logo of the offer. Use the PUT endpoint for all other updating',
-            'description' => "# Pop a great rabbit picture by color!\n\n![A great rabbit]"
+        'update_logo_offer' => [
+            'method' => 'POST',
+            'path' => '/offer/{id}/updateLogo',
+            'openapi_context' => [
+                'summary' => 'Use this endpoint to update only the logo of the offer. Use the PUT endpoint for all other updating',
+                'description' => "# Pop a great rabbit picture by color!\n\n![A great rabbit]"
             ],
-        'controller' => UpdateLogoAction::class,
-        'denormalization_context' => ['groups' => ['offer:updateLogo']],
-        'input_formats' => [
-            'multipart' => ['multipart/form-data'],  
-        ]
+            'controller' => UpdateLogoAction::class,
+            'denormalization_context' => ['groups' => ['offer:updateLogo']],
+            'input_formats' => [
+                'multipart' => ['multipart/form-data'],
+            ]
 
-     ],
- 
+        ],
 
-                                
-],
 
-collectionOperations: [  
 
-    'createOfferWithNotification' => [
-        'method' => 'POST',  
-        'path' => '/offers/createOfferWithNotification',
-        'controller' => CreateOfferWithNotificationAction::class,
-    ],     
-]     
+    ]
 
-)]      
-class Offer  
-{  
+)]
+class Offer
+{
 
     /**
      * @var int|null
-     */  
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -143,7 +139,7 @@ class Offer
      * @var string|null
      */
     private ?string $offerResponse;
-        
+
 
     /**
      * @var int|null
@@ -201,111 +197,108 @@ class Offer
     private bool $isOfPartner;
 
 
-     /**
-     * @var bool|null    
+    /**
+     * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $validationInPending;
 
 
-    
-     /**  
-     * @var User  
+    /**
+     * @var User
      */
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'offers')]
     #[ORM\JoinColumn(nullable: false)]
     private $user;
 
 
-     /**
-     * @var bool|null    
+    /**
+     * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $validationCompleted;
 
-    
-     /**
-     * @var bool|null               
+
+    /**
+     * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $isArchived;
 
-   
-     /**
-     * @var bool|null               
+
+    /**
+     * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $isProvided;
 
 
-     /**
-     * @var bool|null               
+    /**
+     * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $isRejected;
 
-    
-     
+
     /**
-     * @var int|null                
+     * @var int|null
      */
     #[ORM\Column(type: 'integer', nullable: true)]
     private $views;
 
 
     /**
-     * @var int|null                
-     */   
+     * @var int|null
+     */
     #[ORM\Column(type: 'integer', nullable: true)]
     private $numberOfApplications;
 
-      
-     /**
-     * @var DateTimeImmutable|null               
+
+    /**
+     * @var DateTimeImmutable|null
      */
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private $publishedAt;
 
 
-    
-     /**
-     * @var bool|null               
-     */  
+    /**
+     * @var bool|null
+     */
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $isExpired;
 
-     
-     /**
-     * @var bool|null               
-     */  
+
+    /**
+     * @var bool|null
+     */
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $inReactivation;
 
-     
-     /**
-     * @var DateTimeImmutable|null                  
-     */     
+
+    /**
+     * @var DateTimeImmutable|null
+     */
     #[ORM\Column(type: 'date_immutable', nullable: true)]
     private $dateReactivated;
-   
-     /**
+
+    /**
      * @var Collection<int, Application>
      */
     #[ORM\OneToMany(mappedBy: 'offer', targetEntity: Application::class)]
     private $applications;
 
 
-     /**
+    /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $experience;
 
 
-    # Add a logo to an offer was optional but not detailled in the spec, so we'll fix the problem 
-    # if it's imperative 
+    # Add a logo to an offer was optional but not detailled in the spec, so we'll fix the problem
+    # if it's imperative
 
-      /**
+    /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -317,16 +310,28 @@ class Offer
      */
     #[Groups(['offer:updateLogo'])]
     public ?File $logoFile = null;
-   
-    
-   
+
 
     public function __construct()
     {
         $this->applications = new ArrayCollection();
+        $this->candidatures = new ArrayCollection();
+
     }
 
-       
+
+    /**
+     * @var Collection<int,Candidature>
+     */
+    #[ORM\OneToMany(mappedBy: 'offer', targetEntity: Candidature::class)]
+    private Collection $candidatures;
+
+    /**
+     * @var string
+     */
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $offerId;
+
 
     /**
      * @return int|null
@@ -783,9 +788,9 @@ class Offer
         $this->dateReactivated = $dateReactivated;
 
         return $this;
-    }    
+    }
 
-    
+
     /**
      * @return string|null
      */
@@ -793,15 +798,15 @@ class Offer
     {
         return $this->offerResponse;
     }
-      
+
     /**
      * @param string|null $offerResponse
-     * @return $this 
+     * @return $this
      */
     public function setOfferResponse(?string $offerResponse): self
     {
         $this->offerResponse = $offerResponse;
-  
+
         return $this;
     }
 
@@ -832,7 +837,7 @@ class Offer
             }
         }
 
-        return $this;  
+        return $this;
     }
 
     public function getExperience(): ?string
@@ -847,7 +852,7 @@ class Offer
         return $this;
     }
 
-    
+
     public function getLogoLink(): ?string
     {
         return $this->logoLink;
@@ -857,17 +862,17 @@ class Offer
     {
         $this->logoLink = $logoLink;
 
-        return $this;     
+        return $this;
     }
-  
-      /**
+
+    /**
      * @return File|null
      */
     public function getLogoFile(): ?File
     {
         return $this->logoFile;
     }
-  
+
     /**
      * @param File|null $logoFile
      */
@@ -876,5 +881,33 @@ class Offer
         $this->logoFile = $logoFile;
     }
 
-      
+
+    /**
+     * @return Collection<int, Candidature>
+     */
+    public function getCandidatures(): Collection
+    {
+        return $this->candidatures;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOfferId(): ?string
+    {
+        return $this->offerId;
+    }
+
+    /**
+     * @param string $offerId
+     * @return $this
+     */
+    public function setOfferId(string $offerId): self
+    {
+        $this->offerId = $offerId;
+
+        return $this;
+    }
+
+
 }

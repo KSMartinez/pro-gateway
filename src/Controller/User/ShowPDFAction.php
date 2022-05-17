@@ -2,19 +2,7 @@
 
 
 namespace App\Controller\User;
- 
 
-# Problem about this, for aiplatform 
-# require_once '../includes/dompdf/autoload.inc.php';  is good and
-# require_once 'includes/dompdf/autoload.inc.php'; not good 
-
-# For the terminal 
-# require_once 'includes/dompdf/autoload.inc.php';  is good and 
-# require_once '../includes/dompdf/autoload.inc.php';  ain't good, we gonna see this with Akhil  
- 
-
-//require_once '../includes/dompdf/autoload.inc.php';  
-//require_once 'includes/dompdf/autoload.inc.php'; 
 
    
 use Exception;
@@ -31,9 +19,6 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
-//require_once '../../../includes/dompdf/autoload.inc.php';  
-
- 
 
 /**
  * Class ShowPDFAction

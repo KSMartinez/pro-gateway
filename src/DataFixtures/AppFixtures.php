@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\User;
 use App\Factory\CVFactory;
 use App\Factory\DomainFactory;
 use App\Factory\OfferFactory;
@@ -18,9 +19,17 @@ class AppFixtures extends Fixture
         TypeOfContractFactory::createMany(8);
         OfferFactory::createMany(20);
 
+        /** @var User[] $users */
         $users = UserFactory::createMany(10);
 
+        //set Roles
+        $users[0]->setRoles([User::ROLE_ADMIN]);
+        $users[1]->setRoles([User::ROLE_ALUMNI]);
+        $users[2]->setRoles([User::ROLE_ENSEIGNANT]);
+        $users[3]->setRoles([User::ROLE_ETUDIANT]);
+
         foreach ($users as $user){
+            //$manager->persist($user);
             CVFactory::new(['user' => $user]);
         }
 

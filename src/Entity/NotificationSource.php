@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 class NotificationSource
 {
     const NEW_OFFER = 'NEW_OFFER';
+    const GROUP_DEMAND = 'GROUP_DEMAND';
 
     /**
      * @var int|null
