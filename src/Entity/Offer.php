@@ -2,16 +2,30 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Controller\Offer\ValidateOfferAction;
-use App\Repository\OfferRepository;
+use App\Entity\User;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\OfferRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use App\Controller\Offer\UpdateLogoAction;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\Offer\OfferResponseAction;
+use App\Controller\Offer\ValidateOfferAction;
+use App\Controller\Offer\ReactivateOfferAction;
+use Symfony\Component\HttpFoundation\File\File;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;  
+use App\Controller\Offer\UpdateAndSetPublishedAtAction;
+use App\Controller\Offer\CreateOfferWithNotificationAction;
+use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
-/**
+  
+
+/** 
  * Class Offer
  * @package App\Entity
  * @ApiFilter(SearchFilter::class, properties={"title": "partial", "description": "partial", "city":"exact", "country":"exact", "domain":"exact"})
@@ -25,14 +39,57 @@ use Doctrine\ORM\Mapping as ORM;
         'path' => '/offers/{id}/validate',
         'controller' => ValidateOfferAction::class,
     ],
-]
-)]
-class Offer
-{
+    'update_andSetPublishedAt' => [
+        'method' => 'PUT',
+        'path' => '/offers/{id}/updateAndSetPublishedAt',
+        'controller' => UpdateAndSetPublishedAtAction::class,
+    ], 
+    'update_IsExpired' => [
+        'method' => 'PUT',  
+        'path' => '/offers/{id}/updateIsExpired',
+        'controller' => UpdateIsExpiredOfferAction::class,
+    ], 
+    'offer_Response' => [
+        'method' => 'POST',  
+        'path' => '/offers/{id}/offerResponse',
+        'controller' => OfferResponseAction::class,
+    ], 
+
+    'UpdateLogo' => [
+        'method' => 'POST',
+        'path' => '/offer/{id}/UpdateLogo',
+        'openapi_context' => [
+            'summary'     => 'Use this endpoint to update only the logo of the offer. Use the PUT endpoint for all other updating',
+            'description' => "# Pop a great rabbit picture by color!\n\n![A great rabbit]"
+            ],
+        'controller' => UpdateLogoAction::class,
+        'denormalization_context' => ['groups' => ['offer:updateLogo']],
+        'input_formats' => [
+            'multipart' => ['multipart/form-data'],  
+        ]
+
+     ],
+ 
+
+                                
+],
+
+collectionOperations: [  
+
+    'createOfferWithNotification' => [
+        'method' => 'POST',  
+        'path' => '/offers/createOfferWithNotification',
+        'controller' => CreateOfferWithNotificationAction::class,
+    ],     
+]     
+
+)]      
+class Offer  
+{  
 
     /**
      * @var int|null
-     */
+     */  
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -79,6 +136,12 @@ class Offer
      */
     #[ORM\ManyToOne(targetEntity: Domain::class, inversedBy: 'offers')]
     private ?Domain $domain;
+
+     /**
+     * @var string|null
+     */
+    private ?string $offerResponse;
+        
 
     /**
      * @var int|null
@@ -134,6 +197,117 @@ class Offer
      */
     #[ORM\Column(type: 'boolean')]
     private bool $isOfPartner;
+
+
+     /**
+     * @var bool|null    
+     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $validationInPending;
+
+
+    
+     /**  
+     * @var User  
+     */
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'offers')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $user;
+
+
+     /**
+     * @var bool|null    
+     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $validationCompleted;
+
+    
+     /**
+     * @var bool|null               
+     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $isArchived;
+
+   
+     /**
+     * @var bool|null               
+     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $isProvided;
+
+
+     /**
+     * @var bool|null               
+     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $isRejected;
+
+    
+     
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $views;
+
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $numberOfApplications;
+
+    
+     /**
+     * @var bool|null               
+     */
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private $publishedAt;
+
+
+    
+     /**
+     * @var bool|null               
+     */  
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $isExpired;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $inReactivation;
+
+    #[ORM\Column(type: 'date_immutable', nullable: true)]
+    private $dateReactivated;
+
+    #[ORM\OneToMany(mappedBy: 'offer', targetEntity: Application::class)]
+    private $applications;
+
+
+     /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $experience;
+
+
+    # Add a logo to an offer was optional but not detailled in the spec, so we'll fix the problem 
+    # if it's imperative 
+
+      /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $logoLink = null;
+
+
+    /**
+     * @Vich\UploadableField(mapping="media_object", fileNameProperty="logoLink")
+     */
+    #[Groups(['offer:updateLogo'])]
+    public ?File $logoFile = null;
+   
+    
+   
+
+    public function __construct()
+    {
+        $this->applications = new ArrayCollection();
+    }
+
+       
 
     /**
      * @return int|null
@@ -446,4 +620,241 @@ class Offer
 
         return $this;
     }
+
+    public function getValidationInPending(): ?bool
+    {
+        return $this->validationInPending;
+    }
+
+    public function setValidationInPending(?bool $validationInPending): self
+    {
+        $this->validationInPending = $validationInPending;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getValidationCompleted(): ?bool
+    {
+        return $this->validationCompleted;
+    }
+
+    public function setValidationCompleted(?bool $validationCompleted): self
+    {
+        $this->validationCompleted = $validationCompleted;
+
+        return $this;
+    }
+
+    public function getIsArchived(): ?bool
+    {
+        return $this->isArchived;
+    }
+
+    public function setIsArchived(?bool $isArchived): self
+    {
+        $this->isArchived = $isArchived;
+
+        return $this;
+    }
+
+    public function getIsProvided(): ?bool
+    {
+        return $this->isProvided;
+    }
+
+    public function setIsProvided(?bool $isProvided): self
+    {
+        $this->isProvided = $isProvided;
+
+        return $this;
+    }
+
+    public function getIsRejected(): ?bool
+    {
+        return $this->isRejected;
+    }
+
+    public function setIsRejected(?bool $isRejected): self
+    {
+        $this->isRejected = $isRejected;
+
+        return $this;
+    }
+
+    public function getViews(): ?int
+    {
+        return $this->views;
+    }
+
+    public function setViews(?int $views): self
+    {
+        $this->views = $views;
+
+        return $this;
+    }
+
+    public function getNumberOfApplications(): ?int
+    {
+        return $this->numberOfApplications;
+    }
+
+    public function setNumberOfApplications(?int $numberOfApplications): self
+    {
+        $this->numberOfApplications = $numberOfApplications;
+
+        return $this;
+    }
+
+    public function getPublishedAt(): ?\DateTimeImmutable
+    {
+        return $this->publishedAt;
+    }
+
+    public function setPublishedAt(?\DateTimeImmutable $publishedAt): self
+    {
+        $this->publishedAt = $publishedAt;
+
+        return $this;
+    }
+
+    public function getIsExpired(): ?bool
+    {
+        return $this->isExpired;
+    }
+
+    public function setIsExpired(?bool $isExpired): self
+    {
+        $this->isExpired = $isExpired;
+
+        return $this;
+    }
+
+    public function getInReactivation(): ?bool
+    {
+        return $this->inReactivation;
+    }
+
+    public function setInReactivation(?bool $inReactivation): self
+    {
+        $this->inReactivation = $inReactivation;
+
+        return $this;
+    }
+
+    public function getDateReactivated(): ?\DateTimeImmutable
+    {
+        return $this->dateReactivated;
+    }
+
+    public function setDateReactivated(?\DateTimeImmutable $dateReactivated): self
+    {
+        $this->dateReactivated = $dateReactivated;
+
+        return $this;
+    }    
+
+    
+    /**
+     * @return string|null
+     */
+    public function getOfferResponse(): ?string
+    {
+        return $this->offerResponse;
+    }
+      
+    /**
+     * @param string|null $offerResponse
+     * @return $this 
+     */
+    public function setOfferResponse(?string $offerResponse): self
+    {
+        $this->offerResponse = $offerResponse;
+  
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Application>
+     */
+    public function getApplications(): Collection
+    {
+        return $this->applications;
+    }
+
+    public function addApplication(Application $application): self
+    {
+        if (!$this->applications->contains($application)) {
+            $this->applications[] = $application;
+            $application->setOffer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApplication(Application $application): self
+    {
+        if ($this->applications->removeElement($application)) {
+            // set the owning side to null (unless already changed)
+            if ($application->getOffer() === $this) {
+                $application->setOffer(null);
+            }
+        }
+
+        return $this;  
+    }
+
+    public function getExperience(): ?string
+    {
+        return $this->experience;
+    }
+
+    public function setExperience(?string $experience): self
+    {
+        $this->experience = $experience;
+
+        return $this;
+    }
+
+    
+    public function getLogoLink(): ?string
+    {
+        return $this->logoLink;
+    }
+
+    public function setLogoLink(?string $logoLink): self
+    {
+        $this->logoLink = $logoLink;
+
+        return $this;     
+    }
+  
+      /**
+     * @return File|null
+     */
+    public function getLogoFile(): ?File
+    {
+        return $this->logoFile;
+    }
+  
+    /**
+     * @param File|null $file
+     */
+    public function setLogoFile(?File $logoFile): void
+    {
+        $this->logoFile = $logoFile;
+    }
+
+      
 }
