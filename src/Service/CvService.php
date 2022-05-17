@@ -6,7 +6,7 @@ namespace App\Service;
 
 use DateTime;
 use Exception;  
-use App\Entity\CV;
+use App\Entity\CV; 
 use App\Repository\CVRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\File; 
@@ -23,6 +23,7 @@ class CvService
      * @var CvRepository 
      */
     private CVRepository $cVRepository;   
+
 
     /**
      * @param EntityManagerInterface $entityManager
@@ -45,7 +46,7 @@ class CvService
         $cv->setFile($file); 
 
         return $cv;           
-
+  
     }  
 
     
@@ -70,6 +71,24 @@ class CvService
         return $cv;
 
     }
+
+    //  /**
+    //  * @param 
+    //  * @return void 
+    //  */
+    // public function testPDF()
+    // {
+
+    //     $test = "Test my nigga";   
+
+    //     $html = $this->redirectToRoute('test/index.html.twig', ['test' => $test]);
+
+    //     $html = $this->render('test/index.html.twig', ['test' => $test]);
+
+    //     ///dd('kooooll');   
+
+    //     $this->pdfService->showPdfFile($html);   
+    // }  
      
 
 

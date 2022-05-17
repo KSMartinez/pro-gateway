@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * Class CharteDutilisationAction
+ * Class ImportCvAction
  * @package App\Controller\User
  */
 #[AsController]
