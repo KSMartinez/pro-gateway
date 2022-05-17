@@ -13,6 +13,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Education|null findOneBy(array $criteria, array $orderBy = null)
  * @method Education[]    findAll()
  * @method Education[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<Education> 
  */
 class EducationRepository extends ServiceEntityRepository
 {
@@ -73,4 +74,21 @@ class EducationRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    
+    /**
+     * @return Education[] Returns an array of Experience objects
+     * @param int|null $cv_Id     
+     */  
+    public function userEducations(?int $cv_Id)
+    {
+        return $this->createQueryBuilder('e')
+            ->where('e.cv = :val')
+            ->setParameter('val', $cv_Id)
+            ->getQuery()
+            ->getResult()   
+        ;    
+    }         
+
+    
 }
