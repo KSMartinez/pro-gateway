@@ -84,10 +84,14 @@ class UserRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('u')
             ->andWhere('u.charteSigned = :val')
             ->setParameter('val', true)
+            ->andWhere('u.datasVisibleForAnnuaire = :value')
+            ->setParameter('value', true)
             ->orderBy('u.surname')
-            ->getQuery()
+            ->getQuery()    
             ->getResult()
         ;  
+
+        
     }
     
 }

@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\NotificationRepository;
+use App\Entity\Offer;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\NotificationRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
  *
@@ -52,6 +53,13 @@ class Notification
      */
     #[ORM\ManyToOne(targetEntity: NotificationSource::class)]
     private ?NotificationSource $source;
+
+
+    /**  
+     * @var Offer|null
+     */
+    #[ORM\OneToOne(targetEntity: Offer::class, cascade: ['persist', 'remove'])]
+    private $offer;
 
     /**
      * @return int|null
@@ -152,6 +160,18 @@ class Notification
     public function setSource(?NotificationSource $source): self
     {
         $this->source = $source;
+
+        return $this;
+    }
+
+    public function getOffer(): ?Offer
+    {
+        return $this->offer;
+    }
+
+    public function setOffer(?Offer $offer): self
+    {
+        $this->offer = $offer;
 
         return $this;
     }

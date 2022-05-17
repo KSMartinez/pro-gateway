@@ -3,12 +3,12 @@
 namespace App\Entity;
 
 use DateTime;
-use DateTimeInterface;
-
+use DateTimeInterface;  
+  
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
-use App\Controller\User\UserListAction;
-use App\Controller\User\UpdateProfilAction;
+use App\Controller\User\ShowPDFAction;
+use App\Controller\User\UserListAction;  
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\User\UpdatePictureAction;
@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\User\ChangeCityCountryVisibilityAction;         
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
-/**
+/**    
  *
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -74,8 +74,17 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             'method' => 'PUT',  
             'path' => '/rejectedCharteAction/{id}',     
             'controller' => RejectedCharteAction::class,   
-        ],  
-   
+        ], 
+     
+        
+        'showPDFAction' => [  
+            'method' => 'GET',  
+            'path' => '/showPDFAction/{id}',     
+            'controller' => ShowPDFAction::class,     
+        ],      
+  
+          
+     
         //  'birthday_visibility' => [  
         //     'method' => 'PUT',  
         //     'path' => '/changeBirthdayVisibility/user/{id}',             
@@ -87,8 +96,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         //     'path' => '/changeCityAndCountryVisibility/user/{id}',             
         //     'controller' => changeCityCountryVisibilityAction::class,   
         // ],  
-            
-    
+              
 
         ], 
     collectionOperations: [
@@ -301,42 +309,89 @@ class User implements UserInterface
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $addressIsPublic;
 
+    
+      /**  
+     * @var bool|null  
+     */
     #[Groups(["user:write"])] 
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $datasVisibleForAllMembers;
 
+    
+      /**  
+     * @var bool|null 
+     */
     #[Groups(["user:write"])] 
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $datasVisibleForAnnuaire;
 
+    
+      /**  
+     * @var bool|null
+     */
     #[Groups(["user:write"])] 
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $datasPublic;
 
+    
+      /**  
+     * @var bool|null 
+     */
     #[Groups(["user:write"])] 
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $datasAllPrivate;
 
+
+    
+      /**  
+     * @var bool|null 
+     */
     #[Groups(["user:write"])] 
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $newsLetterNotification;
 
+
+    
+      /**  
+     * @var bool|null  
+     */
     #[Groups(["user:write"])] 
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $rejectedCharte;
 
-
+    
+      /**  
+     * @var bool|null  
+     */
     #[Groups(["user:write"])]
-    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[ORM\Column(type: 'boolean', nullable: true)]  
     private $availableToWork;
 
-   
+
      
+    /**
+     * @var Collection<int, Offer>
+     */
+    #[Groups(["user:read, user:write"])]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Offer::class)]
+    private $offers;
+    
+    
+    /**
+     * @var Collection<int, Application>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Application::class)]
+    private $applications;
+   
+      
+
     public function __construct()
     {
         $this->notifications = new ArrayCollection();
         $this->savedOfferSearches = new ArrayCollection();
         $this->emailNotifications = new ArrayCollection();
+        $this->offers = new ArrayCollection();
+        $this->applications = new ArrayCollection();
      
     }
 
@@ -824,6 +879,70 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return Collection<int, Offer>
+     */
+    public function getOffers(): Collection
+    {
+        return $this->offers;
+    }
+
+    public function addOffer(Offer $offer): self
+    {
+        if (!$this->offers->contains($offer)) {
+            $this->offers[] = $offer;
+            $offer->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOffer(Offer $offer): self
+    {
+        if ($this->offers->removeElement($offer)) {
+            // set the owning side to null (unless already changed)
+            if ($offer->getUser() === $this) {
+                $offer->setUser($this);
+            }
+        }
+
+        return $this;
+    } 
+
+    /**
+     * @return Collection<int, Application>
+     */
+    public function getApplications(): Collection
+    {
+        return $this->applications;
+    }
+
+    public function addApplication(Application $application): self
+    {
+        if (!$this->applications->contains($application)) {
+            $this->applications[] = $application;
+            $application->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApplication(Application $application): self
+    {
+        if ($this->applications->removeElement($application)) {
+            // set the owning side to null (unless already changed) 
+            if ($application->getUser() === $this) {
+                $application->setUser($this);
+            }
+        }
+
+        return $this;
+    }
+
+   
+
+    
+       
     
 
 

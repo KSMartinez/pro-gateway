@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello TestController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1> YOUR CV SIR ! ✅</h1>
+
+    <h1> EDUCATION </h1>
+
+    <p> {% for education in educations %}   
+           
+        <li> Diploma : {{ education.getDiploma() }}</li>
+        <li> Study Level  : {{ education.getStudyLevel() }}</li>
+        <li> Domain : {{ education.getDomain() }}</li>
+        <li> School : {{ education.getSchool() }}</li>
+        <li> Start Month : {{ education.getStartMonth()|date("m/d/Y") }}</li>
+        <li> End Month : {{ education.getEndMonth()|date("m/d/Y") }}</li>
+        <li> Start Year : {{ education.getStartYear()|date("m/d/Y") }}</li>
+        <li> End Year : {{ education.getEndYear()|date("m/d/Y") }}</li>    
+        <li> Current school : {{ education.getCurrentSchool() }}</li>
+
+        {% endfor %}
+      
+    </p>  
+ 
+    <h1> EXPERIENCE </h1>
+  
+     <p> {% for experience in experiences %}
+          
+        <li> Description : {{ experience.getDescription() }}</li>
+        <li> Job name  : {{ experience.getJobname() }}</li>
+        <li> Company : {{ experience.getCompany() }}</li>
+        <li> Category : {{ experience.getCategory() }}</li>
+        <li> Country : {{ experience.getCountry() }}</li>
+        <li> City : {{ experience.getCity() }}</li>      
+        <li> Start Month : {{ experience.getStartMonth()|date("m/d/Y") }}</li>  
+        <li> End Month : {{ experience.getEndMonth()|date("m/d/Y") }}</li>  
+        <li> Start Year : {{ experience.getStartYear()|date("m/d/Y") }}</li>  
+        <li> End Year : {{ experience.getEndYear()|date("m/d/Y")  }}</li>    
+        <li> Current job : {{ experience.getCurrentJob() }}</li>
+    
+        {% endfor %}
+       
+    </p>   
+
+     <h1> SKILLS  </h1>
+
+     <p> {% for skill in skills %}    
+          
+        <li> Skill1 : {{ skill.getSkill1() }}</li>
+        <li> Skill2 : {{ skill.getSkill2() }}</li>
+        <li> Skill3 : {{ skill.getSkill3() }}</li>
+        <li> Skill4 : {{ skill.getSkill4() }}</li>
+        <li> Skill5 : {{ skill.getSkill5() }}</li>      
+        <li> Skill5 : {{ skill.getComplementarySkill() }}</li>        
+    
+        {% endfor %}    
+          
+    </p>   
+
+     
+</div>
+{% endblock %}
