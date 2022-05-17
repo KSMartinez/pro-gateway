@@ -4,44 +4,80 @@ namespace App\Entity;
 
 
 
-use ApiPlatform\Core\Annotation\ApiResource;   
-use App\Repository\SkillRepository;
+use App\Entity\CV;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\SkillRepository;
+use ApiPlatform\Core\Annotation\ApiResource;   
 
 #[ORM\Entity(repositoryClass: SkillRepository::class)]
 #[ApiResource]   
 class Skill
 {
+
+    
+      /**  
+     * @var int|null
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]     
     private $id;
 
 
+    
+      /**  
+     * @var CV|null
+     */
     #[ORM\ManyToOne(targetEntity: CV::class, inversedBy: 'skills')]
     private $cv;
 
+
+    
+      /**  
+     * @var string
+     */
     #[ORM\Column(type: 'string', length: 255)]
     private $skill1;
 
+
+      /**  
+     * @var string|null
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $skill2;
 
+
+    
+      /**  
+     * @var string|null
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $skill3;
 
+
+      /**  
+     * @var string|null
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $skill4;
 
+    
+      /**  
+     * @var string|null
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $skill5;
 
+    
+      /**  
+     * @var string|null
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $complementarySkill;
-
+  
 
     public function getId(): ?int
-    {
+    {  
         return $this->id;
     }
 
