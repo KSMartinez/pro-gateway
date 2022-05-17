@@ -7,12 +7,14 @@ use App\Model\GroupDemand;
 use App\Service\GroupService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
 /**
  * Class RejectGroupDemandAction
  *
  * @package App\Controller\Group
  */
+#[AsController]
 class RejectGroupDemandAction extends AbstractController
 {
 

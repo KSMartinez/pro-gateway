@@ -6,11 +6,13 @@ use App\Model\GroupDemand;
 use App\Service\GroupService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
 /**
  * Class ValidateGroupDemandAction
  * @package App\Controller\Group
  */
+#[AsController]
 class ValidateGroupDemandAction extends AbstractController
 {
 

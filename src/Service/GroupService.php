@@ -3,9 +3,11 @@
 namespace App\Service;
 use App\Entity\Group;
 use App\Entity\GroupStatus;
+use App\Entity\User;
 use App\Model\GroupDemand;
 use App\Repository\GroupRepository;
 use App\Repository\GroupStatusRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 
@@ -17,10 +19,11 @@ class GroupService
 
     /**
      * @return Group[]
+     * @throws Exception
      */
     public function getGroupDemands(): array
     {
-        $groupDemandStatus = $this->groupStatusRepository->findOneBy(array('status' => GroupStatus::EN_ATTENTE));
+        $groupDemandStatus = $this->getGroupStatus(GroupStatus::EN_ATTENTE);
         return $this->groupRepository->findBy(array('groupStatus' => $groupDemandStatus));
     }
 
@@ -31,17 +34,13 @@ class GroupService
      */
     public function validateGroupDemand(GroupDemand $groupDemand): Group
     {
-        $groupConfirmedStatus = $this->groupStatusRepository->findOneBy(array('status' => GroupStatus::CONFIRME));
-        if (!$groupConfirmedStatus){
-            throw new Exception('GroupStatus with label ' . GroupStatus::CONFIRME . ' was not found in the table. Please add it correctly.');
-        }
+        $groupConfirmedStatus = $this->getGroupStatus(GroupStatus::CONFIRME);
         $group = $groupDemand->getGroup();
         $group->setGroupStatus($groupConfirmedStatus);
 
-        if (!$group->getCreatedBy()){
+        if (!$group->getCreatedBy()) {
             throw new Exception("Group createdBy is null. Cannot notify user");
         }
-
 //        $this->notificationService->createNotification($groupDemand->getNotificationMessage(),
 //                                                       NotificationSource::GROUP_DEMAND, $group->getCreatedBy());
         $this->entityManager->persist($group);
@@ -56,14 +55,48 @@ class GroupService
      */
     public function rejectGroupDemand(GroupDemand $groupDemand): Group
     {
-        $groupRefusedStatus = $this->groupStatusRepository->findOneBy(array('status' => GroupStatus::REFUSE));
-        if (!$groupRefusedStatus){
-            throw new Exception('GroupStatu with label ' . GroupStatus::REFUSE . ' was not found in the table. Please add it correctly.');
-        }
+        $groupRefusedStatus = $this->getGroupStatus(GroupStatus::REFUSE);
+
         $group = $groupDemand->getGroup();
         $group->setGroupStatus($groupRefusedStatus);
         $this->entityManager->persist($group);
         $this->entityManager->flush();
         return $group;
+    }
+
+    /**
+     * @param Group $group
+     * @param User  $user
+     * @return Group
+     * @throws Exception
+     */
+    public function createNewGroupDemand(Group $group, User $user): Group
+    {
+        $groupEnAttentStatus = $this->getGroupStatus(GroupStatus::EN_ATTENTE);
+
+        $group->setDateCreated(new DateTime('now'))
+              ->setCreatedBy($user)
+              ->setGroupStatus($groupEnAttentStatus);
+
+        $this->entityManager->persist($group);
+        $this->entityManager->flush();
+        return $group;
+
+
+
+    }
+
+    /**
+     * @param string $status
+     * @return GroupStatus
+     * @throws Exception
+     */
+    private function getGroupStatus(string $status): GroupStatus
+    {
+        $groupStatus = $this->groupStatusRepository->findOneBy(array('status' => $status));
+        if (!$groupStatus) {
+            throw new Exception('GroupStatus with label ' . $status . ' was not found in the table. Please add it correctly.');
+        }
+        return $groupStatus;
     }
 }

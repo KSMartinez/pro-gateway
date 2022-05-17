@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\Group\CreateGroupDemandAction;
 use App\Controller\Group\ListGroupDemandsAction;
 use App\Controller\Group\RejectGroupDemandAction;
 use App\Controller\Group\ValidateGroupDemandAction;
@@ -10,6 +11,7 @@ use App\Model\GroupDemand;
 use App\Repository\GroupRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  *
@@ -18,20 +20,26 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: '`group`')]
 #[ApiResource(
     collectionOperations: [
-        'get', 'post',
+        'get',
         'list_group_demands' => [
             'method' => 'get',
             'path' => '/groups/demandes/',
             'controller' => ListGroupDemandsAction::class
-        ]],
+        ],
+        'create_new_group_demand' => [
+            'method' => 'post',
+            'path' => '/groups/demandes',
+            'controller' => CreateGroupDemandAction::class
+        ]
+    ],
     itemOperations: [
         'get','put','patch','delete',
         'validate_group_demand' => [
             'method' => 'post',
             'path' => '/groups/demande/{id}/validate',
             'security' => 'is_granted("ROLE_ADMIN")',
-            'input'=> GroupDemand::class,
-            'controller'  => ValidateGroupDemandAction::class
+            'input' => GroupDemand::class,
+            'controller' => ValidateGroupDemandAction::class
         ],
         'reject_group_demand' => [
             'method' => 'post',
@@ -40,8 +48,17 @@ use Doctrine\ORM\Mapping as ORM;
             'input' => GroupDemand::class,
             'controller' => RejectGroupDemandAction::class
         ]
-    ])
-]
+    ],
+    denormalizationContext: [
+        'groups' => [
+            'group:write'
+        ]
+    ], normalizationContext: [
+        'groups' => [
+            'group:read'
+        ]
+    ]
+)]
 class Group
 {
     /**
@@ -49,30 +66,35 @@ class Group
      */
     #[ORM\Id]
     #[ORM\GeneratedValue]
+    #[Groups(["group:read", "group:write"])]
     #[ORM\Column(type: 'integer')]
     private ?int $id;
 
     /**
      * @var string
      */
+    #[Groups(["group:read", "group:write"])]
     #[ORM\Column(type: 'string', length: 255)]
     private string $name;
 
     /**
      * @var DateTimeInterface
      */
+    #[Groups(["group:read"])]
     #[ORM\Column(type: 'date')]
     private DateTimeInterface $dateCreated;
 
     /**
      * @var string|null
      */
+    #[Groups(["group:read", "group:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $description;
 
     /**
      * @var GroupStatus
      */
+    #[Groups(["group:read"])]
     #[ORM\ManyToOne(targetEntity: GroupStatus::class)]
     #[ORM\JoinColumn(nullable: false)]
     private GroupStatus $groupStatus;
@@ -80,6 +102,7 @@ class Group
     /**
      * @var User|null
      */
+    #[Groups(["group:read"])]
     #[ORM\ManyToOne(targetEntity: User::class)]
     private ?User $createdBy;
 

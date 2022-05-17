@@ -1,31 +1,39 @@
 <?php
 
 namespace App\Controller\Group;
+
 use App\Entity\Group;
+use App\Entity\User;
 use App\Service\GroupService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 /**
- * Class ListGroupDemandsAction
+ * Class CreateGroupDemandAction
+ *
  * @package App\Controller\Group
  */
 #[AsController]
-class ListGroupDemandsAction extends AbstractController
+class CreateGroupDemandAction extends AbstractController
 {
-
+    /**
+     * @param GroupService $groupService
+     */
     public function __construct(private GroupService $groupService)
     {
     }
 
 
     /**
-     * @return Group[]
+     * @param Group $data
+     * @return Group
      * @throws Exception
      */
-    public function __invoke(): array
+    public function __invoke(Group $data): Group
     {
-        return $this->groupService->getGroupDemands();
+        /** @var User $user */
+        $user = $this->getUser();
+        return $this->groupService->createNewGroupDemand($data, $user);
     }
 }
