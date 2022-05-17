@@ -13,6 +13,7 @@ use App\Controller\Offer\UpdateIsExpiredOfferAction;
 use App\Controller\Offer\UpdateLogoAction;
 use App\Controller\Offer\ValidateOfferAction;
 use App\Repository\OfferRepository;
+use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -332,6 +333,13 @@ class Offer
     #[ORM\Column(type: 'string', length: 255)]
     private string $offerId;
 
+    #[ORM\ManyToOne(targetEntity: OfferStatus::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private OfferStatus $offerStatus;
+
+    #[ORM\Column(type: 'date')]
+    private DateTimeInterface $dateModified;
+
 
     /**
      * @return int|null
@@ -432,6 +440,10 @@ class Offer
     public function setDatePosted(DateTimeInterface $datePosted): self
     {
         $this->datePosted = $datePosted;
+
+        if (!isset($this->dateModified)){
+            $this->setDateModified(new DateTime('now'));
+        }
 
         return $this;
     }
@@ -742,12 +754,12 @@ class Offer
     }
 
 
-    public function getPublishedAt(): ?\DateTimeImmutable
+    public function getPublishedAt(): ?DateTimeImmutable
     {
         return $this->publishedAt;
     }
 
-    public function setPublishedAt(?\DateTimeImmutable $publishedAt): self
+    public function setPublishedAt(?DateTimeImmutable $publishedAt): self
     {
         $this->publishedAt = $publishedAt;
 
@@ -778,12 +790,12 @@ class Offer
         return $this;
     }
 
-    public function getDateReactivated(): ?\DateTimeImmutable
+    public function getDateReactivated(): ?DateTimeImmutable
     {
         return $this->dateReactivated;
     }
 
-    public function setDateReactivated(?\DateTimeImmutable $dateReactivated): self
+    public function setDateReactivated(?DateTimeImmutable $dateReactivated): self
     {
         $this->dateReactivated = $dateReactivated;
 
@@ -905,6 +917,30 @@ class Offer
     public function setOfferId(string $offerId): self
     {
         $this->offerId = $offerId;
+
+        return $this;
+    }
+
+    public function getOfferStatus(): ?OfferStatus
+    {
+        return $this->offerStatus;
+    }
+
+    public function setOfferStatus(OfferStatus $offerStatus): self
+    {
+        $this->offerStatus = $offerStatus;
+
+        return $this;
+    }
+
+    public function getDateModified(): ?DateTimeInterface
+    {
+        return $this->dateModified;
+    }
+
+    public function setDateModified(DateTimeInterface $dateModified): self
+    {
+        $this->dateModified = $dateModified;
 
         return $this;
     }
