@@ -385,12 +385,6 @@ class User implements UserInterface
     private $offers;
 
 
-    /**
-     * @var Collection<int, Application>
-     */
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Application::class)]
-    private $applications;
-
 
 
     /**
@@ -406,7 +400,6 @@ class User implements UserInterface
         $this->emailNotifications = new ArrayCollection();
         $this->candidatures = new ArrayCollection();
         $this->offers = new ArrayCollection();
-        $this->applications = new ArrayCollection();
 
     }
 
@@ -923,42 +916,6 @@ class User implements UserInterface
 
         return $this;
     }
-
-    /**
-     * @return Collection<int, Application>
-     */
-    public function getApplications(): Collection
-    {
-        return $this->applications;
-    }
-
-    public function addApplication(Application $application): self
-    {
-        if (!$this->applications->contains($application)) {
-            $this->applications[] = $application;
-            $application->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeApplication(Application $application): self
-    {
-        if ($this->applications->removeElement($application)) {
-            // set the owning side to null (unless already changed)
-            if ($application->getUser() === $this) {
-                $application->setUser($this);
-            }
-        }
-
-        return $this;
-    }
-
-
-
-
-
-
 
 
 
