@@ -9,42 +9,45 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use App\Controller\User\ShowPDFAction;
 use App\Controller\User\UserListAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\User\UpdatePictureAction;
 use App\Controller\User\RejectedCharteAction;
 use App\Controller\User\checkFilledDatasAction;
+use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Controller\User\CharteDutilisationAction;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\User\ChangeBirthdayVisibilityAction;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\User\ChangeCityCountryVisibilityAction;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;  
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
- *
+ * @ApiFilter(SearchFilter::class, properties={"charteSigned": "exact", "datasVisibleForAnnuaire": "exact", "roles": "exact"})
+ * @ApiFilter(OrderFilter::class, properties={"surname" : "DESC"})
  */
-#[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource(
-
-    collectionOperations  : [
-    'get',
-    'post',
-    'annuaire_list' => [
-        'method' => 'GET',
-        'path' => '/annuaireList',
-        'controller' => UserListAction::class,
+#[ORM\Entity(repositoryClass: UserRepository::class)]  
+#[ApiResource(   
+  
+    shortName: "users",
+    denormalizationContext: [
+        'groups' => [
+            'user:write'
+        ]
     ],
-
-
-
-],
-    itemOperations        : [
-        'get','put','delete',
+    // normalizationContext: [
+    //     "groups" => [
+    //         "user:read"
+    //     ]
+    // ],
+    itemOperations      : [
+        'get','put','delete', 'patch',
         'charte_user' => [
             'method' => 'POST',
             'path' => '/charteAction/{id}',
@@ -61,7 +64,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             'denormalization_context' => ['groups' => ['user:updatePicture']],
             'input_formats' => [
                 'multipart' => ['multipart/form-data'],
-            ]
+            ] 
 
          ],
 
@@ -100,17 +103,18 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 
         ],
-    // normalizationContext: [
-    //     "groups" => [
-    //         "user:read"
-    //     ]
-    // ],
-    shortName             : "users",
-    denormalizationContext: [
-        'groups' => [
-            'user:write'
-        ]
+    collectionOperations: [
+    'get',
+    'post',
+    'annuaire_list' => [
+        'method' => 'GET',
+        'path' => '/annuaireList',
+        'controller' => UserListAction::class,
     ],
+
+
+
+],
 
 )]
 class User implements UserInterface
@@ -377,14 +381,6 @@ class User implements UserInterface
 
 
 
-    /**
-     * @var Collection<int, Offer>
-     */
-    #[Groups(["user:read, user:write"])]
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Offer::class)]
-    private $offers;
-
-
 
 
     /**
@@ -399,7 +395,6 @@ class User implements UserInterface
         $this->savedOfferSearches = new ArrayCollection();
         $this->emailNotifications = new ArrayCollection();
         $this->candidatures = new ArrayCollection();
-        $this->offers = new ArrayCollection();
 
     }
 
@@ -883,36 +878,6 @@ class User implements UserInterface
     public function setAvailableToWork(?bool $availableToWork): self
     {
         $this->availableToWork = $availableToWork;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Offer>
-     */
-    public function getOffers(): Collection
-    {
-        return $this->offers;
-    }
-
-    public function addOffer(Offer $offer): self
-    {
-        if (!$this->offers->contains($offer)) {
-            $this->offers[] = $offer;
-            $offer->setCreatedByUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOffer(Offer $offer): self
-    {
-        if ($this->offers->removeElement($offer)) {
-            // set the owning side to null (unless already changed)
-            if ($offer->getCreatedByUser() === $this) {
-                $offer->setCreatedByUser($this);
-            }
-        }
 
         return $this;
     }

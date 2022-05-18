@@ -42,9 +42,9 @@ final class CVFactory extends ModelFactory
     {
         return [
             // TODO add your default values here (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories)
-            'experience' => self::faker()->text(self::faker()->numberBetween(50,100)),
-            'education' => self::faker()->text(self::faker()->numberBetween(50,100)),
-            'skills' => self::faker()->text(self::faker()->numberBetween(50,70)),
+            // 'experience' => self::faker()->text(self::faker()->numberBetween(50,100)),
+            // 'education' => self::faker()->text(self::faker()->numberBetween(50,100)),
+            // 'skills' => self::faker()->text(self::faker()->numberBetween(50,70)),
         ];
     }
 
