@@ -58,12 +58,6 @@ class Notification
     private ?NotificationSource $source;
 
 
-    /**  
-     * @var Offer|null
-     */
-    #[ORM\OneToOne(targetEntity: Offer::class, cascade: ['persist', 'remove'])]
-    private $offer;
-
     /**
      * @return int|null
      */
@@ -163,18 +157,6 @@ class Notification
     public function setSource(?NotificationSource $source): self
     {
         $this->source = $source;
-
-        return $this;
-    }
-
-    public function getOffer(): ?Offer
-    {
-        return $this->offer;
-    }
-
-    public function setOffer(?Offer $offer): self
-    {
-        $this->offer = $offer;
 
         return $this;
     }

@@ -899,7 +899,7 @@ class User implements UserInterface
     {
         if (!$this->offers->contains($offer)) {
             $this->offers[] = $offer;
-            $offer->setUser($this);
+            $offer->setCreatedByUser($this);
         }
 
         return $this;
@@ -909,8 +909,8 @@ class User implements UserInterface
     {
         if ($this->offers->removeElement($offer)) {
             // set the owning side to null (unless already changed)
-            if ($offer->getUser() === $this) {
-                $offer->setUser($this);
+            if ($offer->getCreatedByUser() === $this) {
+                $offer->setCreatedByUser($this);
             }
         }
 

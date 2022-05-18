@@ -200,11 +200,11 @@ class Offer
 
 
     /**
-     * @var User
+     * @var User|null
      */
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'offers')]
-    #[ORM\JoinColumn(nullable: false)]
-    private User $user;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $createdByUser;
 
 
     /**
@@ -259,13 +259,22 @@ class Offer
     #[ORM\Column(type: 'string', length: 255)]
     private string $offerId;
 
+    /**
+     * @var OfferStatus
+     */
     #[ORM\ManyToOne(targetEntity: OfferStatus::class)]
     #[ORM\JoinColumn(nullable: false)]
     private OfferStatus $offerStatus;
 
+    /**
+     * @var DateTimeInterface
+     */
     #[ORM\Column(type: 'date')]
     private DateTimeInterface $dateModified;
 
+    /**
+     *
+     */
     public function __construct()
     {
         $this->candidatures = new ArrayCollection();
@@ -591,25 +600,38 @@ class Offer
         return $this;
     }
 
-    public function getUser(): ?User
+    /**
+     * @return User|null
+     */
+    public function getCreatedByUser(): ?User
     {
-        return $this->user;
+        return $this->createdByUser;
     }
 
-    public function setUser(User $user): self
+    /**
+     * @param User|null $createdByUser
+     * @return $this
+     */
+    public function setCreatedByUser(?User $createdByUser): self
     {
-        $this->user = $user;
+        $this->createdByUser = $createdByUser;
 
         return $this;
     }
 
 
-
+    /**
+     * @return int|null
+     */
     public function getViews(): ?int
     {
         return $this->views;
     }
 
+    /**
+     * @param int|null $views
+     * @return $this
+     */
     public function setViews(?int $views): self
     {
         $this->views = $views;
@@ -617,11 +639,18 @@ class Offer
         return $this;
     }
 
+    /**
+     * @return int|null
+     */
     public function getNumberOfCandidatures(): ?int
     {
         return $this->numberOfCandidatures;
     }
 
+    /**
+     * @param int|null $numberOfCandidatures
+     * @return $this
+     */
     public function setNumberOfCandidatures(?int $numberOfCandidatures): self
     {
         $this->numberOfCandidatures = $numberOfCandidatures;
@@ -630,12 +659,18 @@ class Offer
     }
 
 
-
+    /**
+     * @return string|null
+     */
     public function getExperience(): ?string
     {
         return $this->experience;
     }
 
+    /**
+     * @param string|null $experience
+     * @return $this
+     */
     public function setExperience(?string $experience): self
     {
         $this->experience = $experience;
@@ -644,11 +679,18 @@ class Offer
     }
 
 
+    /**
+     * @return string|null
+     */
     public function getLogoLink(): ?string
     {
         return $this->logoLink;
     }
 
+    /**
+     * @param string|null $logoLink
+     * @return $this
+     */
     public function setLogoLink(?string $logoLink): self
     {
         $this->logoLink = $logoLink;
@@ -700,11 +742,18 @@ class Offer
         return $this;
     }
 
+    /**
+     * @return OfferStatus|null
+     */
     public function getOfferStatus(): ?OfferStatus
     {
         return $this->offerStatus;
     }
 
+    /**
+     * @param OfferStatus $offerStatus
+     * @return $this
+     */
     public function setOfferStatus(OfferStatus $offerStatus): self
     {
         $this->offerStatus = $offerStatus;
@@ -712,11 +761,18 @@ class Offer
         return $this;
     }
 
+    /**
+     * @return DateTimeInterface|null
+     */
     public function getDateModified(): ?DateTimeInterface
     {
         return $this->dateModified;
     }
 
+    /**
+     * @param DateTimeInterface $dateModified
+     * @return $this
+     */
     public function setDateModified(DateTimeInterface $dateModified): self
     {
         $this->dateModified = $dateModified;
