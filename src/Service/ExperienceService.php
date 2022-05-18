@@ -14,10 +14,7 @@ use Symfony\Component\HttpFoundation\File\File;
 class ExperienceService
 {
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private EntityManagerInterface $entityManager;
+    
 
      /**     
      * @var ExperienceRepository 
@@ -25,11 +22,10 @@ class ExperienceService
     private ExperienceRepository $experienceRepository;   
 
     /**
-     * @param EntityManagerInterface $entityManager
+     * @param ExperienceRepository $experienceRepository   
      */
-    public function __construct(EntityManagerInterface $entityManager, ExperienceRepository $experienceRepository)
+    public function __construct(ExperienceRepository $experienceRepository)
     {
-        $this->entityManager = $entityManager;
         $this->experienceRepository = $experienceRepository; 
     }
 

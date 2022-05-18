@@ -6,26 +6,94 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\Offer\ArchiveOfferAction;
+use App\Controller\Offer\CreateOfferAction;
+use App\Controller\Offer\ReactivateExpiredOfferAction;
+use App\Controller\Offer\RefuseOfferAction;
+use App\Controller\Offer\SetFulfilledOfferAction;
+use App\Controller\Offer\UpdateLogoAction;
+use App\Controller\Offer\DeleteOfferAction;
 use App\Controller\Offer\ValidateOfferAction;
 use App\Repository\OfferRepository;
+use DateTime;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * Class Offer
+ *
  * @package App\Entity
- * @ApiFilter(SearchFilter::class, properties={"title": "partial", "description": "partial", "city":"exact", "country":"exact", "domain":"exact"})
+ * @ApiFilter(SearchFilter::class, properties={"title": "partial", "description": "partial", "city":"exact",
+ *     "country":"exact", "domain":"exact"})
  * @ApiFilter(OrderFilter::class, properties={"datePosted" : "DESC"})
+ * @ORM\HasLifecycleCallbacks
  */
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
-#[ApiResource(itemOperations: [
-    'get','put','delete', 'patch',
-    'validate_offer' => [
-        'method' => 'POST',
-        'path' => '/offers/{id}/validate',
-        'controller' => ValidateOfferAction::class,
+#[ApiResource(
+    collectionOperations: [
+        'create_offer' => [
+            'method' => 'POST',
+            'path' => '/offers/create',
+            'controller' => CreateOfferAction::class,
+        ],
     ],
-]
+    itemOperations: [
+        'get', 'put',
+        'validate_offer' => ['method' => 'POST',
+            'path' => '/offers/{id}/validate',
+            'security' => 'is_granted("ROLE_ADMIN")',
+            'controller' => ValidateOfferAction::class,
+        ],
+        'delete_offer' => [
+            'method' => 'DELETE',
+            'path' => '/offers/{id}/',
+            'controller' => DeleteOfferAction::class,
+        ],
+        'setFulfilled_offer' => [
+            'method' => 'POST',
+            'path' => '/offers/{id}/fulfill',
+            'controller' => SetFulfilledOfferAction::class,
+        ],
+        'archive_offer' => [
+            'method' => 'POST',
+            'path' => '/offers/{id}/archive',
+            'controller' => ArchiveOfferAction::class,
+        ],
+        'refuse_offer' => [
+            'method' => 'POST',
+            'path' => '/offers/{id}/refuse',
+            'security' => 'is_granted("ROLE_ADMIN")',
+            'controller' => RefuseOfferAction::class,
+        ],
+        'reactivate_offer' => [
+            'method' => 'POST',
+            'path' => '/offers/{id}/reactivate',
+            'controller' => ReactivateExpiredOfferAction::class,
+        ],
+        'update_logo_offer' => [
+            'method' => 'POST',
+            'path' => '/offer/{id}/updateLogo',
+            'openapi_context' => [
+                'summary' => 'Use this endpoint to update only the logo of the offer. Use the PUT endpoint for all other updating',
+                'description' => "# Pop a great rabbit picture by color!\n\n![A great rabbit]"
+            ],
+            'controller' => UpdateLogoAction::class,
+            'denormalization_context' => ['groups' => ['offer:updateLogo']],
+            'input_formats' => [
+                'multipart' => ['multipart/form-data'],
+            ]
+
+        ],
+
+
+
+    ]
+
 )]
 class Offer
 {
@@ -80,6 +148,7 @@ class Offer
     #[ORM\ManyToOne(targetEntity: Domain::class, inversedBy: 'offers')]
     private ?Domain $domain;
 
+
     /**
      * @var int|null
      */
@@ -115,12 +184,6 @@ class Offer
      * @var bool
      */
     #[ORM\Column(type: 'boolean')]
-    private bool $isValid;
-
-    /**
-     * @var bool
-     */
-    #[ORM\Column(type: 'boolean')]
     private bool $isPublic;
 
     /**
@@ -134,6 +197,101 @@ class Offer
      */
     #[ORM\Column(type: 'boolean')]
     private bool $isOfPartner;
+
+
+    /**
+     * @var User
+     */
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'offers')]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $user;
+
+
+    /**
+     * @var int|null
+     */
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $views;
+
+
+    /**
+     * @var int|null
+     */
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $numberOfCandidatures;
+
+
+
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $experience;
+
+
+    # Add a logo to an offer was optional but not detailed in the spec, so we'll fix the problem
+    # if it's imperative
+
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $logoLink = null;
+
+
+    /**
+     * @Vich\UploadableField(mapping="media_object", fileNameProperty="logoLink")
+     */
+    #[Groups(['offer:updateLogo'])]
+    public ?File $logoFile = null;
+
+    /**
+     * @var Collection<int,Candidature>
+     */
+    #[ORM\OneToMany(mappedBy: 'offer', targetEntity: Candidature::class)]
+    private Collection $candidatures;
+
+    /**
+     * A unique offer ID to identify offers across ReseauPro
+     *
+     * @var string
+     */
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $offerId;
+
+    #[ORM\ManyToOne(targetEntity: OfferStatus::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private OfferStatus $offerStatus;
+
+    #[ORM\Column(type: 'date')]
+    private DateTimeInterface $dateModified;
+
+    public function __construct()
+    {
+        $this->candidatures = new ArrayCollection();
+
+    }
+
+    /**
+     * Gets triggered only on insert
+     *
+     * @ORM\PrePersist
+     */
+    public function onPrePersist() : void
+    {
+        $this->datePosted = new DateTime('now');
+    }
+
+    /**
+     * Gets triggered every time on update
+     *
+     * @ORM\PreUpdate
+     */
+    public function onPreUpdate() : void
+    {
+        $this->dateModified = new DateTime('now');
+    }
+
 
     /**
      * @return int|null
@@ -234,6 +392,10 @@ class Offer
     public function setDatePosted(DateTimeInterface $datePosted): self
     {
         $this->datePosted = $datePosted;
+
+        if (!isset($this->dateModified)){
+            $this->setDateModified(new DateTime('now'));
+        }
 
         return $this;
     }
@@ -371,24 +533,6 @@ class Offer
         return $this;
     }
 
-    /**
-     * @return bool|null
-     */
-    public function getIsValid(): ?bool
-    {
-        return $this->isValid;
-    }
-
-    /**
-     * @param bool $isValid
-     * @return $this
-     */
-    public function setIsValid(bool $isValid): self
-    {
-        $this->isValid = $isValid;
-
-        return $this;
-    }
 
     /**
      * @return bool|null
@@ -446,4 +590,139 @@ class Offer
 
         return $this;
     }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+
+
+    public function getViews(): ?int
+    {
+        return $this->views;
+    }
+
+    public function setViews(?int $views): self
+    {
+        $this->views = $views;
+
+        return $this;
+    }
+
+    public function getNumberOfCandidatures(): ?int
+    {
+        return $this->numberOfCandidatures;
+    }
+
+    public function setNumberOfCandidatures(?int $numberOfCandidatures): self
+    {
+        $this->numberOfCandidatures = $numberOfCandidatures;
+
+        return $this;
+    }
+
+
+
+    public function getExperience(): ?string
+    {
+        return $this->experience;
+    }
+
+    public function setExperience(?string $experience): self
+    {
+        $this->experience = $experience;
+
+        return $this;
+    }
+
+
+    public function getLogoLink(): ?string
+    {
+        return $this->logoLink;
+    }
+
+    public function setLogoLink(?string $logoLink): self
+    {
+        $this->logoLink = $logoLink;
+
+        return $this;
+    }
+
+    /**
+     * @return File|null
+     */
+    public function getLogoFile(): ?File
+    {
+        return $this->logoFile;
+    }
+
+    /**
+     * @param File|null $logoFile
+     */
+    public function setLogoFile(?File $logoFile): void
+    {
+        $this->logoFile = $logoFile;
+    }
+
+
+    /**
+     * @return Collection<int, Candidature>
+     */
+    public function getCandidatures(): Collection
+    {
+        return $this->candidatures;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOfferId(): ?string
+    {
+        return $this->offerId;
+    }
+
+    /**
+     * @param string $offerId
+     * @return $this
+     */
+    public function setOfferId(string $offerId): self
+    {
+        $this->offerId = $offerId;
+
+        return $this;
+    }
+
+    public function getOfferStatus(): ?OfferStatus
+    {
+        return $this->offerStatus;
+    }
+
+    public function setOfferStatus(OfferStatus $offerStatus): self
+    {
+        $this->offerStatus = $offerStatus;
+
+        return $this;
+    }
+
+    public function getDateModified(): ?DateTimeInterface
+    {
+        return $this->dateModified;
+    }
+
+    public function setDateModified(DateTimeInterface $dateModified): self
+    {
+        $this->dateModified = $dateModified;
+
+        return $this;
+    }
+
+
 }

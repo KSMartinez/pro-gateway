@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ExperienceRepository;
 use ApiPlatform\Core\Annotation\ApiResource;   
@@ -21,48 +22,99 @@ use App\Controller\Experience\CheckExperienceDatasAction;
 )]  
 class Experience
 {
+
+      /**  
+     * @var int|null
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
 
+
+     /**
+     * @var string|null
+     */
     #[ORM\Column(type: 'text', nullable: true)]
     private $description;
 
+     /**
+     * @var string  
+     */
     #[ORM\Column(type: 'string', length: 255)]
     private $jobname;
 
+     /**
+     * @var string|null
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $company;
 
+     /**
+     * @var string|null
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $category;
 
+     /**
+     * @var string|null
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $country;
 
+     /**
+     * @var string|null
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $city;
 
+
+    
+      /**  
+     * @var DateTimeInterface|null
+     */
     #[ORM\Column(type: 'date', nullable: true)]
     private $startMonth;
 
+    
+      /**  
+     * @var DateTimeInterface|null
+     */
     #[ORM\Column(type: 'date', nullable: true)]
     private $startYear;
 
+
+    
+      /**  
+     * @var DateTimeInterface|null
+     */
     #[ORM\Column(type: 'date', nullable: true)]
     private $endMonth;
 
+
+    
+      /**  
+     * @var DateTimeInterface|null
+     */
     #[ORM\Column(type: 'date', nullable: true)]
     private $endYear;
 
+    
+      /**  
+     * @var string|null  
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $current_job;   
   
+
+    
+      /**  
+     * @var CV|null
+     */
     #[ORM\ManyToOne(targetEntity: CV::class, inversedBy: 'experiences')]
     private $cv;
 
-
+  
     public function getId(): ?int
     {
         return $this->id;

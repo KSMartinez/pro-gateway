@@ -20,7 +20,7 @@ class CheckExperienceDatasAction extends AbstractController
     /**
      * @var ExperienceService
      */  
-    private ExperienceService $educationService;
+    private ExperienceService $experienceService;
 
     /**
      * CheckExperienceDatasAction constructor.

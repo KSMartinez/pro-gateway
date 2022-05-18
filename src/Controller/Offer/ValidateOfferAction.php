@@ -6,6 +6,7 @@ namespace App\Controller\Offer;
 
 use App\Entity\Offer;
 use App\Service\OfferService;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
@@ -34,10 +35,10 @@ class ValidateOfferAction extends AbstractController
     /**
      * @param Offer $data
      * @return Offer
+     * @throws Exception
      */
     public function __invoke(Offer $data): Offer
     {
-        $this->offerService->validateOffer($data);
-        return $data;
+        return $this->offerService->validateOffer($data);
     }
 }

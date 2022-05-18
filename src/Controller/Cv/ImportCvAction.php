@@ -1,35 +1,33 @@
 <?php
 
 
-namespace App\Controller\Cv; 
+namespace App\Controller\CV;
 
 
 use App\Entity\CV;
-use App\Entity\User; 
-use App\Service\CvService;  
-use App\Service\UserService;
+use App\Service\CVService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * Class CharteDutilisationAction
+ * Class ImportCvAction
  * @package App\Controller\User
  */
 #[AsController]
-class ImportCvAction extends AbstractController
+class ImportCVAction extends AbstractController
 {
      
     /**
-     * @var CvService
+     * @var CVService
      */
-    private CvService $cvService;
+    private CVService $cvService;
 
     /**
      * importCvAction constructor.
-     * @param CvService $cvService
+     * @param CVService $cvService
      */
-    public function __construct(CvService $cvService)
+    public function __construct(CVService $cvService)
     {
         $this->cvService = $cvService;
     }

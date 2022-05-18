@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 
+use App\Entity\CV;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\EducationRepository;
 use ApiPlatform\Core\Annotation\ApiResource;  
@@ -22,41 +24,78 @@ use App\Controller\Education\CheckDatasAction;
 )]   
 class Education
 {
+
+      /**   
+     * @var int|null
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
 
+
+     /**
+     * @var string|null 
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $diploma;
 
+     /**
+     * @var string|null 
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $studyLevel;
    
+     /**
+     * @var string|null 
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $domain;
 
+     /**
+     * @var string|null
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $school;
 
+
+      /**
+     * @var DateTimeInterface|null
+     */
     #[ORM\Column(type: 'date', nullable: true)]
     private $startMonth;
 
+      /**
+     * @var DateTimeInterface|null
+     */
     #[ORM\Column(type: 'date', nullable: true)]
     private $endMonth;
 
+      /**
+     * @var DateTimeInterface|null
+     */
     #[ORM\Column(type: 'date', nullable: true)]
     private $startYear;
 
+      /**  
+     * @var DateTimeInterface|null 
+     */
     #[ORM\Column(type: 'date', nullable: true)]
     private $endYear;
 
+      /**
+     * @var CV|null
+     */
     #[ORM\ManyToOne(targetEntity: CV::class, inversedBy: 'educations')]
     private $cv;
 
+
+     /**
+     * @var string
+     */
     #[ORM\Column(type: 'string', length: 255)]
     private $currentSchool;
-
+  
 
     public function getId(): ?int
     {

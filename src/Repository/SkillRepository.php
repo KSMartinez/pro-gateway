@@ -13,6 +13,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Skill|null findOneBy(array $criteria, array $orderBy = null)
  * @method Skill[]    findAll()
  * @method Skill[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<Skill>   
  */
 class SkillRepository extends ServiceEntityRepository
 {
@@ -21,7 +22,7 @@ class SkillRepository extends ServiceEntityRepository
         parent::__construct($registry, Skill::class);
     }
 
-    /**
+    /**       
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -73,4 +74,20 @@ class SkillRepository extends ServiceEntityRepository
         ;
     }
     */
+
+     /**
+     * @return Skill[] Returns an array of Experience objects
+     * @param int|null $cv_Id 
+     */  
+    public function userSkills(?int $cv_Id)
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.cv = :val')
+            ->setParameter('val', $cv_Id)
+            ->getQuery()
+            ->getResult()       
+        ;
+    }         
+
+   
 }

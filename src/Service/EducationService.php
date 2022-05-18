@@ -12,22 +12,18 @@ use Symfony\Component\HttpFoundation\File\File;
 class EducationService
 {
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private EntityManagerInterface $entityManager;
 
      /**     
      * @var EducationRepository 
      */
     private EducationRepository $educationRepository;   
 
-    /**
-     * @param EntityManagerInterface $entityManager
+    /**   
+     * @param EducationRepository $educationRepository
      */
-    public function __construct(EntityManagerInterface $entityManager, EducationRepository $educationRepository)
+    public function __construct(EducationRepository $educationRepository)
     {
-        $this->entityManager = $entityManager;
+    
         $this->educationRepository = $educationRepository; 
     }
 

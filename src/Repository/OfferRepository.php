@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Offer;
+use App\Entity\OfferStatus;
 use App\Entity\SavedOfferSearch;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
@@ -83,7 +84,8 @@ class OfferRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('o')
                    ->select('COUNT(o)')
-                   ->andWhere('o.isValid = true')
+                   ->innerJoin('o.offerStatus', 'os')
+                   ->andWhere('os.label = \'' . OfferStatus::PUBLIEE . '\'')
             // we're only interested in the offers that were posted after the last search happened
                    ->andWhere('o.datePosted > :lastSearch')
                    ->setParameter(':lastSearch', $search->getLastSearch());

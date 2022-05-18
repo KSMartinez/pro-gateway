@@ -7,8 +7,8 @@ use DateTimeInterface;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use App\Controller\User\ShowPDFAction;
 use App\Controller\User\UserListAction;
-use App\Controller\User\UpdateProfilAction;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\User\UpdatePictureAction;
@@ -16,39 +16,39 @@ use App\Controller\User\RejectedCharteAction;
 use App\Controller\User\checkFilledDatasAction;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Controller\User\CharteDutilisationAction;
-use Symfony\Component\HttpFoundation\File\File;  
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;  
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use App\Controller\User\ChangeBirthdayVisibilityAction;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints as Assert;  
-use App\Controller\User\ChangeCityCountryVisibilityAction;         
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Controller\User\ChangeCityCountryVisibilityAction;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  *
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource( 
-    
+#[ApiResource(
+
     shortName: "users",
     denormalizationContext: [
         'groups' => [
             'user:write'
         ]
-    ],  
+    ],
     // normalizationContext: [
     //     "groups" => [
     //         "user:read"
     //     ]
     // ],
     itemOperations      : [
-        'get','put','delete', 'patch', 
-        'charte_user' => [  
-            'method' => 'POST',  
-            'path' => '/charteAction/{id}',     
+        'get','put','delete', 'patch',
+        'charte_user' => [
+            'method' => 'POST',
+            'path' => '/charteAction/{id}',
             'controller' => CharteDutilisationAction::class,
-        ], 
+        ],
         'updatePicture' => [
             'method' => 'POST',
             'path' => '/user/{id}/updatePicture',
@@ -59,66 +59,82 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             'controller' => UpdatePictureAction::class,
             'denormalization_context' => ['groups' => ['user:updatePicture']],
             'input_formats' => [
-                'multipart' => ['multipart/form-data'],  
+                'multipart' => ['multipart/form-data'],
             ]
- 
+
          ],
 
-         'checkFilledDatas' => [  
-            'method' => 'GET',  
-            'path' => '/checkFilledDatas/{id}',     
-            'controller' => checkFilledDatasAction::class,   
-        ],  
+         'checkFilledDatas' => [
+            'method' => 'GET',
+            'path' => '/checkFilledDatas/{id}',
+            'controller' => checkFilledDatasAction::class,
+        ],
 
-        'rejectedCharteAction' => [  
-            'method' => 'PUT',  
-            'path' => '/rejectedCharteAction/{id}',     
-            'controller' => RejectedCharteAction::class,   
-        ],  
-   
-        //  'birthday_visibility' => [  
-        //     'method' => 'PUT',  
-        //     'path' => '/changeBirthdayVisibility/user/{id}',             
-        //     'controller' => changeBirthdayVisibilityAction::class,   
-        // ],  
-        
-        // 'cityAndCountry_visibility' => [       
-        //     'method' => 'PUT',  
-        //     'path' => '/changeCityAndCountryVisibility/user/{id}',             
-        //     'controller' => changeCityCountryVisibilityAction::class,   
-        // ],  
-            
-    
+        'rejectedCharteAction' => [
+            'method' => 'PUT',
+            'path' => '/rejectedCharteAction/{id}',
+            'controller' => RejectedCharteAction::class,
+        ],
 
-        ], 
+
+        'showPDFAction' => [
+            'method' => 'GET',
+            'path' => '/showPDFAction/{id}',
+            'controller' => ShowPDFAction::class,
+        ],
+
+
+
+        //  'birthday_visibility' => [
+        //     'method' => 'PUT',
+        //     'path' => '/changeBirthdayVisibility/user/{id}',
+        //     'controller' => changeBirthdayVisibilityAction::class,
+        // ],
+
+        // 'cityAndCountry_visibility' => [
+        //     'method' => 'PUT',
+        //     'path' => '/changeCityAndCountryVisibility/user/{id}',
+        //     'controller' => changeCityCountryVisibilityAction::class,
+        // ],
+
+
+        ],
     collectionOperations: [
     'get',
-    'post',  
-    'annuaire_list' => [  
-        'method' => 'GET',  
-        'path' => '/annuaireList',     
-        'controller' => UserListAction::class,   
+    'post',
+    'annuaire_list' => [
+        'method' => 'GET',
+        'path' => '/annuaireList',
+        'controller' => UserListAction::class,
     ],
- 
 
 
-],   
-   
+
+],
+
 )]
 class User implements UserInterface
 {
+    const ROLE_ADMIN = 'ROLE_ADMIN';
+    const ROLE_ETUDIANT = 'ROLE_ETUDIANT';
+    const ROLE_PERSONNEL = 'ROLE_PERSONNEL';
+    const ROLE_ETUDIANT_NON_INSCRIT = 'ROLE_ETUDIANT_NI';
+    const ROLE_ALUMNI = 'ROLE_ALIMNI';
+    const ROLE_ALUMNI_NON_REPERTORIE = 'ROLE_ALUMNI_NR';
+    const ROLE_ENSEIGNANT = 'ROLE_ENSEIGNANT';
+
     /**
-     * @var int|null 
+     * @var int|null
      */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id;
-   
-  
-     
+
+
+
     /**
-     * @var string  
+     * @var string
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
@@ -126,8 +142,8 @@ class User implements UserInterface
 
     /**
      * @var string[]
-     */   
-    #[ORM\Column(type: 'json')]  
+     */
+    #[ORM\Column(type: 'json')]
     private array $roles = [];
 
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: CV::class, cascade: ['persist', 'remove'])]
@@ -161,15 +177,15 @@ class User implements UserInterface
 
 
     /**
-     * @var boolean 
-     */  
+     * @var boolean
+     */
     #[ORM\Column(type: 'boolean',  nullable: false)]
     private bool $charteSigned = false;
 
 
       /**
      * @var DateTimeInterface|null
-     */    
+     */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'date', nullable: true)]
     private $birthday;
@@ -184,160 +200,214 @@ class User implements UserInterface
 
     /**
      * @var string|null
-     */ 
+     */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $firstname;
 
       /**
-     * @var string 
-     */ 
-    #[Groups(["user:write"])] 
+     * @var string
+     */
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255)]
-    private $surname;       
+    private $surname;
 
      /**
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="imageLink")
      */
     #[Groups(['user:updatePicture'])]
-    public ?File $image = null;      
+    public ?File $image = null;
 
 
      /**
-     * @var string 
-     */ 
+     * @var string
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $imageLink;
 
-    
+
      /**
-     * @var string|null 
-     */  
+     * @var string|null
+     */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $profilTitle;
 
 
     /**
-     * @var string|null  
-     */  
+     * @var string|null
+     */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $useFirstname;
 
 
      /**
-     * @var string|null 
-     */  
+     * @var string|null
+     */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $useSurname;
-    
+
 
       /**
      * @var string|null
-     */ 
+     */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'text', nullable: true)]
     private $profilDescription;
 
-  
+
      /**
-     * @var boolean  
-     */  
-    #[Groups(['user:write'])]    
+     * @var boolean
+     */
+    #[Groups(['user:write'])]
     #[ORM\Column(type: 'boolean')]
     private $birthdayIsPublic;
 
- 
+
      /**
-     * @var string|null  
-     */   
+     * @var string|null
+     */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $address;
 
      /**
-     * @var string|null 
+     * @var string|null
      */
     #[Groups(["user:write"])]
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]    
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $city;
 
      /**
-     * @var string 
+     * @var string
      */
-    #[Groups(["user:write"])] 
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255)]
     private $country;
-   
-     /**    
-     * @var boolean 
+
+     /**
+     * @var boolean
      */
-    #[Groups(["user:write"])] 
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean')]
     private $cityAndCountryIsPublic;
 
      /**
-     * @var boolean|null 
-     */  
-    #[Groups(["user:write"])] 
+     * @var boolean|null
+     */
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $mailIsPublic;
 
 
      /**
-     * @var boolean|null  
-     */  
-    #[Groups(["user:write"])] 
+     * @var boolean|null
+     */
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $telephoneIsPublic;
 
 
      /**
-     * @var boolean|null 
-     */  
-    #[Groups(["user:write"])] 
+     * @var boolean|null
+     */
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $addressIsPublic;
 
-    #[Groups(["user:write"])] 
+
+      /**
+     * @var bool|null
+     */
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $datasVisibleForAllMembers;
 
-    #[Groups(["user:write"])] 
+
+      /**
+     * @var bool|null
+     */
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $datasVisibleForAnnuaire;
 
-    #[Groups(["user:write"])] 
+
+      /**
+     * @var bool|null
+     */
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $datasPublic;
 
-    #[Groups(["user:write"])] 
+
+      /**
+     * @var bool|null
+     */
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $datasAllPrivate;
 
-    #[Groups(["user:write"])] 
+
+
+      /**
+     * @var bool|null
+     */
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $newsLetterNotification;
 
-    #[Groups(["user:write"])] 
+
+
+      /**
+     * @var bool|null
+     */
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $rejectedCharte;
 
 
+      /**
+     * @var bool|null
+     */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $availableToWork;
 
-   
-     
+
+
+    /**
+     * @var Collection<int, Offer>
+     */
+    #[Groups(["user:read, user:write"])]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Offer::class)]
+    private $offers;
+
+
+    /**
+     * @var Collection<int, Application>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Application::class)]
+    private $applications;
+
+
+
+    /**
+     * @var Collection<int, Candidature>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Candidature::class, orphanRemoval: true)]
+    private Collection $candidatures;
+
     public function __construct()
     {
         $this->notifications = new ArrayCollection();
         $this->savedOfferSearches = new ArrayCollection();
         $this->emailNotifications = new ArrayCollection();
-     
+        $this->candidatures = new ArrayCollection();
+        $this->offers = new ArrayCollection();
+        $this->applications = new ArrayCollection();
+
     }
 
     /**
@@ -495,7 +565,7 @@ class User implements UserInterface
         $this->frequency = $frequency;
         return $this;
     }
- 
+
       /**
      * Set charte_signed
      *
@@ -505,7 +575,7 @@ class User implements UserInterface
      */
     public function setCharteSigned($charte_signed) {
         $this->charteSigned = $charte_signed;
-  
+
         return $this;
     }
 
@@ -518,7 +588,7 @@ class User implements UserInterface
         return $this->charteSigned;
     }
 
-   
+
 
     public function getBirthday(): ?\DateTimeInterface
     {
@@ -577,10 +647,10 @@ class User implements UserInterface
     }
 
     /**
-     * @param File|null $image 
+     * @param File|null $image
      */
     public function setFile(?File $image): void
-    {  
+    {
         $this->image = $image;
     }
 
@@ -592,7 +662,7 @@ class User implements UserInterface
     public function setImageLink(?string $imageLink): self
     {
         $this->imageLink = $imageLink;
-   
+
         return $this;
     }
 
@@ -824,8 +894,80 @@ class User implements UserInterface
         return $this;
     }
 
-    
+    /**
+     * @return Collection<int, Offer>
+     */
+    public function getOffers(): Collection
+    {
+        return $this->offers;
+    }
+
+    public function addOffer(Offer $offer): self
+    {
+        if (!$this->offers->contains($offer)) {
+            $this->offers[] = $offer;
+            $offer->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOffer(Offer $offer): self
+    {
+        if ($this->offers->removeElement($offer)) {
+            // set the owning side to null (unless already changed)
+            if ($offer->getUser() === $this) {
+                $offer->setUser($this);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Application>
+     */
+    public function getApplications(): Collection
+    {
+        return $this->applications;
+    }
+
+    public function addApplication(Application $application): self
+    {
+        if (!$this->applications->contains($application)) {
+            $this->applications[] = $application;
+            $application->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApplication(Application $application): self
+    {
+        if ($this->applications->removeElement($application)) {
+            // set the owning side to null (unless already changed)
+            if ($application->getUser() === $this) {
+                $application->setUser($this);
+            }
+        }
+
+        return $this;
+    }
 
 
-   
+
+
+
+
+
+
+
+    /**
+     * @return Collection<int, Candidature>
+     */
+    public function getCandidatures(): Collection
+    {
+        return $this->candidatures;
+    }
+
 }
