@@ -31,6 +31,7 @@ class GroupService
      * @param GroupDemand $groupDemand
      * @return Group
      * @throws Exception
+     * //todo notification for validating group
      */
     public function validateGroupDemand(GroupDemand $groupDemand): Group
     {
@@ -52,6 +53,7 @@ class GroupService
      * @param GroupDemand $groupDemand
      * @return Group
      * @throws Exception
+     * //todo notification for rejecting group
      */
     public function rejectGroupDemand(GroupDemand $groupDemand): Group
     {
@@ -69,6 +71,7 @@ class GroupService
      * @param User  $user
      * @return Group
      * @throws Exception
+     * //todo notification for new group
      */
     public function createNewGroupDemand(Group $group, User $user): Group
     {

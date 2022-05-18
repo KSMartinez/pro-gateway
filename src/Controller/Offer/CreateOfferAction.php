@@ -10,12 +10,14 @@ use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
+
 /**
- * Class ValidateOfferAction
+ * Class CreateOfferAction
+ *
  * @package App\Controller\Offer
  */
 #[AsController]
-class ValidateOfferAction extends AbstractController
+class CreateOfferAction extends AbstractController
 {
 
     /**
@@ -24,7 +26,6 @@ class ValidateOfferAction extends AbstractController
     private OfferService $offerService;
 
     /**
-     * ValidateOfferAction constructor.
      * @param OfferService $offerService
      */
     public function __construct(OfferService $offerService)
@@ -39,6 +40,6 @@ class ValidateOfferAction extends AbstractController
      */
     public function __invoke(Offer $data): Offer
     {
-        return $this->offerService->validateOffer($data);
+        return $this->offerService->createNewOffer($data);
     }
 }

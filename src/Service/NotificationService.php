@@ -39,4 +39,11 @@ class NotificationService
         $this->entityManager->persist($notification);
         $this->entityManager->flush();
     }
+
+    //todo implement offer notification
+    public function createOfferNotification(\App\Entity\Offer $offer) : void
+    {
+        //get admins
+        // create notification with offer as source and admins as user.
+    }
 }

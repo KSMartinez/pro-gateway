@@ -31,7 +31,10 @@ class CVService
             throw new Exception('The CV should have an id for updating');
 
         }
+        //this step is important as without it the Vich bundle will not work properly. In the future, I will move this to an event listener
+        // and maybe edit/retain this comment as a warning to keep in mind when updating files with VichBundle
         $cv->setUpdatedAt(new DateTime('now'));
+
         $this->entityManager->persist($cv);
         $this->entityManager->flush();
         return $cv;

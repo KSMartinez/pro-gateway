@@ -6,40 +6,41 @@ namespace App\Controller\Offer;
 
 use App\Entity\Offer;
 use App\Service\OfferService;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 
 /**
- * Class UpdateIsExpiredOfferAction     
+ * Class ArchiveOfferAction
+ *
  * @package App\Controller\Offer
  */
 #[AsController]
-class UpdateIsExpiredOfferAction extends AbstractController
+class ArchiveOfferAction extends AbstractController
 {
 
-    /**   
+    /**
      * @var OfferService
      */
     private OfferService $offerService;
 
     /**
-     * UpdateIsExpiredOfferAction constructor.
      * @param OfferService $offerService
      */
     public function __construct(OfferService $offerService)
     {
         $this->offerService = $offerService;
     }
-            
-    /**    
+
+    /**
      * @param Offer $data
-     * @return Offer   
+     * @return Offer
+     * @throws Exception
      */
     public function __invoke(Offer $data): Offer
     {
-        $this->offerService->UpdateIsExpiredOffer($data);
-        return $data;
+        return $this->offerService->archiveOffer($data);
     }
           
 

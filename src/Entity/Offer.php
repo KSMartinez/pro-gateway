@@ -6,15 +6,15 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Controller\Offer\CreateOfferWithNotificationAction;
-use App\Controller\Offer\OfferResponseAction;
-use App\Controller\Offer\UpdateOfferAction;
-use App\Controller\Offer\UpdateIsExpiredOfferAction;
+use App\Controller\Offer\CreateOfferAction;
+use App\Controller\Offer\ReactivateExpiredOfferAction;
+use App\Controller\Offer\RefuseOfferAction;
+use App\Controller\Offer\SetFulfilledOfferAction;
 use App\Controller\Offer\UpdateLogoAction;
+use App\Controller\Offer\DeleteOfferAction;
 use App\Controller\Offer\ValidateOfferAction;
 use App\Repository\OfferRepository;
 use DateTime;
-use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -30,39 +30,49 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @ApiFilter(SearchFilter::class, properties={"title": "partial", "description": "partial", "city":"exact",
  *     "country":"exact", "domain":"exact"})
  * @ApiFilter(OrderFilter::class, properties={"datePosted" : "DESC"})
+ * @ORM\HasLifecycleCallbacks
  */
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 #[ApiResource(
     collectionOperations: [
-        'createOfferWithNotification' => [
+        'create_offer' => [
             'method' => 'POST',
-            'path' => '/offers/createOfferWithNotification',
-            'controller' => CreateOfferWithNotificationAction::class,
+            'path' => '/offers/create',
+            'controller' => CreateOfferAction::class,
         ],
     ],
     itemOperations: [
-        'get', 'put', 'delete', 'patch',
+        'get', 'put',
         'validate_offer' => ['method' => 'POST',
             'path' => '/offers/{id}/validate',
             'security' => 'is_granted("ROLE_ADMIN")',
             'controller' => ValidateOfferAction::class,
         ],
-        'update_offer' => [
-            'method' => 'PUT',
+        'delete_offer' => [
+            'method' => 'DELETE',
             'path' => '/offers/{id}/',
-            'controller' => UpdateOfferAction::class,
+            'controller' => DeleteOfferAction::class,
         ],
-        'update_IsExpired' => [
-            'method' => 'PUT',
-            'path' => '/offers/{id}/updateIsExpired',
-            'controller' => UpdateIsExpiredOfferAction::class,
-        ],
-        'offer_Response' => [
+        'setFulfilled_offer' => [
             'method' => 'POST',
-            'path' => '/offers/{id}/offerResponse',
-            'controller' => OfferResponseAction::class,
+            'path' => '/offers/{id}/fulfill',
+            'controller' => SetFulfilledOfferAction::class,
         ],
-
+        'archive_offer' => [
+            'method' => 'POST',
+            'path' => '/offers/{id}/archive',
+            'controller' => SetFulfilledOfferAction::class,
+        ],
+        'refuse_offer' => [
+            'method' => 'POST',
+            'path' => '/offers/{id}/refuse',
+            'controller' => RefuseOfferAction::class,
+        ],
+        'reactivate_offer' => [
+            'method' => 'POST',
+            'path' => '/offers/{id}/reactivate',
+            'controller' => ReactivateExpiredOfferAction::class,
+        ],
         'update_logo_offer' => [
             'method' => 'POST',
             'path' => '/offer/{id}/updateLogo',
@@ -136,11 +146,6 @@ class Offer
     #[ORM\ManyToOne(targetEntity: Domain::class, inversedBy: 'offers')]
     private ?Domain $domain;
 
-     /**
-     * @var string|null
-     */
-    private ?string $offerResponse;
-
 
     /**
      * @var int|null
@@ -177,12 +182,6 @@ class Offer
      * @var bool
      */
     #[ORM\Column(type: 'boolean')]
-    private bool $isValid;
-
-    /**
-     * @var bool
-     */
-    #[ORM\Column(type: 'boolean')]
     private bool $isPublic;
 
     /**
@@ -199,46 +198,11 @@ class Offer
 
 
     /**
-     * @var bool|null
-     */
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $validationInPending;
-
-
-    /**
      * @var User
      */
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'offers')]
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
-
-
-    /**
-     * @var bool|null
-     */
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $validationCompleted;
-
-
-    /**
-     * @var bool|null
-     */
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $isArchived;
-
-
-    /**
-     * @var bool|null
-     */
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $isProvided;
-
-
-    /**
-     * @var bool|null
-     */
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $isRejected;
 
 
     /**
@@ -252,41 +216,8 @@ class Offer
      * @var int|null
      */
     #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $numberOfApplications;
+    private ?int $numberOfCandidatures;
 
-
-    /**
-     * @var DateTimeImmutable|null
-     */
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?DateTimeImmutable $publishedAt;
-
-
-    /**
-     * @var bool|null
-     */
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $isExpired;
-
-
-    /**
-     * @var bool|null
-     */
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $inReactivation;
-
-
-    /**
-     * @var DateTimeImmutable|null
-     */
-    #[ORM\Column(type: 'date_immutable', nullable: true)]
-    private ?DateTimeImmutable $dateReactivated;
-
-    /**
-     * @var Collection<int, Application>
-     */
-    #[ORM\OneToMany(mappedBy: 'offer', targetEntity: Application::class)]
-    private Collection|ArrayCollection $applications;
 
 
     /**
@@ -296,7 +227,7 @@ class Offer
     private ?string $experience;
 
 
-    # Add a logo to an offer was optional but not detailled in the spec, so we'll fix the problem
+    # Add a logo to an offer was optional but not detailed in the spec, so we'll fix the problem
     # if it's imperative
 
     /**
@@ -312,15 +243,6 @@ class Offer
     #[Groups(['offer:updateLogo'])]
     public ?File $logoFile = null;
 
-
-    public function __construct()
-    {
-        $this->applications = new ArrayCollection();
-        $this->candidatures = new ArrayCollection();
-
-    }
-
-
     /**
      * @var Collection<int,Candidature>
      */
@@ -328,6 +250,8 @@ class Offer
     private Collection $candidatures;
 
     /**
+     * A unique offer ID to identify offers across ReseauPro
+     *
      * @var string
      */
     #[ORM\Column(type: 'string', length: 255)]
@@ -339,6 +263,32 @@ class Offer
 
     #[ORM\Column(type: 'date')]
     private DateTimeInterface $dateModified;
+
+    public function __construct()
+    {
+        $this->candidatures = new ArrayCollection();
+
+    }
+
+    /**
+     * Gets triggered only on insert
+     *
+     * @ORM\PrePersist
+     */
+    public function onPrePersist() : void
+    {
+        $this->datePosted = new DateTime('now');
+    }
+
+    /**
+     * Gets triggered every time on update
+     *
+     * @ORM\PreUpdate
+     */
+    public function onPreUpdate() : void
+    {
+        $this->dateModified = new DateTime('now');
+    }
 
 
     /**
@@ -581,24 +531,6 @@ class Offer
         return $this;
     }
 
-    /**
-     * @return bool|null
-     */
-    public function getIsValid(): ?bool
-    {
-        return $this->isValid;
-    }
-
-    /**
-     * @param bool $isValid
-     * @return $this
-     */
-    public function setIsValid(bool $isValid): self
-    {
-        $this->isValid = $isValid;
-
-        return $this;
-    }
 
     /**
      * @return bool|null
@@ -657,18 +589,6 @@ class Offer
         return $this;
     }
 
-    public function getValidationInPending(): ?bool
-    {
-        return $this->validationInPending;
-    }
-
-    public function setValidationInPending(?bool $validationInPending): self
-    {
-        $this->validationInPending = $validationInPending;
-
-        return $this;
-    }
-
     public function getUser(): ?User
     {
         return $this->user;
@@ -681,53 +601,7 @@ class Offer
         return $this;
     }
 
-    public function getValidationCompleted(): ?bool
-    {
-        return $this->validationCompleted;
-    }
 
-    public function setValidationCompleted(?bool $validationCompleted): self
-    {
-        $this->validationCompleted = $validationCompleted;
-
-        return $this;
-    }
-
-    public function getIsArchived(): ?bool
-    {
-        return $this->isArchived;
-    }
-
-    public function setIsArchived(?bool $isArchived): self
-    {
-        $this->isArchived = $isArchived;
-
-        return $this;
-    }
-
-    public function getIsProvided(): ?bool
-    {
-        return $this->isProvided;
-    }
-
-    public function setIsProvided(?bool $isProvided): self
-    {
-        $this->isProvided = $isProvided;
-
-        return $this;
-    }
-
-    public function getIsRejected(): ?bool
-    {
-        return $this->isRejected;
-    }
-
-    public function setIsRejected(?bool $isRejected): self
-    {
-        $this->isRejected = $isRejected;
-
-        return $this;
-    }
 
     public function getViews(): ?int
     {
@@ -741,116 +615,19 @@ class Offer
         return $this;
     }
 
-    public function getNumberOfApplications(): ?int
+    public function getNumberOfCandidatures(): ?int
     {
-        return $this->numberOfApplications;
+        return $this->numberOfCandidatures;
     }
 
-    public function setNumberOfApplications(?int $numberOfApplications): self
+    public function setNumberOfCandidatures(?int $numberOfCandidatures): self
     {
-        $this->numberOfApplications = $numberOfApplications;
+        $this->numberOfCandidatures = $numberOfCandidatures;
 
         return $this;
     }
 
 
-    public function getPublishedAt(): ?DateTimeImmutable
-    {
-        return $this->publishedAt;
-    }
-
-    public function setPublishedAt(?DateTimeImmutable $publishedAt): self
-    {
-        $this->publishedAt = $publishedAt;
-
-        return $this;
-    }
-
-    public function getIsExpired(): ?bool
-    {
-        return $this->isExpired;
-    }
-
-    public function setIsExpired(?bool $isExpired): self
-    {
-        $this->isExpired = $isExpired;
-
-        return $this;
-    }
-
-    public function getInReactivation(): ?bool
-    {
-        return $this->inReactivation;
-    }
-
-    public function setInReactivation(?bool $inReactivation): self
-    {
-        $this->inReactivation = $inReactivation;
-
-        return $this;
-    }
-
-    public function getDateReactivated(): ?DateTimeImmutable
-    {
-        return $this->dateReactivated;
-    }
-
-    public function setDateReactivated(?DateTimeImmutable $dateReactivated): self
-    {
-        $this->dateReactivated = $dateReactivated;
-
-        return $this;
-    }
-
-
-    /**
-     * @return string|null
-     */
-    public function getOfferResponse(): ?string
-    {
-        return $this->offerResponse;
-    }
-
-    /**
-     * @param string|null $offerResponse
-     * @return $this
-     */
-    public function setOfferResponse(?string $offerResponse): self
-    {
-        $this->offerResponse = $offerResponse;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Application>
-     */
-    public function getApplications(): Collection
-    {
-        return $this->applications;
-    }
-
-    public function addApplication(Application $application): self
-    {
-        if (!$this->applications->contains($application)) {
-            $this->applications[] = $application;
-            $application->setOffer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeApplication(Application $application): self
-    {
-        if ($this->applications->removeElement($application)) {
-            // set the owning side to null (unless already changed)
-            if ($application->getOffer() === $this) {
-                $application->setOffer($this);
-            }
-        }
-
-        return $this;
-    }
 
     public function getExperience(): ?string
     {
