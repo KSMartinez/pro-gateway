@@ -10,7 +10,10 @@ use App\Repository\SkillRepository;
 use ApiPlatform\Core\Annotation\ApiResource;   
 
 #[ORM\Entity(repositoryClass: SkillRepository::class)]
-#[ApiResource]   
+#[ApiResource(
+    collectionOperations: ['get', 'post'],
+    itemOperations: ['get', 'put', 'delete']
+)]
 class Skill
 {
 

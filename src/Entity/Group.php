@@ -33,7 +33,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ]
     ],
     itemOperations: [
-        'get','put','patch','delete',
+        'get','put','delete',
         'validate_group_demand' => [
             'method' => 'post',
             'path' => '/groups/demande/{id}/validate',

@@ -31,19 +31,20 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
 
-    shortName: "users",
-    denormalizationContext: [
-        'groups' => [
-            'user:write'
-        ]
+    collectionOperations  : [
+    'get',
+    'post',
+    'annuaire_list' => [
+        'method' => 'GET',
+        'path' => '/annuaireList',
+        'controller' => UserListAction::class,
     ],
-    // normalizationContext: [
-    //     "groups" => [
-    //         "user:read"
-    //     ]
-    // ],
-    itemOperations      : [
-        'get','put','delete', 'patch',
+
+
+
+],
+    itemOperations        : [
+        'get','put','delete',
         'charte_user' => [
             'method' => 'POST',
             'path' => '/charteAction/{id}',
@@ -99,18 +100,17 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 
         ],
-    collectionOperations: [
-    'get',
-    'post',
-    'annuaire_list' => [
-        'method' => 'GET',
-        'path' => '/annuaireList',
-        'controller' => UserListAction::class,
+    // normalizationContext: [
+    //     "groups" => [
+    //         "user:read"
+    //     ]
+    // ],
+    shortName             : "users",
+    denormalizationContext: [
+        'groups' => [
+            'user:write'
+        ]
     ],
-
-
-
-],
 
 )]
 class User implements UserInterface
@@ -385,12 +385,6 @@ class User implements UserInterface
     private $offers;
 
 
-    /**
-     * @var Collection<int, Application>
-     */
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Application::class)]
-    private $applications;
-
 
 
     /**
@@ -406,7 +400,6 @@ class User implements UserInterface
         $this->emailNotifications = new ArrayCollection();
         $this->candidatures = new ArrayCollection();
         $this->offers = new ArrayCollection();
-        $this->applications = new ArrayCollection();
 
     }
 
@@ -906,7 +899,7 @@ class User implements UserInterface
     {
         if (!$this->offers->contains($offer)) {
             $this->offers[] = $offer;
-            $offer->setUser($this);
+            $offer->setCreatedByUser($this);
         }
 
         return $this;
@@ -916,49 +909,13 @@ class User implements UserInterface
     {
         if ($this->offers->removeElement($offer)) {
             // set the owning side to null (unless already changed)
-            if ($offer->getUser() === $this) {
-                $offer->setUser($this);
+            if ($offer->getCreatedByUser() === $this) {
+                $offer->setCreatedByUser($this);
             }
         }
 
         return $this;
     }
-
-    /**
-     * @return Collection<int, Application>
-     */
-    public function getApplications(): Collection
-    {
-        return $this->applications;
-    }
-
-    public function addApplication(Application $application): self
-    {
-        if (!$this->applications->contains($application)) {
-            $this->applications[] = $application;
-            $application->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeApplication(Application $application): self
-    {
-        if ($this->applications->removeElement($application)) {
-            // set the owning side to null (unless already changed)
-            if ($application->getUser() === $this) {
-                $application->setUser($this);
-            }
-        }
-
-        return $this;
-    }
-
-
-
-
-
-
 
 
 

@@ -10,7 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
  *
  */
 #[ORM\Entity(repositoryClass: OfferStatusRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    collectionOperations: ['get'],
+    itemOperations: ['get']
+)]
 class OfferStatus
 {
 
