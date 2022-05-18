@@ -6,6 +6,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\Offer\ArchiveOfferAction;
 use App\Controller\Offer\CreateOfferAction;
 use App\Controller\Offer\ReactivateExpiredOfferAction;
 use App\Controller\Offer\RefuseOfferAction;
@@ -61,11 +62,12 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
         'archive_offer' => [
             'method' => 'POST',
             'path' => '/offers/{id}/archive',
-            'controller' => SetFulfilledOfferAction::class,
+            'controller' => ArchiveOfferAction::class,
         ],
         'refuse_offer' => [
             'method' => 'POST',
             'path' => '/offers/{id}/refuse',
+            'security' => 'is_granted("ROLE_ADMIN")',
             'controller' => RefuseOfferAction::class,
         ],
         'reactivate_offer' => [
