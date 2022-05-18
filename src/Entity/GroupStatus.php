@@ -10,7 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
  * //todo refactor with string as ID
  */
 #[ORM\Entity(repositoryClass: GroupStatusRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    collectionOperations: ['get'],
+    itemOperations: ['get']
+)]
 class GroupStatus
 {
     const EN_ATTENTE = 'EN_ATTENTE';

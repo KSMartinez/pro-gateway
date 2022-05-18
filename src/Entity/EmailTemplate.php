@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  */
 #[ORM\Entity(repositoryClass: EmailTemplateRepository::class)]
-#[ApiResource]
+//#[ApiResource]
 class EmailTemplate
 {
 

@@ -31,19 +31,20 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
 
-    shortName: "users",
-    denormalizationContext: [
-        'groups' => [
-            'user:write'
-        ]
+    collectionOperations  : [
+    'get',
+    'post',
+    'annuaire_list' => [
+        'method' => 'GET',
+        'path' => '/annuaireList',
+        'controller' => UserListAction::class,
     ],
-    // normalizationContext: [
-    //     "groups" => [
-    //         "user:read"
-    //     ]
-    // ],
-    itemOperations      : [
-        'get','put','delete', 'patch',
+
+
+
+],
+    itemOperations        : [
+        'get','put','delete',
         'charte_user' => [
             'method' => 'POST',
             'path' => '/charteAction/{id}',
@@ -99,18 +100,17 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 
         ],
-    collectionOperations: [
-    'get',
-    'post',
-    'annuaire_list' => [
-        'method' => 'GET',
-        'path' => '/annuaireList',
-        'controller' => UserListAction::class,
+    // normalizationContext: [
+    //     "groups" => [
+    //         "user:read"
+    //     ]
+    // ],
+    shortName             : "users",
+    denormalizationContext: [
+        'groups' => [
+            'user:write'
+        ]
     ],
-
-
-
-],
 
 )]
 class User implements UserInterface

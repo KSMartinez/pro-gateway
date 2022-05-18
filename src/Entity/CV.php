@@ -97,7 +97,7 @@ class CV
     private User $user;
 
     /**
-     * This field is techincally not needed. But we need this to update the file of the CV.
+     * This field is technically not needed. But we need this to update the file of the CV.
      * This is a bug with VichUploaderBundle. Refer this link
      * https://github.com/dustin10/VichUploaderBundle/issues/8
      *

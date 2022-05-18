@@ -11,7 +11,14 @@ use Doctrine\ORM\Mapping as ORM;
  *
  */
 #[ORM\Entity(repositoryClass: CandidatureRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    collectionOperations: [
+        'post', 'get'
+    ],
+    itemOperations      : [
+        'put', 'get', 'delete'
+    ]
+)]
 class Candidature
 {
 

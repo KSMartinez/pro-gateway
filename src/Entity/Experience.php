@@ -12,7 +12,7 @@ use App\Controller\Experience\CheckExperienceDatasAction;
 #[ORM\Entity(repositoryClass: ExperienceRepository::class)]
 #[ApiResource(
     itemOperations  : [
-        'get','put','delete', 'patch',         
+        'get','put','delete',
         'checkExperienceDatas' => [  
             'method' => 'GET',    
             'path' => '/checkExperienceDatas/{id}',     

@@ -11,7 +11,10 @@ use Doctrine\ORM\Mapping as ORM;
  * Il peut s'agir d'alertes d'offres, d'actualités, d'administration, etc.
  */
 #[ORM\Entity(repositoryClass: NotificationSourceRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    collectionOperations: ['get'],
+    itemOperations: ['get']
+)]
 class NotificationSource
 {
     const NEW_OFFER = 'NEW_OFFER';

@@ -12,7 +12,10 @@ use ApiPlatform\Core\Annotation\ApiResource;
  *
  */
 #[ORM\Entity(repositoryClass: NotificationRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    collectionOperations: ['get', 'post'],
+    itemOperations: ['get', 'put', 'delete']
+)]
 class Notification
 {
     /**

@@ -6,6 +6,7 @@ namespace App\Controller\Education;
 
 use App\Entity\Education;
 use App\Service\EducationService;
+use Exception;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -32,8 +33,9 @@ class CheckDatasAction extends AbstractController
     }
 
     /**
-     * @param Education $data 
-     * @return bool 
+     * @param Education $data
+     * @return bool
+     * @throws Exception
      */
     public function __invoke(Education $data): bool 
     {
