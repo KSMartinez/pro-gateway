@@ -25,28 +25,29 @@ use App\Controller\User\ChangeBirthdayVisibilityAction;
 use Symfony\Component\Security\Core\User\UserInterface;
 use App\Controller\User\ChangeCityCountryVisibilityAction;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;  
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  * @ApiFilter(SearchFilter::class, properties={"charteSigned": "exact", "datasVisibleForAnnuaire": "exact", "roles": "exact"})
  * @ApiFilter(OrderFilter::class, properties={"surname" : "DESC"})
  */
-#[ORM\Entity(repositoryClass: UserRepository::class)]  
-#[ApiResource(   
-  
-    shortName: "users",
-    denormalizationContext: [
-        'groups' => [
-            'user:write'
-        ]
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ApiResource(
+
+    collectionOperations  : [
+    'get',
+    'post',
+    'annuaire_list' => [
+        'method' => 'GET',
+        'path' => '/annuaireList',
+        'controller' => UserListAction::class,
     ],
-    // normalizationContext: [
-    //     "groups" => [
-    //         "user:read"
-    //     ]
-    // ],
-    itemOperations      : [
+
+
+
+],
+    itemOperations        : [
         'get','put','delete', 'patch',
         'charte_user' => [
             'method' => 'POST',
@@ -64,7 +65,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             'denormalization_context' => ['groups' => ['user:updatePicture']],
             'input_formats' => [
                 'multipart' => ['multipart/form-data'],
-            ] 
+            ]
 
          ],
 
@@ -103,18 +104,17 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 
         ],
-    collectionOperations: [
-    'get',
-    'post',
-    'annuaire_list' => [
-        'method' => 'GET',
-        'path' => '/annuaireList',
-        'controller' => UserListAction::class,
+    // normalizationContext: [
+    //     "groups" => [
+    //         "user:read"
+    //     ]
+    // ],
+    shortName             : "users",
+    denormalizationContext: [
+        'groups' => [
+            'user:write'
+        ]
     ],
-
-
-
-],
 
 )]
 class User implements UserInterface
@@ -192,14 +192,14 @@ class User implements UserInterface
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'date', nullable: true)]
-    private $birthday;
+    private ?DateTimeInterface $birthday;
 
     /**
      * @var string|null
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $telephone;
+    private ?string $telephone;
 
 
     /**
@@ -207,14 +207,14 @@ class User implements UserInterface
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $firstname;
+    private ?string $firstname;
 
       /**
      * @var string
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255)]
-    private $surname;
+    private string $surname;
 
      /**
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="imageLink")
@@ -235,7 +235,7 @@ class User implements UserInterface
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $profilTitle;
+    private ?string $profilTitle;
 
 
     /**
@@ -243,7 +243,7 @@ class User implements UserInterface
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $useFirstname;
+    private ?string $useFirstname;
 
 
      /**
@@ -251,7 +251,7 @@ class User implements UserInterface
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $useSurname;
+    private ?string $useSurname;
 
 
       /**
@@ -259,7 +259,7 @@ class User implements UserInterface
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'text', nullable: true)]
-    private $profilDescription;
+    private ?string $profilDescription;
 
 
      /**
@@ -267,7 +267,7 @@ class User implements UserInterface
      */
     #[Groups(['user:write'])]
     #[ORM\Column(type: 'boolean')]
-    private $birthdayIsPublic;
+    private bool $birthdayIsPublic = false;
 
 
      /**
@@ -275,43 +275,35 @@ class User implements UserInterface
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $address;
+    private ?string $address;
 
      /**
      * @var string|null
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $city;
+    private ?string $city;
 
      /**
      * @var string
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255)]
-    private $country;
+    private string $country;
 
      /**
      * @var boolean
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean')]
-    private $cityAndCountryIsPublic;
+    private bool $cityAndCountryIsPublic = false;
 
      /**
      * @var boolean|null
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $mailIsPublic;
-
-
-     /**
-     * @var boolean|null
-     */
-    #[Groups(["user:write"])]
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private $telephoneIsPublic;
+    private ?bool $mailIsPublic;
 
 
      /**
@@ -319,7 +311,15 @@ class User implements UserInterface
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $addressIsPublic;
+    private ?bool $telephoneIsPublic;
+
+
+     /**
+     * @var boolean|null
+     */
+    #[Groups(["user:write"])]
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $addressIsPublic;
 
 
       /**
@@ -327,7 +327,7 @@ class User implements UserInterface
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $datasVisibleForAllMembers;
+    private ?bool $datasVisibleForAllMembers;
 
 
       /**
@@ -335,7 +335,7 @@ class User implements UserInterface
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $datasVisibleForAnnuaire;
+    private ?bool $datasVisibleForAnnuaire;
 
 
       /**
@@ -343,7 +343,7 @@ class User implements UserInterface
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $datasPublic;
+    private ?bool $datasPublic;
 
 
       /**
@@ -351,16 +351,7 @@ class User implements UserInterface
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $datasAllPrivate;
-
-
-
-      /**
-     * @var bool|null
-     */
-    #[Groups(["user:write"])]
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private $newsLetterNotification;
+    private ?bool $datasAllPrivate;
 
 
 
@@ -369,7 +360,8 @@ class User implements UserInterface
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $rejectedCharte;
+    private ?bool $newsLetterNotification;
+
 
 
       /**
@@ -377,7 +369,15 @@ class User implements UserInterface
      */
     #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $availableToWork;
+    private ?bool $rejectedCharte;
+
+
+      /**
+     * @var bool|null
+     */
+    #[Groups(["user:write"])]
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $availableToWork;
 
 
 

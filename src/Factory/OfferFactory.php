@@ -3,10 +3,12 @@
 namespace App\Factory;
 
 use App\Entity\Offer;
+use App\Entity\OfferStatus;
 use App\Repository\OfferRepository;
 use Zenstruck\Foundry\RepositoryProxy;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
+use function Zenstruck\Foundry\factory;
 
 /**
  * @extends ModelFactory<Offer>
@@ -54,10 +56,10 @@ final class OfferFactory extends ModelFactory
             'maxSalary' => self::faker()->numberBetween(10000, 30000),
             'companyName' => self::faker()->company(),
             'isDirect' => self::faker()->boolean(),
-            'isValid' => self::faker()->boolean,
             'isPublic' => self::faker()->boolean(),
             'isOfPartner' => self::faker()->boolean(),
-            'offerId' => self::faker()->uuid()
+            'offerId' => self::faker()->uuid(),
+            'offerStatus' => factory(OfferStatus::class)->random()
         ];
     }
 
