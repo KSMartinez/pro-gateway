@@ -86,7 +86,7 @@ class UserRepository extends ServiceEntityRepository
             ->setParameter('val', true)
             ->andWhere('u.datasVisibleForAnnuaire = :value')
             ->setParameter('value', true)
-            ->orderBy('u.surname')   
+            ->orderBy('u.surname', 'ASC')   
             ->getQuery()         
             ->getResult()
         ;  

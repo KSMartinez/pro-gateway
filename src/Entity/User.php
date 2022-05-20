@@ -29,8 +29,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
- * @ApiFilter(SearchFilter::class, properties={"charteSigned": "exact", "datasVisibleForAnnuaire": "exact", "roles": "exact"})
- * @ApiFilter(OrderFilter::class, properties={"surname" : "DESC"})
+ * @ApiFilter(SearchFilter::class, properties={"charteSigned": "exact", "datasVisibleForAnnuaire": "exact", "roles": "exact", "profilTitle":"partial", "profilDescription":"partial", "surname":"partial", "fisrtname":"partial", "address":"partial", "city":"partial", "country":"partial"})
+ * @ApiFilter(OrderFilter::class, properties={"surname" : "ASC"})
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(

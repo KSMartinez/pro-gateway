@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 /**
- * Class ImportCvAction
+ * Class ImportCVAction
  * @package App\Controller\User
  */
 #[AsController]
