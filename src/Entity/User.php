@@ -419,8 +419,11 @@ class User implements UserInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $twitterAccount;
 
+    /**
+     * @var bool|null
+     */
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $mentorAccept;
+    private ?bool $mentorAccept;
 
     public function __construct()
     {
