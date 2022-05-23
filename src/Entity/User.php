@@ -2,31 +2,26 @@
 
 namespace App\Entity;
 
-use DateTime;
-use DateTimeInterface;
-
-use Doctrine\ORM\Mapping as ORM;
-use App\Repository\UserRepository;
-use App\Controller\User\ShowPDFAction;
-use App\Controller\User\UserListAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
-use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Controller\User\UpdatePictureAction;
-use App\Controller\User\RejectedCharteAction;
-use App\Controller\User\checkFilledDatasAction;
-use Symfony\Component\HttpFoundation\File\File;
-use Doctrine\Common\Collections\ArrayCollection;
-use App\Controller\User\CharteDutilisationAction;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use Symfony\Component\Validator\Constraints as Assert;
-use App\Controller\User\ChangeBirthdayVisibilityAction;
-use Symfony\Component\Security\Core\User\UserInterface;
-use App\Controller\User\ChangeCityCountryVisibilityAction;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\User\CharteDutilisationAction;
+use App\Controller\User\checkFilledDatasAction;
+use App\Controller\User\RejectedCharteAction;
+use App\Controller\User\ShowPDFAction;
+use App\Controller\User\UpdatePictureAction;
+use App\Controller\User\UserListAction;
+use App\Repository\UserRepository;
+use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ApiFilter(SearchFilter::class, properties={"charteSigned": "exact", "datasVisibleForAnnuaire": "exact", "roles": "exact", "profilTitle":"partial", "profilDescription":"partial", "surname":"partial", "firstname":"partial", "address":"partial", "city":"partial", "country":"partial", "companyCreator":"exact"})
@@ -133,7 +128,7 @@ class User implements UserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private ?int $id;
+    private ?int $id = null;
 
 
 

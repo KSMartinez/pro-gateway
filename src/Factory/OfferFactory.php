@@ -58,7 +58,7 @@ final class OfferFactory extends ModelFactory
             'isDirect' => self::faker()->boolean(),
             'isPublic' => self::faker()->boolean(),
             'isOfPartner' => self::faker()->boolean(),
-            'offerId' => self::faker()->uuid(),
+            'offerId' => self::faker()->unique()->numberBetween(0,20),
             'offerStatus' => factory(OfferStatus::class)->random()
         ];
     }

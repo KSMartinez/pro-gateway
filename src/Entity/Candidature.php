@@ -6,9 +6,10 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\CandidatureRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\This;
 
 /**
- *
+ * todo add unique user and offer constraint
  */
 #[ORM\Entity(repositoryClass: CandidatureRepository::class)]
 #[ApiResource(
@@ -28,7 +29,7 @@ class Candidature
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @var User
@@ -153,5 +154,22 @@ class Candidature
         $this->extraCVFilePath = $extraCVFilePath;
 
         return $this;
+    }
+
+
+    /**
+     * @return array<mixed>
+     */
+    public function toArray(): array
+    {
+
+        return [
+            'id' => $this->getId(),
+            'dateOfCandidature' => $this->getDateOfCandidature()?->format('Y-m-d H:i:s.u'),
+            'message' => $this->getMessage(),
+            'user' => ($this->getUser()
+                              ?->getId()),
+            'offerId' => ($this->getOffer()?->getOfferId()),
+        ];
     }
 }
