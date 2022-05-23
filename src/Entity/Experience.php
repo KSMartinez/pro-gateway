@@ -48,6 +48,7 @@ class Experience
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+
     private $company;
 
      /**
@@ -113,7 +114,6 @@ class Experience
      */
     #[ORM\ManyToOne(targetEntity: CV::class, inversedBy: 'experiences')]
     private $cv;
-
   
     public function getId(): ?int
     {

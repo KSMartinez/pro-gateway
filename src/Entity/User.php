@@ -29,7 +29,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
- * @ApiFilter(SearchFilter::class, properties={"charteSigned": "exact", "datasVisibleForAnnuaire": "exact", "roles": "exact", "profilTitle":"partial", "profilDescription":"partial", "surname":"partial", "firstname":"partial", "address":"partial", "city":"partial", "country":"partial"})
+ * @ApiFilter(SearchFilter::class, properties={"charteSigned": "exact", "datasVisibleForAnnuaire": "exact", "roles": "exact", "profilTitle":"partial", "profilDescription":"partial", "surname":"partial", "firstname":"partial", "address":"partial", "city":"partial", "country":"partial", "companyCreator":"exact"})
  * @ApiFilter(OrderFilter::class, properties={"surname" : "ASC"})
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -388,6 +388,12 @@ class User implements UserInterface
      */
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Candidature::class, orphanRemoval: true)]
     private Collection $candidatures;
+
+    /**
+     * @var bool|null
+     */
+    #[ORM\Column(type: 'boolean', nullable:true)]
+    private ?bool $companyCreator;
 
     public function __construct()
     {
@@ -890,6 +896,18 @@ class User implements UserInterface
     public function getCandidatures(): Collection
     {
         return $this->candidatures;
+    }
+
+    public function getCompanyCreator(): ?bool
+    {
+        return $this->companyCreator;
+    }
+
+    public function setCompanyCreator(bool $companyCreator): self
+    {
+        $this->companyCreator = $companyCreator;
+
+        return $this;
     }
 
 }

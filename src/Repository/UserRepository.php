@@ -2,10 +2,12 @@
 
 namespace App\Repository;
 
+use App\Entity\Experience;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -82,6 +84,8 @@ class UserRepository extends ServiceEntityRepository
     public function annuaireList(): Array   
     {
         return $this->createQueryBuilder('u')
+            // ->innerJoin(CV::class,'cv', Join::WITH, 'u=cv.user')
+            // ->innerJoin(Experience::class, 'e', Join::WITH, 'cv=e.cV')
             ->andWhere('u.charteSigned = :val')
             ->setParameter('val', true)
             ->andWhere('u.datasVisibleForAnnuaire = :value')
