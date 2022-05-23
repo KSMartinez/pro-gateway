@@ -395,6 +395,36 @@ class User implements UserInterface
     #[ORM\Column(type: 'boolean', nullable:true)]
     private ?bool $companyCreator;
 
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $linkedinAccount;
+
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $facebookAccount;
+
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $instagramAccount;
+
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $twitterAccount;
+
+    /**
+     * @var bool|null
+     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $mentorAccept;
+
     public function __construct()
     {
         $this->notifications = new ArrayCollection();
@@ -906,6 +936,66 @@ class User implements UserInterface
     public function setCompanyCreator(bool $companyCreator): self
     {
         $this->companyCreator = $companyCreator;
+
+        return $this;
+    }
+
+    public function getLinkedinAccount(): ?string
+    {
+        return $this->linkedinAccount;
+    }
+
+    public function setLinkedinAccount(?string $linkedinAccount): self
+    {
+        $this->linkedinAccount = $linkedinAccount;
+
+        return $this;
+    }
+
+    public function getFacebookAccount(): ?string
+    {
+        return $this->facebookAccount;
+    }
+
+    public function setFacebookAccount(?string $facebookAccount): self
+    {
+        $this->facebookAccount = $facebookAccount;
+
+        return $this;
+    }
+
+    public function getInstagramAccount(): ?string
+    {
+        return $this->instagramAccount;
+    }
+
+    public function setInstagramAccount(?string $instagramAccount): self
+    {
+        $this->instagramAccount = $instagramAccount;
+
+        return $this;
+    }
+
+    public function getTwitterAccount(): ?string
+    {
+        return $this->twitterAccount;
+    }
+
+    public function setTwitterAccount(?string $twitterAccount): self
+    {
+        $this->twitterAccount = $twitterAccount;
+
+        return $this;
+    }
+
+    public function getMentorAccept(): ?bool
+    {
+        return $this->mentorAccept;
+    }
+
+    public function setMentorAccept(?bool $mentorAccept): self
+    {
+        $this->mentorAccept = $mentorAccept;
 
         return $this;
     }
