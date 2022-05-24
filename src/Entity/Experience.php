@@ -9,6 +9,9 @@ use App\Repository\ExperienceRepository;
 use ApiPlatform\Core\Annotation\ApiResource;   
 use App\Controller\Experience\CheckExperienceDatasAction;
 
+/**
+ *
+ */
 #[ORM\Entity(repositoryClass: ExperienceRepository::class)]
 #[ApiResource(
     itemOperations  : [
@@ -29,45 +32,45 @@ class Experience
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id = null;
 
 
      /**
      * @var string|null
      */
     #[ORM\Column(type: 'text', nullable: true)]
-    private $description;
+    private ?string $description;
 
      /**
      * @var string  
      */
     #[ORM\Column(type: 'string', length: 255)]
-    private $jobname;
+    private string $jobname;
 
      /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
 
-    private $company;
+    private ?string $company;
 
      /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $category;
+    private ?string $category;
 
      /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $country;
+    private ?string $country;
 
      /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $city;
+    private ?string $city;
 
 
     
@@ -75,22 +78,14 @@ class Experience
      * @var DateTimeInterface|null
      */
     #[ORM\Column(type: 'date', nullable: true)]
-    private $startMonth;
+    private ?DateTimeInterface $startMonth;
 
     
       /**  
      * @var DateTimeInterface|null
      */
     #[ORM\Column(type: 'date', nullable: true)]
-    private $startYear;
-
-
-    
-      /**  
-     * @var DateTimeInterface|null
-     */
-    #[ORM\Column(type: 'date', nullable: true)]
-    private $endMonth;
+    private ?DateTimeInterface $startYear;
 
 
     
@@ -98,14 +93,22 @@ class Experience
      * @var DateTimeInterface|null
      */
     #[ORM\Column(type: 'date', nullable: true)]
-    private $endYear;
+    private ?DateTimeInterface $endMonth;
+
+
+    
+      /**  
+     * @var DateTimeInterface|null
+     */
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?DateTimeInterface $endYear;
 
     
       /**  
      * @var string|null  
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $current_job;   
+    private ?string $current_job;
   
 
     
@@ -113,18 +116,28 @@ class Experience
      * @var CV|null
      */
     #[ORM\ManyToOne(targetEntity: CV::class, inversedBy: 'experiences')]
-    private $cv;
-  
+    private ?CV $cv;
+
+    /**
+     * @return int|null
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * @return string|null
+     */
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
+    /**
+     * @param string|null $description
+     * @return $this
+     */
     public function setDescription(?string $description): self
     {
         $this->description = $description;
@@ -132,11 +145,18 @@ class Experience
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getJobname(): ?string
     {
         return $this->jobname;
     }
 
+    /**
+     * @param string $jobname
+     * @return $this
+     */
     public function setJobname(string $jobname): self
     {
         $this->jobname = $jobname;
@@ -144,11 +164,18 @@ class Experience
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getCompany(): ?string
     {
         return $this->company;
     }
 
+    /**
+     * @param string|null $company
+     * @return $this
+     */
     public function setCompany(?string $company): self
     {
         $this->company = $company;
@@ -156,11 +183,18 @@ class Experience
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getCategory(): ?string
     {
         return $this->category;
     }
 
+    /**
+     * @param string|null $category
+     * @return $this
+     */
     public function setCategory(?string $category): self
     {
         $this->category = $category;
@@ -168,11 +202,18 @@ class Experience
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getCountry(): ?string
     {
         return $this->country;
     }
 
+    /**
+     * @param string|null $country
+     * @return $this
+     */
     public function setCountry(?string $country): self
     {
         $this->country = $country;
@@ -180,11 +221,18 @@ class Experience
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getCity(): ?string
     {
         return $this->city;
     }
 
+    /**
+     * @param string|null $city
+     * @return $this
+     */
     public function setCity(?string $city): self
     {
         $this->city = $city;
@@ -192,11 +240,18 @@ class Experience
         return $this;
     }
 
+    /**
+     * @return DateTimeInterface|null
+     */
     public function getStartMonth(): ?\DateTimeInterface
     {
         return $this->startMonth;
     }
 
+    /**
+     * @param DateTimeInterface|null $startMonth
+     * @return $this
+     */
     public function setStartMonth(?\DateTimeInterface $startMonth): self
     {
         $this->startMonth = $startMonth;
@@ -204,11 +259,18 @@ class Experience
         return $this;
     }
 
+    /**
+     * @return DateTimeInterface|null
+     */
     public function getStartYear(): ?\DateTimeInterface
     {
         return $this->startYear;
     }
 
+    /**
+     * @param DateTimeInterface|null $startYear
+     * @return $this
+     */
     public function setStartYear(?\DateTimeInterface $startYear): self
     {
         $this->startYear = $startYear;
@@ -216,11 +278,18 @@ class Experience
         return $this;
     }
 
+    /**
+     * @return DateTimeInterface|null
+     */
     public function getEndMonth(): ?\DateTimeInterface
     {
         return $this->endMonth;
     }
 
+    /**
+     * @param DateTimeInterface|null $endMonth
+     * @return $this
+     */
     public function setEndMonth(?\DateTimeInterface $endMonth): self
     {
         $this->endMonth = $endMonth;
@@ -228,11 +297,18 @@ class Experience
         return $this;
     }
 
+    /**
+     * @return DateTimeInterface|null
+     */
     public function getEndYear(): ?\DateTimeInterface
     {
         return $this->endYear;
     }
 
+    /**
+     * @param DateTimeInterface|null $endYear
+     * @return $this
+     */
     public function setEndYear(?\DateTimeInterface $endYear): self
     {
         $this->endYear = $endYear;
@@ -240,11 +316,18 @@ class Experience
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getCurrentJob(): ?string
     {
         return $this->current_job;
     }
 
+    /**
+     * @param string|null $current_job
+     * @return $this
+     */
     public function setCurrentJob(?string $current_job): self
     {
         $this->current_job = $current_job;
@@ -252,12 +335,19 @@ class Experience
         return $this;
     }
 
+    /**
+     * @return CV|null
+     */
     public function getCV(): ?CV
     {    
         return $this->cv;
     }
 
-    public function setCV(?CV $cv): self   
+    /**
+     * @param CV|null $cv
+     * @return $this
+     */
+    public function setCV(?CV $cv): self
     {
         $this->cv = $cv;
 

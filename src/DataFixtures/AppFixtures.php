@@ -2,9 +2,11 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Experience;
 use App\Entity\User;
 use App\Factory\CVFactory;
 use App\Factory\DomainFactory;
+use App\Factory\ExperienceFactory;
 use App\Factory\OfferFactory;
 use App\Factory\TypeOfContractFactory;
 use App\Factory\UserFactory;
@@ -31,12 +33,10 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
 
         foreach ($users as $user){
             //$manager->persist($user);
-            CVFactory::new(['user' => $user]);
+            CVFactory::new(['user' => $user])->create();
         }
 
-
-
-
+        ExperienceFactory::createMany(20);
         $manager->flush();
     }
 
