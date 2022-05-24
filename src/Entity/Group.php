@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Group\CreateGroupDemandAction;
 use App\Controller\Group\ListGroupDemandsAction;
 use App\Controller\Group\RejectGroupDemandAction;
@@ -14,12 +16,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- *
+ * @ApiFilter(SearchFilter::class, properties={"name":"exact"})
  */
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
 #[ApiResource(
-    collectionOperations: [
+       collectionOperations  : [
         'get',
         'list_group_demands' => [
             'method' => 'get',
@@ -32,7 +34,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             'controller' => CreateGroupDemandAction::class
         ]
     ],
-    itemOperations: [
+       itemOperations        : [
         'get','put','delete',
         'validate_group_demand' => [
             'method' => 'post',
@@ -49,15 +51,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
             'controller' => RejectGroupDemandAction::class
         ]
     ],
-    denormalizationContext: [
+       denormalizationContext: [
         'groups' => [
             'group:write'
         ]
-    ], normalizationContext: [
-        'groups' => [
-            'group:read'
-        ]
+    ], normalizationContext  : [
+    'groups' => [
+        'group:read'
     ]
+]
 )]
 class Group
 {

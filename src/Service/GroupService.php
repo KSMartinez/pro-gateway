@@ -77,6 +77,13 @@ class GroupService
     {
         $groupEnAttentStatus = $this->getGroupStatus(GroupStatus::EN_ATTENTE);
 
+        if (empty($group->getName())){
+            throw new Exception('Name for a group is mandatory');
+        }
+        if ($this->checkGroupWithNameExists($group->getName())){
+            throw new Exception('Group with this name already exists');
+        }
+
         $group->setDateCreated(new DateTime('now'))
               ->setCreatedBy($user)
               ->setGroupStatus($groupEnAttentStatus);
@@ -101,5 +108,16 @@ class GroupService
             throw new Exception('GroupStatus with label ' . $status . ' was not found in the table. Please add it correctly.');
         }
         return $groupStatus;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function checkGroupWithNameExists(string $name): bool
+    {
+
+        $group = $this->groupRepository->findOneBy(['name' => $name]);
+        return $group == null;
     }
 }
