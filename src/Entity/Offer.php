@@ -36,7 +36,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 #[ApiResource(
     collectionOperations: [
-        'create_offer' => [
+        'get','create_offer' => [
             'method' => 'POST',
             'path' => '/offers/create',
             'controller' => CreateOfferAction::class,
