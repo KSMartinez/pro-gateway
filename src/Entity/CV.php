@@ -35,8 +35,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             'method' => 'POST',
             'path' => '/cvs/{id}/update',
             'openapi_context' => [
-                'summary' => 'Use this endpoint to update only the file of the CV. Use the PUT endpoint for all other updating',
-                'description' => "# Pop a great rabbit picture by color!\n\n![A great rabbit]"
+                'summary' => 'Use this endpoint to update only the file of the CV. Use the PUT endpoint for all other updating'
             ],
             'controller' => UpdateCVAction::class,
             'denormalization_context' => ['groups' => ['cv:update']],

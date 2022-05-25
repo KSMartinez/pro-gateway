@@ -67,8 +67,7 @@ use App\Filters\CompanyExperienceAnnuaireFilter;
             'method' => 'POST',
             'path' => '/user/{id}/updatePicture',
             'openapi_context' => [
-                'summary'     => 'Use this endpoint to update only the picture of the user. Use the PUT endpoint for all other updating',
-                'description' => "# Pop a great rabbit picture by color!\n\n![A great rabbit]"
+                'summary'     => 'Use this endpoint to update only the picture of the user. Use the PUT endpoint for all other updating'
                 ],
             'controller' => UpdatePictureAction::class,
             'denormalization_context' => ['groups' => ['user:updatePicture']],

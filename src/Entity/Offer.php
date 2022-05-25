@@ -79,8 +79,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             'method' => 'POST',
             'path' => '/offer/{id}/updateLogo',
             'openapi_context' => [
-                'summary' => 'Use this endpoint to update only the logo of the offer. Use the PUT endpoint for all other updating',
-                'description' => "# Pop a great rabbit picture by color!\n\n![A great rabbit]"
+                'summary' => 'Use this endpoint to update only the logo of the offer. Use the PUT endpoint for all other updating'
             ],
             'controller' => UpdateLogoAction::class,
             'denormalization_context' => ['groups' => ['offer:updateLogo']],
