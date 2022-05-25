@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\GroupMember\AcceptGroupInvitationAction;
 use App\Controller\GroupMember\InviteGroupMemberAction;
+use App\Controller\GroupMember\RefuseGroupInvitationAction;
 use App\Repository\GroupMemberRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -18,7 +20,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
         'invite_group_member' => [
             'method' => 'POST',
             'path' => '/group-members/invite',
+            'status' => '200',
             'controller' => InviteGroupMemberAction::class
+        ],
+        'accept_invitation_group_member' => [
+            'method' => 'POST',
+            'path' => '/group-members/invite/{id}/accept',
+            'status' => '200',
+            'controller' => AcceptGroupInvitationAction::class
+        ],
+        'refuse_invitation_group_member' => [
+            'method' => 'POST',
+            'path' => '/group-members/invite/{id}/refuse',
+            'status' => '200',
+            'controller' => RefuseGroupInvitationAction::class
         ]
     ],
     itemOperations        : [
