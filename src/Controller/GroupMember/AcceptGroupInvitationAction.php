@@ -22,12 +22,13 @@ class AcceptGroupInvitationAction extends AbstractController
 
     /**
      * @param GroupMember $data
-     * @return void
+     * @return GroupMember
      * @throws Exception
      */
-    public function __invoke(GroupMember $data)
+    public function __invoke(GroupMember $data): GroupMember
     {
-        $this->groupMemberService->acceptInvite($data);
+        return $this->groupMemberService->acceptInvite($data);
+
 
     }
 }

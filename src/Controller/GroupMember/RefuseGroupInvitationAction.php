@@ -19,12 +19,12 @@ class RefuseGroupInvitationAction extends AbstractController
 
     /**
      * @param GroupMember $data
-     * @return void
+     * @return GroupMember
      * @throws Exception
      */
-    public function __invoke(GroupMember $data)
+    public function __invoke(GroupMember $data): GroupMember
     {
-        $this->groupMemberService->refuseInvite($data);
+        return $this->groupMemberService->refuseInvite($data);
 
     }
 }

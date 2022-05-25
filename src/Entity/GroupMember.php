@@ -20,24 +20,24 @@ use Symfony\Component\Serializer\Annotation\Groups;
         'invite_group_member' => [
             'method' => 'POST',
             'path' => '/group-members/invite',
-            'status' => '200',
+            'status' => 200,
             'controller' => InviteGroupMemberAction::class
-        ],
+        ]
+    ],
+    itemOperations        : [
+        'get', 'put', 'delete',
         'accept_invitation_group_member' => [
             'method' => 'POST',
             'path' => '/group-members/invite/{id}/accept',
-            'status' => '200',
+            'status' => 200,
             'controller' => AcceptGroupInvitationAction::class
         ],
         'refuse_invitation_group_member' => [
             'method' => 'POST',
             'path' => '/group-members/invite/{id}/refuse',
-            'status' => '200',
+            'status' => 200,
             'controller' => RefuseGroupInvitationAction::class
         ]
-    ],
-    itemOperations        : [
-        'get', 'put', 'delete'
     ],
     denormalizationContext: [
         'groups' => ['group_member.write']

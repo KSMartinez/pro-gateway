@@ -35,10 +35,10 @@ class GroupMemberService
 
     /**
      * @param GroupMember $groupMember
-     * @throws Exception
-     * @return void
+     * @return GroupMember
+     *@throws Exception
      */
-    public function acceptInvite(GroupMember $groupMember)
+    public function acceptInvite(GroupMember $groupMember): GroupMember
     {
 
         $groupMemberStatus = $this->getGroupMemberStatus(GroupMemberStatus::ACTIF);
@@ -47,6 +47,8 @@ class GroupMemberService
         $groupMember->setGroupMemberStatus($groupMemberStatus);
         $this->entityManager->persist($groupMember);
         $this->entityManager->flush();
+
+        return $groupMember;
 
     }
 
@@ -70,10 +72,10 @@ class GroupMemberService
 
     /**
      * @param GroupMember $groupMember
-     * @return void
+     * @return GroupMember
      * @throws Exception
      */
-    public function refuseInvite(GroupMember $groupMember)
+    public function refuseInvite(GroupMember $groupMember): GroupMember
     {
         $groupMemberStatus = $this->getGroupMemberStatus(GroupMemberStatus::REFUSE);
         $groupMember->setGroupMemberStatus($groupMemberStatus);
@@ -81,6 +83,7 @@ class GroupMemberService
         $groupMember->setGroupMemberStatus($groupMemberStatus);
         $this->entityManager->persist($groupMember);
         $this->entityManager->flush();
+        return $groupMember;
     }
 
 }
