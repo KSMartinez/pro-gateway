@@ -47,6 +47,7 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             OfferStatusFixture::class,
+            GroupMemberStatusFixtures::class
         ];
     }
 }
