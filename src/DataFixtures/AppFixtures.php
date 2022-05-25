@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Factory\CVFactory;
 use App\Factory\DomainFactory;
 use App\Factory\ExperienceFactory;
+use App\Factory\GroupFactory;
 use App\Factory\OfferFactory;
 use App\Factory\TypeOfContractFactory;
 use App\Factory\UserFactory;
@@ -37,6 +38,7 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
         }
 
         ExperienceFactory::createMany(20);
+        GroupFactory::createMany(5);
         $manager->flush();
     }
 
@@ -47,7 +49,8 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             OfferStatusFixture::class,
-            GroupMemberStatusFixtures::class
+            GroupMemberStatusFixtures::class,
+            GroupStatusFixture::class
         ];
     }
 }
