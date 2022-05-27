@@ -434,12 +434,16 @@ class User implements UserInterface
     #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $mentorAccept;
 
+    #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'participants')]
+    private $events;
+
     public function __construct()
     {
         $this->notifications = new ArrayCollection();
         $this->savedOfferSearches = new ArrayCollection();
         $this->emailNotifications = new ArrayCollection();
         $this->candidatures = new ArrayCollection();
+        $this->events = new ArrayCollection();
 
     }
 
@@ -1005,6 +1009,33 @@ class User implements UserInterface
     public function setMentorAccept(?bool $mentorAccept): self
     {
         $this->mentorAccept = $mentorAccept;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(Event $event): self
+    {
+        if (!$this->events->contains($event)) {
+            $this->events[] = $event;
+            $event->addParticipant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): self
+    {
+        if ($this->events->removeElement($event)) {
+            $event->removeParticipant($this);
+        }
 
         return $this;
     }
