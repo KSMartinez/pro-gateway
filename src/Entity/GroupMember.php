@@ -71,17 +71,11 @@ class GroupMember
     /**
      * @var User
      */
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'groupsMemberOf')]
+    #[ORM\ManyToOne(targetEntity: User::class, cascade: ['persist'], inversedBy: 'groupsMemberOf')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(["group_member.read", "group_member.write"])]
     private User $user;
 
-    /**
-     * @var string[]|null
-     */
-    #[ORM\Column(type: 'json', nullable: true)]
-    #[Groups(["group_member.read"])]
-    private ?array $roles = [];
 
     /**
      * @var GroupMemberStatus|null
@@ -141,9 +135,10 @@ class GroupMember
      */
     public function getRoles(): ?array
     {
-        $roles = $this->roles;
-        $roles[] = GroupMember::ROLE_GROUP_USER;
-        return array_unique($roles);
+        return array_values(array_filter($this->getUser()->getRoles(), function (string $item){
+            return in_array($item, [self::ROLE_GROUP_ADMIN, self::ROLE_GROUP_USER]);
+        }));
+
     }
 
     /**
@@ -152,7 +147,14 @@ class GroupMember
      */
     public function setRoles(?array $roles): self
     {
-        $this->roles = $roles;
+
+        $userRoles = $this->user->getRoles();
+        if (!empty($roles)){
+            $userRoles = array_merge($userRoles,$roles);
+        }
+
+        //add roles to user as well
+        $this->user->setRoles(array_unique($userRoles));
 
         return $this;
     }

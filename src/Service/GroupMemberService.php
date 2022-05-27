@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Group;
 use App\Entity\GroupMember;
 use App\Entity\GroupMemberStatus;
 use App\Repository\GroupMemberRepository;
@@ -84,6 +85,25 @@ class GroupMemberService
         $this->entityManager->persist($groupMember);
         $this->entityManager->flush();
         return $groupMember;
+    }
+
+    /**
+     * @param Group $group
+     * @return GroupMember[]
+     */
+    public function getGroupMemberAdmins(Group $group): array
+    {
+
+        $members = $group->getGroupMembers();
+        $admins = [];
+
+        foreach ($members as $member) {
+            if (in_array(GroupMember::ROLE_GROUP_ADMIN, $member->getUser()->getRoles())){
+                $admins[] = $member;
+            }
+        }
+
+        return $admins;
     }
 
 }
