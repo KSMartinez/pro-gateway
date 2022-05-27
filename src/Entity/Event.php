@@ -2,15 +2,28 @@
 
 namespace App\Entity;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\EventRepository;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\Event\RandomEventsListAction;
 use Doctrine\Common\Collections\ArrayCollection;
 
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
-#[ApiResource]   
+#[ApiResource(
+    collectionOperations  : [
+        'get',   
+        'post',
+        'randomEventsList' => [
+            'method' => 'GET',
+            'path' => '/randomEventsList',
+            'controller' => RandomEventsListAction::class,
+        ],
+            
+    ],   
+)]   
 class Event
 {
 
@@ -21,7 +34,7 @@ class Event
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private int $id;
+    private ?int $id = null;
 
 
      /**
@@ -40,8 +53,8 @@ class Event
 
 
     
-     /**
-     * @var Collection
+      /**
+     * @var Collection<int, User>  
      */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'events')]
     private Collection $participants;
@@ -64,7 +77,20 @@ class Event
      * @var boolean   
      */
     #[ORM\Column(type: 'boolean')]
-    private bool $isPublic;
+    private bool $isPublic;  
+
+      /**
+     * @var DateTimeImmutable 
+     */
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?DateTimeImmutable $createdAt = null;
+
+    
+     /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $company;
 
 
     
@@ -158,6 +184,43 @@ class Event
     public function setIsPublic(bool $isPublic): self
     {
         $this->isPublic = $isPublic;
+
+        return $this;
+    }
+
+
+    /**
+     * @return DateTimeImmutable 
+     */
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+     /**
+     * @param DateTimeImmutable $createdAt
+     * @return $this     
+     */
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    
+   
+
+
+
+    public function getCompany(): ?string
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?string $company): self
+    {
+        $this->company = $company;
 
         return $this;
     }

@@ -434,8 +434,12 @@ class User implements UserInterface
     #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $mentorAccept;
 
+
+     /**
+     * @var Collection<int, Event>
+     */
     #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'participants')]
-    private $events;
+    private Collection $events;
 
     public function __construct()
     {

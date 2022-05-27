@@ -81,6 +81,7 @@ class CV
     #[ApiProperty(iri: 'http://schema.org/contentUrl')]
     #[Groups(['cv:read'])]
     public ?string $contentUrl = null;
+    
     /**
      * @var Collection<int, Education>
      */

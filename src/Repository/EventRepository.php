@@ -13,8 +13,9 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Event|null findOneBy(array $criteria, array $orderBy = null)
  * @method Event[]    findAll()
  * @method Event[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<Event>
  */
-class EventRepository extends ServiceEntityRepository
+class EventRepository extends ServiceEntityRepository  
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -73,4 +74,32 @@ class EventRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    /**
+    * @return Event[] Returns an array of Event objects
+    */
+    public function allEvents() 
+    {
+        return $this->createQueryBuilder('e')
+            ->where('e.company IS NOT NULL')
+            ->orWhere('e.university IS NOT NULL')   
+            ->getQuery()     
+            ->getResult()      
+              
+        ;
+    }
+
+    //  /**
+    // * @return Event[] Returns an array of Event objects
+    // */
+    // public function onlyUniversities() 
+    // {  
+    //     return $this->createQueryBuilder('e')
+    //         ->where('e.university IS NOT NULL')   
+    //         ->andWhere('e.company IS NULL')
+    //         ->getQuery()         
+    //         ->getResult()          
+           
+    //     ;
+    // }
 }
