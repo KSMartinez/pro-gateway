@@ -3,9 +3,12 @@
 namespace App\Factory;
 
 use App\Entity\Domain;
+use App\Entity\LevelOfEducation;
 use App\Entity\Offer;
 use App\Entity\OfferStatus;
+use App\Entity\SectorOfOffer;
 use App\Entity\TypeOfContract;
+use App\Entity\TypeOfOffer;
 use App\Repository\OfferRepository;
 use Zenstruck\Foundry\RepositoryProxy;
 use Zenstruck\Foundry\ModelFactory;
@@ -61,7 +64,10 @@ final class OfferFactory extends ModelFactory
             'isPublic' => self::faker()->boolean(),
             'isOfPartner' => self::faker()->boolean(),
             'offerId' => self::faker()->unique()->numberBetween(0,20),
-            'offerStatus' => factory(OfferStatus::class)->random()
+            'offerStatus' => factory(OfferStatus::class)->random(),
+            'typeOfOffer' => factory(TypeOfOffer::class)->random(),
+            'sectorOfOffer' => factory(SectorOfOffer::class)->random(),
+            'levelOfEducation' => factory(LevelOfEducation::class)->random()
         ];
     }
 

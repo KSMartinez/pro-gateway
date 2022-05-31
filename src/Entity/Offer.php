@@ -284,6 +284,12 @@ class Offer
     private ?SectorOfOffer $sector;
 
     /**
+     * @var LevelOfEducation|null
+     */
+    #[ORM\ManyToOne(targetEntity: LevelOfEducation::class, inversedBy: 'offers')]
+    private ?LevelOfEducation $levelOfEducation;
+
+    /**
      *
      */
     public function __construct()
@@ -825,6 +831,25 @@ class Offer
     public function setSector(?SectorOfOffer $sector): self
     {
         $this->sector = $sector;
+
+        return $this;
+    }
+
+    /**
+     * @return LevelOfEducation|null
+     */
+    public function getLevelOfEducation(): ?LevelOfEducation
+    {
+        return $this->levelOfEducation;
+    }
+
+    /**
+     * @param LevelOfEducation|null $levelOfEducation
+     * @return $this
+     */
+    public function setLevelOfEducation(?LevelOfEducation $levelOfEducation): self
+    {
+        $this->levelOfEducation = $levelOfEducation;
 
         return $this;
     }

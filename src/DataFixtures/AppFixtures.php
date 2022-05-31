@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Domain;
+use App\Entity\SectorOfOffer;
 use App\Entity\User;
 use App\Factory\CVFactory;
 use App\Factory\DomainFactory;
@@ -55,7 +56,9 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
             GroupStatusFixture::class,
             TypeOfContractFixture::class,
             DomainFixture::class,
-            TypeOfOfferFixture::class
+            TypeOfOfferFixture::class,
+            SectorOfOfferFixture::class,
+            LevelOfEducationFixture::class
         ];
     }
 }
