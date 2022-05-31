@@ -66,7 +66,7 @@ final class OfferFactory extends ModelFactory
             'offerId' => self::faker()->unique()->numberBetween(0,20),
             'offerStatus' => factory(OfferStatus::class)->random(),
             'typeOfOffer' => factory(TypeOfOffer::class)->random(),
-            'sectorOfOffer' => factory(SectorOfOffer::class)->random(),
+            'sector' => factory(SectorOfOffer::class)->random(),
             'levelOfEducation' => factory(LevelOfEducation::class)->random()
         ];
     }
