@@ -31,9 +31,10 @@ class RandomEventsListAction extends AbstractController
         $this->eventService = $eventService;
     }
 
+
+
     /**
-     * @param   
-     * @return Event[]    
+     * @return Event[]       
      */
     public function __invoke()   
     {

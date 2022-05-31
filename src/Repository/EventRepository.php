@@ -83,8 +83,9 @@ class EventRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('e')
             ->where('e.company IS NOT NULL')
             ->orWhere('e.university IS NOT NULL')   
+            ->andWhere('e.createdAt IS NOT NULL')   
             ->getQuery()     
-            ->getResult()      
+            ->getResult()              
               
         ;
     }

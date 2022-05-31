@@ -38,7 +38,7 @@ class Event
 
 
      /**
-     * @var string
+     * @var string   
      */
     #[ORM\Column(type: 'string', length: 255)]
     private string $title;  
@@ -50,14 +50,6 @@ class Event
      */
     #[ORM\Column(type: 'text')]
     private string $description;
-
-
-    
-      /**
-     * @var Collection<int, User>  
-     */
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'events')]
-    private Collection $participants;
 
     
      /**
@@ -128,29 +120,7 @@ class Event
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
-    public function getParticipants(): Collection
-    {
-        return $this->participants;
-    }
-
-    public function addParticipant(User $participant): self
-    {
-        if (!$this->participants->contains($participant)) {
-            $this->participants[] = $participant;
-        }
-
-        return $this;
-    }
-
-    public function removeParticipant(User $participant): self
-    {
-        $this->participants->removeElement($participant);
-
-        return $this;
-    }
+    
 
     public function getForAllUniversities(): ?bool
     {
