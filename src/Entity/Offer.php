@@ -278,6 +278,12 @@ class Offer
     private ?TypeOfOffer $typeOfOffer;
 
     /**
+     * @var SectorOfOffer|null
+     */
+    #[ORM\ManyToOne(targetEntity: SectorOfOffer::class, inversedBy: 'offers')]
+    private ?SectorOfOffer $sector;
+
+    /**
      *
      */
     public function __construct()
@@ -800,6 +806,25 @@ class Offer
     public function setTypeOfOffer(?TypeOfOffer $typeOfOffer): self
     {
         $this->typeOfOffer = $typeOfOffer;
+
+        return $this;
+    }
+
+    /**
+     * @return SectorOfOffer|null
+     */
+    public function getSector(): ?SectorOfOffer
+    {
+        return $this->sector;
+    }
+
+    /**
+     * @param SectorOfOffer|null $sector
+     * @return $this
+     */
+    public function setSector(?SectorOfOffer $sector): self
+    {
+        $this->sector = $sector;
 
         return $this;
     }
