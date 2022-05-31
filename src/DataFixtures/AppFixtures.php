@@ -2,14 +2,13 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Experience;
+use App\Entity\Domain;
 use App\Entity\User;
 use App\Factory\CVFactory;
 use App\Factory\DomainFactory;
 use App\Factory\ExperienceFactory;
 use App\Factory\GroupFactory;
 use App\Factory\OfferFactory;
-use App\Factory\TypeOfContractFactory;
 use App\Factory\UserFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -17,10 +16,13 @@ use Doctrine\Persistence\ObjectManager;
 
 class AppFixtures extends Fixture implements DependentFixtureInterface
 {
+    /**
+     * @param ObjectManager $manager
+     * @return void
+     */
     public function load(ObjectManager $manager): void
     {
-        DomainFactory::createMany(5);
-        TypeOfContractFactory::createMany(8);
+
         OfferFactory::createMany(20);
 
         /** @var User[] $users */
@@ -50,7 +52,9 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
         return [
             OfferStatusFixture::class,
             GroupMemberStatusFixtures::class,
-            GroupStatusFixture::class
+            GroupStatusFixture::class,
+            TypeOfContractFixture::class,
+            DomainFixture::class
         ];
     }
 }

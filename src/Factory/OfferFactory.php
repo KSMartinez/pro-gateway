@@ -2,8 +2,10 @@
 
 namespace App\Factory;
 
+use App\Entity\Domain;
 use App\Entity\Offer;
 use App\Entity\OfferStatus;
+use App\Entity\TypeOfContract;
 use App\Repository\OfferRepository;
 use Zenstruck\Foundry\RepositoryProxy;
 use Zenstruck\Foundry\ModelFactory;
@@ -50,8 +52,8 @@ final class OfferFactory extends ModelFactory
             'country' => self::faker()->country(),
             'datePosted' => self::faker()->dateTime(),
             'publishDuration' => self::faker()->randomNumber(),
-            'domain' => DomainFactory::random(),
-            'typeOfContract' => TypeOfContractFactory::random(),
+            'domain' => factory(Domain::class)->random(),
+            'typeOfContract' => factory(TypeOfContract::class)->random(),
             'minSalary' => self::faker()->numberBetween(10000, 30000),
             'maxSalary' => self::faker()->numberBetween(10000, 30000),
             'companyName' => self::faker()->company(),

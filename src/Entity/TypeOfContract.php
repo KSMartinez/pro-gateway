@@ -15,10 +15,19 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: TypeOfContractRepository::class)]
 #[ApiResource(
     collectionOperations: ['get'],
-    itemOperations: ['get']
+    itemOperations      : ['get']
 )]
 class TypeOfContract
 {
+    const CDI = 'CDI';
+    const CDD = 'CDD';
+    const VIE_VIA = 'VIE - VIA';
+    const INTERIM = 'INTERIM';
+    const CIFRE = 'CIFRE';
+    const INDIFFERENT = 'INDIFFERENT';
+    const SERVICE_CIVIQUE = 'SERVICE-CIVIQUE';
+    const POST_DOCTORANT = 'POST-DOCTORANT';
+
     /**
      * @var int|null
      */
