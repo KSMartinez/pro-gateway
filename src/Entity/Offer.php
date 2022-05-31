@@ -290,6 +290,12 @@ class Offer
     private ?LevelOfEducation $levelOfEducation;
 
     /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $url;
+
+    /**
      *
      */
     public function __construct()
@@ -305,7 +311,9 @@ class Offer
      */
     public function onPrePersist() : void
     {
-        $this->datePosted = new DateTime('now');
+        if (!isset($this->datePosted)){
+            $this->datePosted = new DateTime('now');
+        }
     }
 
     /**
@@ -850,6 +858,25 @@ class Offer
     public function setLevelOfEducation(?LevelOfEducation $levelOfEducation): self
     {
         $this->levelOfEducation = $levelOfEducation;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string|null $url
+     * @return $this
+     */
+    public function setUrl(?string $url): self
+    {
+        $this->url = $url;
 
         return $this;
     }
