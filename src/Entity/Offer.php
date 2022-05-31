@@ -272,6 +272,12 @@ class Offer
     private DateTimeInterface $dateModified;
 
     /**
+     * @var TypeOfOffer|null
+     */
+    #[ORM\ManyToOne(targetEntity: TypeOfOffer::class, inversedBy: 'offers')]
+    private ?TypeOfOffer $typeOfOffer;
+
+    /**
      *
      */
     public function __construct()
@@ -775,6 +781,25 @@ class Offer
     public function setDateModified(DateTimeInterface $dateModified): self
     {
         $this->dateModified = $dateModified;
+
+        return $this;
+    }
+
+    /**
+     * @return TypeOfOffer|null
+     */
+    public function getTypeOfOffer(): ?TypeOfOffer
+    {
+        return $this->typeOfOffer;
+    }
+
+    /**
+     * @param TypeOfOffer|null $typeOfOffer
+     * @return $this
+     */
+    public function setTypeOfOffer(?TypeOfOffer $typeOfOffer): self
+    {
+        $this->typeOfOffer = $typeOfOffer;
 
         return $this;
     }
