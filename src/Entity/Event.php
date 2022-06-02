@@ -59,7 +59,7 @@ class Event
     private bool $forAllUniversities;
 
      /**
-     * @var string  
+     * @var string|null  
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $university;
@@ -74,21 +74,30 @@ class Event
       /**
      * @var DateTimeImmutable 
      */
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?DateTimeImmutable $createdAt = null;
+    #[ORM\Column(type: 'datetime_immutable', nullable: false)]
+    private DateTimeImmutable $createdAt;   
 
     
      /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $company;
+    private string $company;
 
+   
+     /**
+     * @var int|null
+     */
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $maxNumberOfParticipants;
+   
+      
 
+    
     
     public function __construct()
     {
-        $this->participants = new ArrayCollection();
+        
     }
 
     public function getId(): ?int
@@ -162,7 +171,7 @@ class Event
     /**
      * @return DateTimeImmutable 
      */
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -175,7 +184,7 @@ class Event
     {
         $this->createdAt = $createdAt;
 
-        return $this;
+        return $this;   
     }
 
     
@@ -194,4 +203,19 @@ class Event
 
         return $this;
     }
+
+    public function getMaxNumberOfParticipants(): ?int
+    {
+        return $this->maxNumberOfParticipants;
+    }
+
+    public function setMaxNumberOfParticipants(?int $maxNumberOfParticipants): self
+    {
+        $this->maxNumberOfParticipants = $maxNumberOfParticipants;
+
+        return $this;
+    }
+
+   
+  
 }

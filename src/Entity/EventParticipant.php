@@ -5,9 +5,21 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\EventParticipantRepository;
+use App\Controller\EventParticipant\EventRegistrationAction;
+   
 
 #[ORM\Entity(repositoryClass: EventParticipantRepository::class)]
-#[ApiResource()]  
+#[ApiResource(
+
+    collectionOperations        : [  
+        
+        'event_registration' => [
+            'method' => 'POST',
+            'path' => '/eventRegistration',
+            'controller' => EventRegistrationAction::class,
+        ],
+    ]
+)]  
 class EventParticipant   
 {
 
@@ -25,7 +37,11 @@ class EventParticipant
      */
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private User $User;
+    private User $user;
+
+    #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'eventParticipants')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $event;
 
 
   
@@ -36,12 +52,24 @@ class EventParticipant
 
     public function getUser(): ?User
     {
-        return $this->User;
+        return $this->user;
     }
 
-    public function setUser(?User $User): self
+    public function setUser(User $user): self  
+    {  
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getEvent(): ?Event
     {
-        $this->User = $User;
+        return $this->event;
+    }
+
+    public function setEvent(?Event $event): self
+    {
+        $this->event = $event;
 
         return $this;
     }

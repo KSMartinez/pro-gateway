@@ -34,10 +34,10 @@ class EventService
 
     /**
      * @param Event[] $events
-     * @param array $result  
-     * @return Event[]   
+     * @param Event[] $result  
+     * @return Event[]      
      */ 
-    public function reOrderTable($events, $result){   
+    public function reOrderTable(array $events, array $result){   
            
        $array_dateTimes =  array(); 
   

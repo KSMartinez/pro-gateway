@@ -5,6 +5,7 @@ namespace App\Controller\Event;
 
     
 use Exception;
+use App\Entity\Event;
 use App\Service\EventService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,14 +25,14 @@ class RandomEventsListAction extends AbstractController
 
     /**
      * CheckDatasAction constructor.  
-     * @param EventService $EventService
+     * @param EventService $eventService
      */
     public function __construct(EventService $eventService)
     {
         $this->eventService = $eventService;
     }
 
-
+  
 
     /**
      * @return Event[]       

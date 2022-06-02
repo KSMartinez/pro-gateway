@@ -2,17 +2,19 @@
 
 namespace App\Repository;
 
-use App\Entity\EventParticipant;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use App\Entity\EventParticipant;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Contracts\EventDispatcher\Event;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method EventParticipant|null find($id, $lockMode = null, $lockVersion = null)
  * @method EventParticipant|null findOneBy(array $criteria, array $orderBy = null)
  * @method EventParticipant[]    findAll()
  * @method EventParticipant[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<EventParticipant>
  */
 class EventParticipantRepository extends ServiceEntityRepository
 {
@@ -43,6 +45,47 @@ class EventParticipantRepository extends ServiceEntityRepository
         if ($flush) {
             $this->_em->flush();
         }
+    }
+
+
+     /**
+    * @return EventParticipant[] Returns an array of Event objects
+     * @param int $event_Id 
+    */
+    public function getParticipants(int $event_id)
+    {
+        return $this->createQueryBuilder('e')    
+            ->andWhere('e.event = :val')
+            ->setParameter('val', $event_id)  
+            ->getQuery()            
+            ->getResult()                 
+              
+        ;   
+    }
+
+
+    
+     /**
+    * @return boolean // We check if the user is already registered 
+    * @param int $user_Id
+    * @param int $event_Id
+    */
+    public function userIsAlreadyRegistered(int $user_id, int $event_id)
+    {
+
+        $q =  $this->createQueryBuilder('e')       
+            ->where('e.user = :val1')
+            ->andWhere('e.event = :val2')
+            ->setParameter('val1', $user_id)  
+            ->setParameter('val2', $event_id)  
+            ->getQuery()                 
+            ->getResult();     
+
+        if( $q == NULL)
+        return false;
+
+        return true;  
+        
     }
 
     // /**
