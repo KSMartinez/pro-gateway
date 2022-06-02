@@ -7,7 +7,6 @@ use Exception;
 use App\Entity\User;
 use App\Entity\Event;
 use App\Entity\EventParticipant;
-use App\Repository\UserRepository;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\EventParticipantRepository;
@@ -15,12 +14,6 @@ use Symfony\Component\Validator\Constraints\Collection;
 
 class EventParticipantService
 {   
-
-       
-     /**     
-     * @var UserRepository 
-     */
-    private UserRepository $userRepository;   
 
         
      /**     
@@ -34,7 +27,7 @@ class EventParticipantService
      */
     private EntityManagerInterface $entityManagerInterface;   
     
-
+  
     /**     
      * @var EventParticipantRepository 
      */
@@ -57,11 +50,10 @@ class EventParticipantService
         $this->eventParticipantRepository = $eventParticipantRepository;   
     }
 
-      //   * @return EventParticipant[]
-    
+   
     /**
      * @param EventParticipant $data   
-     * @return []      
+   *  @return EventParticipant 
      * @throws Exception
      */
     public function eventRegistration(EventParticipant $data)   
@@ -70,11 +62,11 @@ class EventParticipantService
 
         # Before all we check if the user is connected 
         # To master later :  Check if the user is connected, we gonna do that after Akhil works on Authentification
-
+ 
         if (!$this->eventRepository->find($data->getEvent()->getId())) {
             throw new Exception('The Event should have an id for creating an Event_Participant');
-
-        }
+  
+        }  
 
         $event = $this->eventRepository->find($data->getEvent()->getId());  
 

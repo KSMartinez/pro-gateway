@@ -82,7 +82,7 @@ class Event
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private string $company;
+    private ?string $company;
 
    
      /**
@@ -101,9 +101,10 @@ class Event
     }
 
     public function getId(): ?int
-    {
+    {  
         return $this->id;
     }
+    
 
     public function getTitle(): ?string
     {

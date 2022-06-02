@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Event;
+
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\EventParticipantRepository;
@@ -39,18 +41,22 @@ class EventParticipant
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
+
+      /**  
+     * @var Event 
+     */
     #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'eventParticipants')]
     #[ORM\JoinColumn(nullable: false)]
-    private $event;
+    private Event $event;
 
-
+  
   
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
@@ -62,12 +68,12 @@ class EventParticipant
         return $this;
     }
 
-    public function getEvent(): ?Event
+    public function getEvent(): Event
     {
         return $this->event;
     }
 
-    public function setEvent(?Event $event): self
+    public function setEvent(Event $event): self
     {
         $this->event = $event;
 

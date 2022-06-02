@@ -36,12 +36,11 @@ class EventRegistrationAction extends AbstractController
    
 
 
-    //  @return EventParticipant  
-
+    
     /**   
      * @param EventParticipant $data        
-    * @return []    
-     * @throws Exception 
+    *  @return EventParticipant 
+     * @throws Exception   
      */
     public function __invoke(EventParticipant $data)  
     {

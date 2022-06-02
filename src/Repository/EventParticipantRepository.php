@@ -50,11 +50,11 @@ class EventParticipantRepository extends ServiceEntityRepository
 
      /**
     * @return EventParticipant[] Returns an array of Event objects
-     * @param int $event_Id 
+     * @param ?int $event_id 
     */
-    public function getParticipants(int $event_id)
+    public function getParticipants(?int $event_id)
     {
-        return $this->createQueryBuilder('e')    
+        return $this->createQueryBuilder('e')      
             ->andWhere('e.event = :val')
             ->setParameter('val', $event_id)  
             ->getQuery()            
@@ -67,13 +67,13 @@ class EventParticipantRepository extends ServiceEntityRepository
     
      /**
     * @return boolean // We check if the user is already registered 
-    * @param int $user_Id
-    * @param int $event_Id
+    * @param ?int $user_id
+    * @param ?int $event_id
     */
-    public function userIsAlreadyRegistered(int $user_id, int $event_id)
+    public function userIsAlreadyRegistered(?int $user_id, ?int $event_id)
     {
 
-        $q =  $this->createQueryBuilder('e')       
+        $q =  $this->createQueryBuilder('e')          
             ->where('e.user = :val1')
             ->andWhere('e.event = :val2')
             ->setParameter('val1', $user_id)  
