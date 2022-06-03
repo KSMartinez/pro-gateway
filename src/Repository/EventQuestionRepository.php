@@ -13,6 +13,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method EventQuestion|null findOneBy(array $criteria, array $orderBy = null)
  * @method EventQuestion[]    findAll()
  * @method EventQuestion[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<EventQuestion>      
  */
 class EventQuestionRepository extends ServiceEntityRepository
 {

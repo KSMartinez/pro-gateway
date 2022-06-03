@@ -29,14 +29,7 @@ use App\Controller\EventParticipant\EventRegistrationAction;
     itemOperations      : [
         'put', 'get', 'delete'
     ]  
-    
-    // itemOperations  : [  
-    //     'event_unsubscription' => [
-    //         'method' => 'delete',  
-    //         'path' => '/EventUnsubscription/{id}',
-    //         'controller' => EventUnsubscriptionAction::class,
-    //     ],
-    // ]      
+     
 )]  
 class EventParticipant   
 {
@@ -65,11 +58,21 @@ class EventParticipant
     #[ORM\JoinColumn(nullable: false)]
     private Event $event;
 
-    #[ORM\Column(type: 'boolean')]
-    private $registrationInPending;
 
+    
+      /**  
+     * @var boolean 
+     */
+    #[ORM\Column(type: 'boolean')]
+    private bool $registrationInPending;
+
+
+       
+       /**
+     * @var Collection<int, EventQuestion>
+     */
     #[ORM\OneToMany(mappedBy: 'eventParticipant', targetEntity: EventQuestion::class, orphanRemoval: true)]
-    private $eventQuestions;
+    private Collection $eventQuestions;
 
     public function __construct()
     {
@@ -139,12 +142,10 @@ class EventParticipant
 
     public function removeEventQuestion(EventQuestion $eventQuestion): self
     {
-        if ($this->eventQuestions->removeElement($eventQuestion)) {
-            // set the owning side to null (unless already changed)
-            if ($eventQuestion->getEventParticipant() === $this) {
-                $eventQuestion->setEventParticipant(null);
-            }
-        }
+        
+        if ($eventQuestion->getEventParticipant() === $this) {
+            $this->eventQuestions->removeElement($eventQuestion); 
+        }  
 
         return $this;
     }
