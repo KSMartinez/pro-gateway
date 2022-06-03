@@ -59,7 +59,7 @@ class EventParticipantService
     public function eventRegistration(EventParticipant $data)   
     {
   
-
+  
         # Before all we check if the user is connected 
         # To master later :  Check if the user is connected, we gonna do that after Akhil works on Authentification
  
@@ -73,7 +73,17 @@ class EventParticipantService
         if( $event->getMaxNumberOfParticipants() == NULL){
                 
             if( !$this->eventParticipantRepository->userIsAlreadyRegistered($data->getUser()->getId(), $data->getEvent()->getId()) ) 
-            {
+            {   
+                if( $data->getRegistrationInPending() ){
+                    // Waiting line registration
+                    # Here, we have to
+                    # Tell the admin that there is a new subscriber 
+                    # Tell the user that we still got place for the event
+                    
+                      // MAIL PART TO MASTER LATER WE GONNA COME BACK ON IT 
+     
+                }
+              
 
                 $this->entityManagerInterface->persist($data);
                 $this->entityManagerInterface->flush();
@@ -95,10 +105,10 @@ class EventParticipantService
             
              if( !$this->eventParticipantRepository->userIsAlreadyRegistered($data->getUser()->getId(), $data->getEvent()->getId()) ) 
                 {
-    
-                $this->entityManagerInterface->persist($data);
-                $this->entityManagerInterface->flush();
-                return $data;    
+
+                    $this->entityManagerInterface->persist($data);
+                    $this->entityManagerInterface->flush();
+                    return $data;    
                 
                 }
                 else{
@@ -110,18 +120,73 @@ class EventParticipantService
             }   
             else{
     
-                throw new Exception('The user can not register to the event cause the Event is full');
+                # SEND A MAIL TO THE ADMIN TO NOTIFY THAT THE EVENT IS FULL 
+
+                    
+
+                # WAITING LINE  
+                # The waiting line is only when the event is full 
+                if( $data->getRegistrationInPending() ){
+
+                    // Waiting line registration 
+
+                     # Here, we have to
+                     # Tell the admin that there is a new subscriber 
+
+                    // MAIL PART TO MASTER LATER WE'LL COME BACK ON IT 
+                     
+                     $this->entityManagerInterface->persist($data);
+                     $this->entityManagerInterface->flush();
+                     return $data;    
+
+                     
+                     # Tell the user that we still got place for the event 
+
+                     // MAIL PART TO MASTER LATER WE'LL COME BACK ON IT 
+   
+
+                }
+                else{
+
+                    // The case when the user don't register to the waiting line   
+                    throw new Exception('The user can not register to the event cause the Event is full');
+                }
+   
+
     
             } 
 
         }
-
-      
-        
   
+    }   
+
+ 
+     /**
+     * @param EventParticipant $data   
+    * @return boolean  
+     * @throws Exception   
+     */
+    public function eventUnsubscription(EventParticipant $data)
+    {
+
+   
+        if (!$this->eventRepository->find($data->getEvent()->getId())) {
+            throw new Exception('The Event should have an id for unsubscription');
+  
+        }  
+
+        if( !$data->getRegistrationInPending() ){
+            $this->entityManagerInterface->remove($data);
+            $this->entityManagerInterface->flush();
+            return true;    
+        }
+        else{
+
+            throw new Exception('The user can not unsubscrib cause he is not registered to this event'); 
+        }   
 
 
     }
-
+  
   
 }
