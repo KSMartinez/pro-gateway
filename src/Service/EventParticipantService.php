@@ -7,6 +7,7 @@ use Exception;
 use App\Entity\User;
 use App\Entity\Event;
 use App\Entity\EventParticipant;
+use App\Repository\UserRepository;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\EventParticipantRepository;
@@ -34,6 +35,12 @@ class EventParticipantService
     private EventParticipantRepository $eventParticipantRepository;   
     
 
+      /**     
+     * @var UserRepository 
+     */
+    private UserRepository $userRepository;   
+    
+
    
            
      /**
@@ -41,15 +48,15 @@ class EventParticipantService
       * @param EntityManagerInterface $entityManagerInterface      
      * @param EventParticipantRepository $eventParticipantRepository  
      */
-    public function __construct(EventRepository $eventRepository, EntityManagerInterface $entityManagerInterface, 
+    public function __construct(UserRepository $userRepository, EventRepository $eventRepository, EntityManagerInterface $entityManagerInterface, 
     EventParticipantRepository $eventParticipantRepository)
     {
-      //  $this->userRepository = $userRepository; 
+        $this->userRepository = $userRepository; 
         $this->eventRepository = $eventRepository; 
         $this->entityManagerInterface = $entityManagerInterface;   
         $this->eventParticipantRepository = $eventParticipantRepository;   
     }
-
+   
    
     /**
      * @param EventParticipant $data   
@@ -162,31 +169,36 @@ class EventParticipantService
 
  
      /**
-     * @param EventParticipant $data   
-    * @return boolean  
+     * @param User $data   
+    * @return Event[]  
      * @throws Exception   
      */
-    public function eventUnsubscription(EventParticipant $data)
+    public function userEvents(User $data)
     {
-
-   
-        if (!$this->eventRepository->find($data->getEvent()->getId())) {
-            throw new Exception('The Event should have an id for unsubscription');
   
+        if (!$this->userRepository->find($data)) {
+            throw new Exception('The User should have an id for getting his events');
+    
+        }     
+
+        # Get all the events participants of the user 
+        # Get all the events by taking the id of the previous result 
+
+        $eventParticipants =  $this->eventParticipantRepository->eventParticipants($data->getId());
+
+        $events = array();
+
+
+        foreach( $eventParticipants as $ep)
+        {
+            array_push($events, $ep->getEvent()->getId());  
         }  
+   
 
-        if( !$data->getRegistrationInPending() ){
-            $this->entityManagerInterface->remove($data);
-            $this->entityManagerInterface->flush();
-            return true;    
-        }
-        else{
-
-            throw new Exception('The user can not unsubscrib cause he is not registered to this event'); 
-        }   
-
+        return $this->eventRepository->userEvents($events);
+    
 
     }
-  
+     
   
 }

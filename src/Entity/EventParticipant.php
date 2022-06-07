@@ -3,12 +3,13 @@
 namespace App\Entity;
 
 use App\Entity\Event;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\EventParticipantRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use App\Controller\EventParticipant\EventRegistrationAction;
    
 
@@ -23,6 +24,7 @@ use App\Controller\EventParticipant\EventRegistrationAction;
             'controller' => EventRegistrationAction::class,
         ],
 
+        
        
     ],
 
@@ -73,6 +75,14 @@ class EventParticipant
      */
     #[ORM\OneToMany(mappedBy: 'eventParticipant', targetEntity: EventQuestion::class, orphanRemoval: true)]
     private Collection $eventQuestions;
+
+   
+    /**
+     * @var DateTimeImmutable 
+     */
+    #[ORM\Column(type: 'datetime_immutable')]
+    private DateTimeImmutable $registeredAt;
+
 
     public function __construct()
     {
@@ -146,6 +156,18 @@ class EventParticipant
         if ($eventQuestion->getEventParticipant() === $this) {
             $this->eventQuestions->removeElement($eventQuestion); 
         }  
+
+        return $this;
+    }
+
+    public function getRegisteredAt(): ?\DateTimeImmutable
+    {
+        return $this->registeredAt;
+    }
+
+    public function setRegisteredAt(\DateTimeImmutable $registeredAt): self
+    {
+        $this->registeredAt = $registeredAt;
 
         return $this;
     }

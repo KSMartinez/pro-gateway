@@ -5,12 +5,13 @@ namespace App\Entity;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\EventRepository;
-use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\Event\ParticipantListAction;
 use App\Controller\Event\RandomEventsListAction;
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Controller\Event\DownloadParticipantListAction;
 
 
+  
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[ApiResource(
     collectionOperations  : [
@@ -22,8 +23,23 @@ use Doctrine\Common\Collections\ArrayCollection;
             'controller' => RandomEventsListAction::class,
         ],
             
-    ],   
-)]   
+    ],  
+      
+    itemOperations  : [  
+        'downloadParticipantList' => [
+            'method' => 'GET',
+            'path' => '/downloadParticipantList/{id}',
+            'controller' => DownloadParticipantListAction::class,
+        ],
+   
+        'participantList' => [
+            'method' => 'GET',      
+            'path' => '/participantList/{id}',
+            'controller' => ParticipantListAction::class,
+        ],   
+               
+    ],  
+)]     
 class Event
 {
 
@@ -90,6 +106,19 @@ class Event
      */
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $maxNumberOfParticipants;
+
+
+       /**
+     * @var DateTimeImmutable 
+     */
+    #[ORM\Column(type: 'datetime_immutable')]
+    private $startingAt;
+  
+       /**
+     * @var DateTimeImmutable 
+     */
+    #[ORM\Column(type: 'datetime_immutable')]
+    private $endingAt;
    
       
 
@@ -213,6 +242,30 @@ class Event
     public function setMaxNumberOfParticipants(?int $maxNumberOfParticipants): self
     {
         $this->maxNumberOfParticipants = $maxNumberOfParticipants;
+
+        return $this;
+    }
+
+    public function getStartingAt(): ?\DateTimeImmutable
+    {
+        return $this->startingAt;
+    }
+
+    public function setStartingAt(\DateTimeImmutable $startingAt): self
+    {
+        $this->startingAt = $startingAt;
+
+        return $this;
+    }
+
+    public function getEndingAt(): ?\DateTimeImmutable
+    {
+        return $this->endingAt;
+    }
+
+    public function setEndingAt(\DateTimeImmutable $endingAt): self
+    {
+        $this->endingAt = $endingAt;
 
         return $this;
     }
