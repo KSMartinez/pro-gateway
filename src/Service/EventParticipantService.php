@@ -165,14 +165,14 @@ class EventParticipantService
 
         }
   
-    }   
+    }     
 
  
      /**
      * @param User $data   
-    * @return Event[]  
+    * @return Event[]    
      * @throws Exception   
-     */
+     */    
     public function userEvents(User $data)
     {
   

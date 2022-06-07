@@ -6,6 +6,7 @@ namespace App\Controller\User;
 
 use Exception;
 use App\Entity\User;
+use App\Entity\Event;
 use App\Service\EventParticipantService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,6 +44,6 @@ class UserEventsAction extends AbstractController
     public function __invoke(User $data)  
     {
         return $this->eventParticipantService->userEvents($data);
-
+ 
     }
 }         

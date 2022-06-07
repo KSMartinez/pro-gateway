@@ -7,6 +7,7 @@ use Exception;
 use DateTime;  
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use App\Entity\User;
 use App\Entity\Event;
 use App\Repository\UserRepository;
 use App\Repository\EventRepository;
@@ -184,7 +185,7 @@ class EventService
 
 
     
-    /**
+    /**   
      * @param Event $data
      * @return User[]        
      */ 

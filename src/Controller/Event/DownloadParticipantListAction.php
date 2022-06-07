@@ -24,10 +24,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class DownloadParticipantListAction extends AbstractController
 {  
   
-    /**    
-     * @var EventService
-     */  
-    private EventService $eventService;
 
 
      /**    
@@ -43,7 +39,7 @@ class DownloadParticipantListAction extends AbstractController
 
 
     /**    
-     * @var EventRepository   
+     * @var UserRepository   
      */  
     private UserRepository $userRepository;
 
@@ -51,19 +47,20 @@ class DownloadParticipantListAction extends AbstractController
   
     /**
      * DownloadParticipantListAction constructor.  
-     * @param EventService $eventService
-     */
-    public function __construct(EventService $eventService,  EventParticipantRepository $eventParticipantRepository,  
+     * @param EventParticipantRepository $eventParticipantRepository  
+     * @param EventRepository $eventRepository  
+     * @param UserRepository $userRepository   
+     */  
+    public function __construct(EventParticipantRepository $eventParticipantRepository,  
     EventRepository $eventRepository,  UserRepository $userRepository)
     {
   
         $this->userRepository = $userRepository;   
         $this->eventRepository = $eventRepository;   
-        $this->eventService = $eventService;
         $this->eventParticipantRepository = $eventParticipantRepository; 
 
         
-    }
+    }   
 
 
    
