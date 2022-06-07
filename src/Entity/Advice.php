@@ -5,7 +5,17 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\AdviceRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
-
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\Serializer\Annotation\Groups;
+/**
+ * @ApiFilter(SearchFilter::class, properties={
+ *      "name":"ASC",
+ *      "university":"partial",
+ * })
+ */
 #[ORM\Entity(repositoryClass: AdviceRepository::class)]
 #[ApiResource]    
 class Advice
@@ -44,7 +54,19 @@ class Advice
      * @var string
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $university;  
+    private ?string $university;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $document;
+
+    /**
+     * @Vich\UploadableField(mapping="media_object", fileNameProperty="document")
+     */
+    // #[Groups(['user:updatePicture'])]
+    public ?File $documentFile = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isPublic;
 
 
     public function getId(): ?int
@@ -96,6 +118,47 @@ class Advice
     public function setUniversity(?string $university): self
     {
         $this->university = $university;
+
+        return $this;
+    }
+
+    /**
+     * @return File|null
+     */
+    public function getFile(): ?File
+    {
+        return $this->documentFile;
+    }
+
+    /**
+     * @param File|null $documentFile
+     */
+    public function setFile(?File $documentFile): void
+    {
+        $this->documentFile = $documentFile;
+    }
+
+
+    public function getDocument(): ?string
+    {
+        return $this->document;
+    }
+
+    public function setDocument(?string $document): self
+    {
+        $this->document = $document;
+
+        return $this;
+    }
+
+    public function getIsPublic(): ?bool
+    {
+        return $this->isPublic;
+    }
+
+    public function setIsPublic(bool $isPublic): self
+    {
+        $this->isPublic = $isPublic;
 
         return $this;
     }

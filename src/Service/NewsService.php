@@ -5,18 +5,18 @@ namespace App\Service;
 
 use Exception;
 use DateTime;  
-use App\Entity\Event;
-use App\Repository\EventRepository;
+use App\Entity\News;
+use App\Repository\NewsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-class EventService
+class NewsService
 {
    
   
      /**
      * Number of random events to display 
      */
-    const random_Events_Value = 6; 
+    const random_News_Value = 6; 
 
     /**
      * @var EntityManagerInterface
@@ -24,33 +24,33 @@ class EventService
     private EntityManagerInterface $entityManager;
 
      /**     
-     * @var EventRepository 
+     * @var NewsRepository 
      */
-    private EventRepository $eventRepository;   
+    private NewsRepository $newsRepository;   
 
     /**   
-     * @param EventRepository $eventRepository
+     * @param NewsRepository $newsRepository
      */
-    public function __construct(EventRepository $eventRepository, EntityManagerInterface $entityManager)
+    public function __construct(NewsRepository $newsRepository, EntityManagerInterface $entityManager)
     {
-        $this->eventRepository = $eventRepository; 
+        $this->newsRepository = $newsRepository; 
         $this->entityManager = $entityManager;
     }
 
        
 
     /**
-     * @param Event[] $events
-     * @param Event[] $result  
-     * @return Event[]      
+     * @param News[] $news
+     * @param News[] $result  
+     * @return News[]      
      */ 
-    public function reOrderTable(array $events, array $result){   
+    public function reOrderTable(array $news, array $result){   
            
        $array_dateTimes =  array(); 
   
-       for($i = 0; $i< count($events); $i++){
+       for($i = 0; $i< count($news); $i++){
      
-           $val1 = DateTime::createFromInterface($events[$i]->getStartAt());  
+           $val1 = DateTime::createFromInterface($news[$i]->getPublishedAt());  
            $array_dateTimes[$i] = $val1->format('Y-m-d H:i:s');
               
        }
@@ -100,15 +100,15 @@ class EventService
          
    foreach( $array_dateTimes as $date){
 
-        foreach( $events as $event){
+        foreach( $news as $new){
  
-            $dateTime = DateTime::createFromInterface($event->getStartAt())->format('Y-m-d H:i:s'); 
+            $dateTime = DateTime::createFromInterface($new->getPublishedAt())->format('Y-m-d H:i:s'); 
 
                     if( strcmp($dateTime, $date) == 0 ){  
         
-                        if (!in_array( $event,  $result)){
+                        if (!in_array( $new,  $result)){
 
-                            array_push( $result, $event); 
+                            array_push( $result, $new); 
                         }
             
                     }   
@@ -122,32 +122,32 @@ class EventService
 
     
     /**
-    * @return Event[]   
+    * @return News[]   
      */ 
-    public function randomEventsList() 
+    public function randomNewsList() 
     {     
     
-       $events = array(); 
+       $news = array(); 
        $result = array();    
     
-       $allEvents = $this->eventRepository->allEvents();
+       $allNews = $this->newsRepository->allNews();
 
-       $rangeMax = count($allEvents) - 1;  
+       $rangeMax = count($allNews) - 1;  
  
-       if( count($allEvents) > self::random_Events_Value ){
+       if( count($allNews) > self::random_News_Value ){
           
         # Let's generate 6 Random events 
-        while( count($events) !=  self::random_Events_Value ){
+        while( count($news) !=  self::random_News_Value ){
 
-            for($i=0; $i< count($allEvents); $i++){
+            for($i=0; $i< count($allNews); $i++){
                 
-                $forRandomEvent = mt_rand(0,  $rangeMax);       
+                $forRandomNews = mt_rand(0,  $rangeMax);       
         
-                    if( $i == $forRandomEvent){
+                    if( $i == $forRandomNews){
         
-                            if( !in_array( $allEvents[$i], $events ) ){
+                            if( !in_array( $allNews[$i], $news ) ){
             
-                                array_push($events, $allEvents[$i]); 
+                                array_push($news, $allNews[$i]); 
                                 
                             } 
                     }            
@@ -155,34 +155,34 @@ class EventService
                 
         }
 
-        return $this->reOrderTable($events, $result); 
+        return $this->reOrderTable($news, $result); 
 
        }
    
-       return $this->reOrderTable($allEvents, $result); 
+       return $this->reOrderTable($allNews, $result); 
    
 
     }    
     
     /**   
-     * @param Event $event
-     * @return Event  
+     * @param News $news
+     * @return News 
      * @throws Exception
      */
-    public function updatePicture(Event $event)
+    public function updatePicture(News $news)
     {
 
-        if (!$event->getId()) {
+        if (!$news->getId()) {
             throw new Exception('The user should have an id for updating');
         }
-        if (!$this->eventRepository->find($event->getId())) {
+        if (!$this->newsRepository->find($news->getId())) {
             throw new Exception('The user should have an id for updating');
    
         }  
         
-        $this->entityManager->persist($event);
+        $this->entityManager->persist($news);
         $this->entityManager->flush();
-        return $event;       
+        return $news;       
 
 
     }
