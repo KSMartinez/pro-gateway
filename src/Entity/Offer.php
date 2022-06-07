@@ -10,6 +10,7 @@ use App\Controller\Offer\ArchiveOfferAction;
 use App\Controller\Offer\CreateOfferAction;
 use App\Controller\Offer\DeleteOfferAction;
 use App\Controller\Offer\MultipleDeleteOfferAction;
+use App\Controller\Offer\MultipleValidateOfferAction;
 use App\Controller\Offer\ReactivateExpiredOfferAction;
 use App\Controller\Offer\RefuseOfferAction;
 use App\Controller\Offer\SetFulfilledOfferAction;
@@ -54,6 +55,31 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
                         'in' => 'query',
                         'name' => 'ids',
                         'description' => 'List of IDs to delete',
+                        'required' => true,
+                        'schema' => ['type' => 'array']
+                    ]
+                ],
+                'requestBody' => [
+                    'content' => [
+                        'application/json' => []
+                    ]
+                ]
+            ],
+            'requirements' => [],
+            'read' => false,
+            'deserialize' => false,
+            'validate' => false
+        ],
+        'multiple_validate_offers' => [
+            'method' => 'POST',
+            'path' => '/offer/validate/multiple',
+            'controller' => MultipleValidateOfferAction::class,
+            'openapi_context' => [
+                'parameters' => [
+                    [
+                        'in' => 'query',
+                        'name' => 'ids',
+                        'description' => 'List of IDs to validate',
                         'required' => true,
                         'schema' => ['type' => 'array']
                     ]

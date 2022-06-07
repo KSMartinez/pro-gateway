@@ -270,5 +270,21 @@ class OfferService
         }
     }
 
+    /**
+     * @param array<string> $idsToDelete
+     * @return void
+     * @throws Exception
+     */
+    public function validateMultipleOffers(array $idsToDelete)
+    {
+        foreach ($idsToDelete as $id) {
+
+            $offer = $this->offerRepository->find($id);
+            if ($offer){
+                $this->validateOffer($offer);
+            }
+        }
+    }
+
 
 }   
