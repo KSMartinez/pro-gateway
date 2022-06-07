@@ -8,11 +8,12 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Offer\ArchiveOfferAction;
 use App\Controller\Offer\CreateOfferAction;
+use App\Controller\Offer\DeleteOfferAction;
+use App\Controller\Offer\MultipleDeleteOfferAction;
 use App\Controller\Offer\ReactivateExpiredOfferAction;
 use App\Controller\Offer\RefuseOfferAction;
 use App\Controller\Offer\SetFulfilledOfferAction;
 use App\Controller\Offer\UpdateLogoAction;
-use App\Controller\Offer\DeleteOfferAction;
 use App\Controller\Offer\ValidateOfferAction;
 use App\Repository\OfferRepository;
 use DateTime;
@@ -38,11 +39,36 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 #[ApiResource(
     collectionOperations: [
-        'get','create_offer' => [
+        'get', 'create_offer' => [
             'method' => 'POST',
             'path' => '/offers/create',
             'controller' => CreateOfferAction::class,
         ],
+        'multiple_delete_offers' => [
+            'method' => 'DELETE',
+            'path' => '/offer/delete/multiple',
+            'controller' => MultipleDeleteOfferAction::class,
+            'openapi_context' => [
+                'parameters' => [
+                    [
+                        'in' => 'query',
+                        'name' => 'ids',
+                        'description' => 'List of IDs to delete',
+                        'required' => true,
+                        'schema' => ['type' => 'array']
+                    ]
+                ],
+                'requestBody' => [
+                    'content' => [
+                        'application/json' => []
+                    ]
+                ]
+            ],
+            'requirements' => [],
+            'read' => false,
+            'deserialize' => false,
+            'validate' => false
+        ]
     ],
     itemOperations: [
         'get', 'put',
@@ -90,8 +116,6 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             ]
 
         ],
-
-
 
     ]
 
