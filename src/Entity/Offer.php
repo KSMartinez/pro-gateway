@@ -19,7 +19,10 @@ use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\ORM\Mapping\PreUpdate;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -31,7 +34,6 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @ApiFilter(SearchFilter::class, properties={"title": "partial", "description": "partial", "city":"exact",
  *     "country":"exact", "domain":"exact"})
  * @ApiFilter(OrderFilter::class, properties={"datePosted" : "DESC"})
- * @ORM\HasLifecycleCallbacks
  */
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 #[ApiResource(
@@ -94,6 +96,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     ]
 
 )]
+#[HasLifecycleCallbacks]
 class Offer
 {
 
@@ -177,13 +180,13 @@ class Offer
      * @var bool
      */
     #[ORM\Column(type: 'boolean')]
-    private bool $isDirect;
+    private bool $isDirect = false;
 
     /**
      * @var bool
      */
     #[ORM\Column(type: 'boolean')]
-    private bool $isPublic;
+    private bool $isPublic = false;
 
     /**
      * @var string|null
@@ -195,7 +198,7 @@ class Offer
      * @var bool
      */
     #[ORM\Column(type: 'boolean')]
-    private bool $isOfPartner;
+    private bool $isOfPartner = false;
 
 
     /**
@@ -301,27 +304,18 @@ class Offer
     public function __construct()
     {
         $this->candidatures = new ArrayCollection();
+        $this->datePosted = new DateTime('now');
+        $this->dateModified = new DateTime('now');
 
     }
 
-    /**
-     * Gets triggered only on insert
-     *
-     * @ORM\PrePersist
-     */
-    public function onPrePersist() : void
-    {
-        if (!isset($this->datePosted)){
-            $this->datePosted = new DateTime('now');
-        }
-    }
 
     /**
-     * Gets triggered every time on update
-     *
-     * @ORM\PreUpdate
+     * @param PreUpdateEventArgs $eventArgs
+     * @return void
      */
-    public function onPreUpdate() : void
+    #[PreUpdate]
+    public function doStuffOnPreUpdate(PreUpdateEventArgs $eventArgs)
     {
         $this->dateModified = new DateTime('now');
     }
