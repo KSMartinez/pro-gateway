@@ -48,6 +48,27 @@ class UserRepository extends ServiceEntityRepository
         }
     }
 
+
+    
+    /**
+    * @return User[] Returns an array of User objects
+    * @param array<mixed> $participants  
+     */
+    public function userEvents(array $participants = [])
+    {
+    
+        // We gonna take all the eventParticipant of the user and after check here with a whereIn(e.id, $eventsParticipantArray )
+        return $this->createQueryBuilder('u')
+        ->where('u.id IN (:ids)')
+        ->setParameter('ids', $participants) 
+        ->getQuery()    
+        ->getResult();    
+
+     
+    }
+
+       
+
     // /**
     //  * @return User[] Returns an array of User objects
     //  */

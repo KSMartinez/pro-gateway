@@ -2,27 +2,29 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Controller\User\CharteDutilisationAction;
-use App\Controller\User\checkFilledDatasAction;
-use App\Controller\User\RejectedCharteAction;
-use App\Controller\User\ShowPDFAction;
-use App\Controller\User\UpdatePictureAction;
-use App\Controller\User\UserListAction;
-use App\Repository\UserRepository;
 use DateTimeInterface;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserRepository;
+use App\Controller\User\ShowPDFAction;
+use App\Controller\User\UserListAction;
+use App\Controller\User\UserEventsAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use App\Controller\User\ShowPDFActionCopy;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\User\UpdatePictureAction;
+use App\Controller\User\RejectedCharteAction;
+use App\Controller\User\checkFilledDatasAction;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
+use App\Filters\CompanyExperienceAnnuaireFilter;
+use Doctrine\Common\Collections\ArrayCollection;
+use App\Controller\User\CharteDutilisationAction;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use App\Filters\CompanyExperienceAnnuaireFilter;
+use Symfony\Component\Security\Core\User\UserInterface;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  * @ApiFilter(SearchFilter::class, properties={
@@ -54,7 +56,7 @@ use App\Filters\CompanyExperienceAnnuaireFilter;
     ],
 
 
-
+    
 ],
     itemOperations        : [
         'get','put','delete', 'patch',
@@ -96,20 +98,13 @@ use App\Filters\CompanyExperienceAnnuaireFilter;
             'controller' => ShowPDFAction::class,
         ],
 
+        'user_events' => [
+            'method' => 'GET',
+            'path' => '/userEvents/{id}',
+            'controller' => UserEventsAction::class,
+        ],
+   
 
-
-
-        //  'birthday_visibility' => [
-        //     'method' => 'PUT',
-        //     'path' => '/changeBirthdayVisibility/user/{id}',
-        //     'controller' => changeBirthdayVisibilityAction::class,
-        // ],
-
-        // 'cityAndCountry_visibility' => [
-        //     'method' => 'PUT',
-        //     'path' => '/changeCityAndCountryVisibility/user/{id}',
-        //     'controller' => changeCityCountryVisibilityAction::class,
-        // ],
 
 
         ],
@@ -125,7 +120,7 @@ use App\Filters\CompanyExperienceAnnuaireFilter;
         ]
     ],
 
-)]
+)]  
 class User implements UserInterface
 {
     const ROLE_ADMIN = 'ROLE_ADMIN';

@@ -90,7 +90,27 @@ class EventRepository extends ServiceEntityRepository
         ;
     }
 
-   
+
+    
+    /**
+    * @return Event[] Returns an array of Event objects
+    * @param array<mixed> $events 
+     */
+    public function userEvents(array $events = []) 
+    {
+    
+        // We gonna take all the eventParticipant of the user and after check here with a whereIn(e.id, $eventsParticipantArray )
+        return $this->createQueryBuilder('e')
+        ->where('e.id IN (:ids)')
+        ->setParameter('ids', $events) 
+        ->getQuery()  
+        ->getResult(); 
+
+     
+    }
+
+    
+
 
     //  /**
     // * @return Event[] Returns an array of Event objects

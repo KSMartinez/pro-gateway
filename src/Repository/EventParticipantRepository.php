@@ -88,6 +88,24 @@ class EventParticipantRepository extends ServiceEntityRepository
         
     }
 
+     
+     /**
+    * @return EventParticipant[] Returns an array of Event Participant 
+     * @param ?int $user_id 
+    */
+    public function eventParticipants(?int $user_id)
+    {
+
+        return $this->createQueryBuilder('e')      
+        ->where('e.user = :val')
+        ->setParameter('val', $user_id)  
+        ->getQuery()            
+        ->getResult()                 
+              
+    ;      
+
+    }
+
     // /**
     //  * @return EventParticipant[] Returns an array of EventParticipant objects
     //  */
@@ -116,4 +134,8 @@ class EventParticipantRepository extends ServiceEntityRepository
         ;
     }
     */
+
+
+   
+   
 }

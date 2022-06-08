@@ -7,17 +7,20 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\EventRepository;
+
 use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
-use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\HttpFoundation\File\File;
-use App\Controller\Event\RandomEventsListAction;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Event\UpdatePictureAction;
+use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\Event\ParticipantListAction;
+
+
 
 
 /**
@@ -55,9 +58,22 @@ use App\Controller\Event\UpdatePictureAction;
                 'multipart' => ['multipart/form-data'],
             ]
 
-        ]
+            ], 
+                'downloadParticipantList' => [
+                    'method' => 'GET',
+                    'path' => '/downloadParticipantList/{id}',
+                    'controller' => DownloadParticipantListAction::class,
+                ],
+           
+                'participantList' => [
+                    'method' => 'GET',      
+                    'path' => '/participantList/{id}',
+                    'controller' => ParticipantListAction::class,
+                ],   
+                       
+             
     ]
-)]
+)]  
 class Event
 {
 
@@ -125,6 +141,10 @@ class Event
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $maxNumberOfParticipants;
 
+    
+    
+
+
     /**
      * @var DateTimeImmutable
      */
@@ -153,7 +173,7 @@ class Event
     public ?File $imageFile = null;
 
 
-
+    
     public function __construct()
     {
     }
@@ -275,6 +295,7 @@ class Event
         return $this;
     }
 
+
     /**
      * @return DateTimeImmutable 
      */
@@ -290,10 +311,13 @@ class Event
     public function setStartAt(\DateTimeImmutable $startAt): self
     {
         $this->startAt = $startAt;
-
-        return $this;
+  
+        return $this;  
+  
     }
 
+    
+    
     /**
      * @return DateTimeImmutable 
      */
@@ -310,9 +334,11 @@ class Event
     {
         $this->endAt = $endAt;
 
-        return $this;
+        return $this; 
+
     }
 
+    
 
     public function getLocation(): ?string
     {
@@ -365,4 +391,5 @@ class Event
     {
         $this->imageFile = $imageFile;
     }
+
 }

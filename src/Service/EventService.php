@@ -5,9 +5,16 @@ namespace App\Service;
 
 use Exception;
 use DateTime;  
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use App\Entity\User;
 use App\Entity\Event;
+use App\Repository\UserRepository;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\EventParticipantRepository;
+use Symfony\Component\HttpFoundation\Response;
+
 
 class EventService
 {
@@ -28,16 +35,34 @@ class EventService
      */
     private EventRepository $eventRepository;   
 
-    /**   
-     * @param EventRepository $eventRepository
-     */
-    public function __construct(EventRepository $eventRepository, EntityManagerInterface $entityManager)
-    {
-        $this->eventRepository = $eventRepository; 
-        $this->entityManager = $entityManager;
-    }
 
-       
+      /**     
+     * @var EventParticipantRepository 
+     */
+    private EventParticipantRepository $eventParticipantRepository; 
+
+
+    /**     
+     * @var UserRepository   
+     */
+    private UserRepository $userRepository; 
+  
+
+    /**      
+     * @param EventRepository $eventRepository
+     * @param EventParticipantRepository $eventParticipantRepository 
+     */
+    public function __construct(EventRepository $eventRepository, EventParticipantRepository $eventParticipantRepository,
+     UserRepository $userRepository,  EntityManagerInterface $entityManager){
+        $this->entityManager = $entityManager; 
+        $this->eventRepository = $eventRepository;   
+        $this->entityManager = $entityManager;
+        $this->userRepository = $userRepository; 
+        $this->eventParticipantRepository = $eventParticipantRepository;  
+
+    }    
+
+
 
     /**
      * @param Event[] $events
@@ -121,7 +146,7 @@ class EventService
 
 
     
-    /**
+    /**  
     * @return Event[]   
      */ 
     public function randomEventsList() 
@@ -185,8 +210,42 @@ class EventService
         return $event;       
 
 
-    }
+    } 
 
+
+    
+    /**   
+     * @param Event $data
+     * @return User[]        
+     */ 
+    public function participantList(Event $data)
+    {
+
+
+        if (!$data->getId()) {
+            throw new Exception('The event should have an id for getting the Participant List');
+        }
+        if (!$this->eventRepository->find($data->getId())) {
+            throw new Exception('The event should have an id for Participant List');
+   
+        }     
+   
+        $eventParticipants =  $this->eventParticipantRepository->getParticipants($data->getId());
+        $participants = array();
+
+   
+        foreach( $eventParticipants as $ep )
+        {
+            array_push($participants, $ep->getUser()->getId());  
+        }  
   
+        $users = $this->userRepository->userEvents($participants);  
+
+        return $users;  
+
+        
+    } 
+
+
    
 }
