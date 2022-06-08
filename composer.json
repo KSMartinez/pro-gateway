@@ -7,6 +7,7 @@
         "php": ">=8.0",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-xml": "*",
         "api-platform/core": "^2.6",
         "doctrine/annotations": "^1.0",
         "doctrine/doctrine-bundle": "^2.5",
@@ -35,8 +36,7 @@
         "symfony/twig-bundle": "5.4.*",
         "symfony/validator": "5.4.*",
         "symfony/yaml": "5.4.*",
-        "vich/uploader-bundle": "^1.19",
-        "ext-xml": "*"
+        "vich/uploader-bundle": "^1.19"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.4",
