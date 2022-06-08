@@ -4,17 +4,16 @@ namespace App\Service;
 
 use DateTime;
 use Exception;
-use App\Repository\UserRepository;
+use App\Entity\SavedOfferSearch;
 use App\Repository\EventRepository;
 use App\Repository\OfferRepository;
 use App\Repository\EventParticipantRepository;
-use App\Repository\SavedOfferSearchRepository;
 
+   
 class EventAlertService
 {
   
-    public function __construct(private EmailNotificationService $emailNotificationService, private SavedOfferSearchRepository $savedOfferSearchRepository, private EventRepository $eventRepository, 
-    private UserRepository $userRepository, private EventParticipantRepository $eventParticipantRepository)
+    public function __construct(private EmailNotificationService $emailNotificationService, private EventRepository $eventRepository, private EventParticipantRepository $eventParticipantRepository)
     {
     }
   
@@ -58,17 +57,16 @@ class EventAlertService
             if( (intval($startingDate_day) - intval($today_day)) == 1 ){  
 
                 # Send a notification to the eventParticipant 
-              //$this->emailNotificationService->createEmailNotificationOneDayBeforeTheEvent($search, $numberOfNewOffers); 
+                $justToPush = new SavedOfferSearch();    
+                $this->emailNotificationService->createEmailNotification($justToPush, 10); 
+            //  $this->emailNotificationService->createEmailNotificationOneDayBeforeTheEvent(); 
+
+
+              //dd('y')
           
-   
-
-
-             
-
 
             }
 
-                  
             }
 
         }

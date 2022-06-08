@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(name: 'app:events:alert', description: 'Command that goes through the saved search of users to alert them with notifications one day before the event',)]
-class EventsAltertCommand extends Command
+class EventsAlertCommand extends Command
 {
     public function __construct(private OfferAlertService $offerAlertService, private LoggerInterface $logger)
     {

@@ -18,10 +18,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Event\UpdatePictureAction;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\Event\DownloadParticipantListAction;
 use App\Controller\Event\ParticipantListAction;
-
-
-
+use App\Controller\Event\RandomEventsListAction;
 
 /**
  * @ApiFilter(OrderFilter::class,properties={"startAt":"ASC"})
