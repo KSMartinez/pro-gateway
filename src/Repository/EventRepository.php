@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Event;
 use Doctrine\ORM\ORMException;
+use App\Entity\EventParticipant;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -108,9 +109,8 @@ class EventRepository extends ServiceEntityRepository
 
      
     }
-
+   
     
-
 
     //  /**
     // * @return Event[] Returns an array of Event objects

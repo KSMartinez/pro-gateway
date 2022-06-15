@@ -106,6 +106,20 @@ class EventParticipantRepository extends ServiceEntityRepository
 
     }
 
+
+    
+     /**
+    * @return EventParticipant[] Returns an array of EventParticipant objects
+     */
+    public function getAll()
+    {
+        return $this->createQueryBuilder('e')
+        ->getQuery()  
+        ->getResult(); 
+   
+    }
+
+
     // /**
     //  * @return EventParticipant[] Returns an array of EventParticipant objects
     //  */

@@ -28,4 +28,9 @@ final class Version20220602132008 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE event_participant DROP registration_in_pending');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

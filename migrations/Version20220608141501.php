@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20220608084414 extends AbstractMigration
+final class Version20220608141501 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -115,12 +115,11 @@ final class Version20220608084414 extends AbstractMigration
         $this->addSql('DROP TABLE skill');
         $this->addSql('DROP TABLE type_of_contract');
         $this->addSql('DROP TABLE user');
-
-        
     }
 
+    
     public function isTransactional(): bool
-    {
+    {  
         return false;
-    }
+    }  
 }
