@@ -88,7 +88,7 @@ class EmailNotificationService
      * For each user, if new offers are found, we create an email notification. We don't really care if notification is already created or not.
      * If there are multiple searches for the same user, multiple notifications will be created. We will deal with sending emails in another service
      * @param User[] $users
-     * @param string $notificationSource     
+     * @param string $notificationSource   
      * @return void    
      * @throws Exception  
      */

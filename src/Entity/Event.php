@@ -9,9 +9,8 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\Event\ParticipantListAction;
 use App\Controller\Event\RandomEventsListAction;
 use App\Controller\Event\DownloadParticipantListAction;
+use Faker\Provider\UserAgent;
 
-
-  
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[ApiResource(
     collectionOperations  : [
@@ -120,11 +119,15 @@ class Event
     #[ORM\Column(type: 'datetime_immutable')]
     private $endingAt;
 
+
+       /**
+     * @var User|null  
+     */
     #[ORM\ManyToOne(targetEntity: User::class)]
-    private $createdBy;
+    private User|null $createdBy;
    
       
-
+ 
     
     
     public function __construct()

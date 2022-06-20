@@ -163,22 +163,30 @@ class EventAlertService
 
                 if( $forAdmin){   
                     
+                    if(  $eventCreator !== null){
+                        
                         if(  in_array( "ROLE_ADMIN",   $eventCreator->getRoles()) )
                          {
                     
                             array_push($participants,  $eventCreator); 
                                       
-                        }         
+                        }    
+
+                    } 
 
                 }
                 else{
 
-                    if(  !in_array( "ROLE_ADMIN",   $eventCreator->getRoles()) )
-                    {
-               
-                       array_push($participants,  $eventCreator); 
-                                 
-                    }   
+                    if(  $eventCreator !== null){
+
+                        if(  !in_array( "ROLE_ADMIN",   $eventCreator->getRoles()) )
+                        {
+                
+                        array_push($participants,  $eventCreator); 
+                                    
+                        }     
+
+                    }
                        
                 }
                        
