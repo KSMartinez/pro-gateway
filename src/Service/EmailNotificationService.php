@@ -9,6 +9,7 @@ use App\Entity\NotificationSource;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\EmailTemplateRepository;
 use App\Repository\NotificationSourceRepository;
+use Symfony\Component\VarDumper\VarDumper;
 
 class EmailNotificationService
 {
@@ -52,24 +53,54 @@ class EmailNotificationService
 
 
      /**
-     * For each user, if new offers are found, we create an email notification. We don't really care if notification is already created or not.
-     * If there are multiple searches for the same user, multiple notifications will be created. We will deal with sending emails in another service
+     *  * Send notifications to the creator of an event one day before the end   
      * @param User[] $users
+     * @param string $notificationSource  
      * @return void    
      * @throws Exception  
      */
-    public function createEmailNotificationOneDayBeforeTheEvent(array $users)
+    public function emailNotificationOneDayBeforeTheEvent(array $users,  string $notificationSource)
+    {
+  
+        $this->createEmailNotificationOneDayBeforeTheEvent($users, $notificationSource);            
+
+    }
+
+    
+     /**
+     * Send notifications to the creator of an event one day before the end of the event  
+     * @param User[] $users
+     * @param string $notificationSource  
+     * @return void    
+     * @throws Exception  
+     */
+    public function emailNotificationOneDayBeforeTheEndOfTheEvent(array $users, string $notificationSource)
     {
 
-        // var_dump('users');
+        $this->createEmailNotificationOneDayBeforeTheEvent($users, $notificationSource); 
+            
 
-        // dd($users); 
-   
-        $notificationSource = $this->notificationSourceRepository->findOneBy(array('sourceLabel' => NotificationSource::EVENT_NOTIFICATION_ONE_DAY_BEFORE));
+    }
 
-  
+
+
+     /**
+     * For each user, if new offers are found, we create an email notification. We don't really care if notification is already created or not.
+     * If there are multiple searches for the same user, multiple notifications will be created. We will deal with sending emails in another service
+     * @param User[] $users
+     * @param string $notificationSource     
+     * @return void    
+     * @throws Exception  
+     */
+    public function createEmailNotificationOneDayBeforeTheEvent(array $users, string $notificationSource)
+    {
+ 
+
+        $notificationSource = $this->notificationSourceRepository->findOneBy(array('sourceLabel' => $notificationSource));
+
+     
         if (!$notificationSource){     
-            throw new Exception("Notification Source for " . NotificationSource::EVENT_NOTIFICATION_ONE_DAY_BEFORE . " not found. Please add this to the notificationSource table");
+            throw new Exception("Notification Source for " . $notificationSource . " not found. Please add this to the notificationSource table");
         }
 
     
