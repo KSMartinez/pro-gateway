@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Entity\EventParticipant;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\EventQuestionRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -32,12 +34,24 @@ class EventQuestion
     /**
      * @var string  
      */
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: false)]
     private $question;
+
+  
+    /**   
+     * @var Collection<int,EventAnswer>
+     */
+    #[ORM\OneToMany(mappedBy: 'eventQuestion', targetEntity: EventAnswer::class)]
+    private $eventAnswers;
+
+    public function __construct()
+    {
+        $this->eventAnswers = new ArrayCollection();
+    }
 
 
     public function getId(): ?int
-    {
+    {  
         return $this->id;  
     }
 
@@ -61,6 +75,36 @@ class EventQuestion
     public function setQuestion(string $question): self
     {
         $this->question = $question;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventAnswer>
+     */
+    public function getEventAnswers(): Collection
+    {
+        return $this->eventAnswers;
+    }
+
+    public function addEventAnswer(EventAnswer $eventAnswer): self
+    {
+        if (!$this->eventAnswers->contains($eventAnswer)) {
+            $this->eventAnswers[] = $eventAnswer;
+            $eventAnswer->setEventQuestion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventAnswer(EventAnswer $eventAnswer): self
+    {
+        if ($this->eventAnswers->removeElement($eventAnswer)) {
+            // set the owning side to null (unless already changed)
+            if ($eventAnswer->getEventQuestion() === $this) {
+                $eventAnswer->setEventQuestion(null);
+            }
+        }
 
         return $this;
     }
