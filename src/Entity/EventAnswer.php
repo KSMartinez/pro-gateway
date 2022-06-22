@@ -38,25 +38,25 @@ class EventAnswer
 
   
      /**
-     * @var string|null
+     * @var string
      */
-    #[ORM\Column(type: 'string', length: 255,  nullable: false)]
+    #[ORM\Column(type: 'string', length: 255)]      
     private string $response;
 
 
     /**   
-     * @var EventQuestion
+     * @var EventQuestion   
      */
-    #[ORM\ManyToOne(targetEntity: EventQuestion::class, inversedBy: 'eventAnswers',  nullable: false)]
-    private EventQuestion $eventQuestion;  
+    #[ORM\ManyToOne(targetEntity: EventQuestion::class, inversedBy: 'eventAnswers')]
+    private ?EventQuestion $eventQuestion;  
 
 
     /**    
      * @var User  
      */
-    #[ORM\ManyToOne(targetEntity: User::class,  nullable: false)]
-    private $eventCreator;
-   
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    private ?User $eventCreator;
+        
        
 
     public function getId(): ?int
@@ -64,7 +64,7 @@ class EventAnswer
         return $this->id;
     }
 
-    public function getResponse(): string
+    public function getResponse(): ?string
     {
         return $this->response;
     }
@@ -76,19 +76,19 @@ class EventAnswer
         return $this;
     }
 
-    public function getEventQuestion(): EventQuestion
+    public function getEventQuestion(): ?EventQuestion
     {
         return $this->eventQuestion;
     }
 
-    public function setEventQuestion(EventQuestion $eventQuestion): self
+    public function setEventQuestion(?EventQuestion $eventQuestion): self
     {
-        $this->eventQuestion = $eventQuestion;
+        $this->eventQuestion = $eventQuestion;  
 
         return $this;
-    }
+    } 
 
-    public function getEventCreator(): User
+    public function getEventCreator():?User
     {
         return $this->eventCreator;
     }

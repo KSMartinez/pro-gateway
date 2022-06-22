@@ -97,6 +97,8 @@ class EventQuestion
         return $this;
     }
 
+
+    # If we remove an answer from the answers of a question, 
     public function removeEventAnswer(EventAnswer $eventAnswer): self
     {
         if ($this->eventAnswers->removeElement($eventAnswer)) {

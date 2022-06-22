@@ -47,7 +47,7 @@ class EventAnswerQuestionAction extends AbstractController
    
      /**
      * @param EventAnswer $data
-     * @return EventAnswer[]   
+     * @return EventAnswer  
      */  
     public function __invoke(EventAnswer $data)   
     {  
