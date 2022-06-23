@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\GroupMember\AcceptGroupInvitationAction;
 use App\Controller\GroupMember\InviteGroupMemberAction;
@@ -9,9 +10,10 @@ use App\Controller\GroupMember\RefuseGroupInvitationAction;
 use App\Repository\GroupMemberRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
- *
+ * @ApiFilter(SearchFilter::class, properties={"groupOfMember":"exact", "user": "exact", "groupMemberStatus": "exact"})
  */
 #[ORM\Entity(repositoryClass: GroupMemberRepository::class)]
 #[ApiResource(
