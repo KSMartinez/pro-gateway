@@ -5,7 +5,7 @@ namespace App\Service;
 use App\Entity\Group;
 use App\Entity\GroupMember;
 use App\Entity\GroupMemberStatus;
-use App\Repository\GroupMemberRepository;
+use App\Entity\User;
 use App\Repository\GroupMemberStatusRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -44,6 +44,9 @@ class GroupMemberService
 
         $groupMemberStatus = $this->getGroupMemberStatus(GroupMemberStatus::ACTIF);
         $groupMember->setGroupMemberStatus($groupMemberStatus);
+
+
+        $groupMember->setMemberRoles([GroupMember::ROLE_GROUP_USER]);
 
         $groupMember->setGroupMemberStatus($groupMemberStatus);
         $this->entityManager->persist($groupMember);
@@ -98,12 +101,43 @@ class GroupMemberService
         $admins = [];
 
         foreach ($members as $member) {
-            if (in_array(GroupMember::ROLE_GROUP_ADMIN, $member->getUser()->getRoles())){
+            if (in_array(GroupMember::ROLE_GROUP_ADMIN, $member->getUser()
+                                                               ->getRoles())) {
                 $admins[] = $member;
             }
         }
 
         return $admins;
+    }
+
+    /**
+     * @param GroupMember $member
+     * @param User        $currentUser
+     * @throws Exception
+     */
+    public function removeUserFromGroup(GroupMember $member, User $currentUser): void
+    {
+
+
+        $userBeingDeleted = $member->getUser();
+        // if current currentUser is not admin, make some checks
+        if (!in_array(User::ROLE_ADMIN, $currentUser->getRoles())) {
+
+            //if user being deleted is a group admin
+            if (in_array(GroupMember::ROLE_GROUP_ADMIN, $member->getMemberRoles())) {
+
+                // the current user is user being deleted, can't delete [CANNOT DELETE OTHER ADMINS FROM GROUP]
+                if ($userBeingDeleted !== $currentUser) {
+                    throw new Exception('Cannot delete a group admin from the group');
+                } // If the user is deleting themselves and they're the last admin, cannot delete [CANNOT DELETE ONESELF IF LAST ADMIN]
+                else if (count($this->getGroupMemberAdmins($member->getGroupOfMember())) == 1) {
+                    throw new Exception('Cannot remove user who is the last admin user. No more admins left if this user is removed.');
+                }
+            }
+        }
+
+        $this->entityManager->remove($member);
+        $this->entityManager->flush();
     }
 
 }

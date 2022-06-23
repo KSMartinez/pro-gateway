@@ -50,26 +50,7 @@ class GroupMemberDataPersister implements DataPersisterInterface
     {
         /** @var User $currentUser */
         $currentUser = $this->security->getUser();
-        $userBeingDeleted  = $data->getUser();
-        // if current currentUser is not admin, make some checks
-        if (!in_array(User::ROLE_ADMIN, $currentUser->getRoles())){
-
-            //if user being deleted is a group admin
-            if (in_array(GroupMember::ROLE_GROUP_ADMIN, $userBeingDeleted->getRoles()) ){
-
-                // the current user is user being deleted, can't delete [CANNOT DELETE OTHER ADMINS FROM GROUP]
-                if ($userBeingDeleted !== $currentUser){
-                    throw new Exception('Cannot delete a group admin from the group');
-                } // If the user is deleting themselves and they're the last admin, cannot delete [CANNOT DELETE ONESELF IF LAST ADMIN]
-                else if(count($this->groupMemberService->getGroupMemberAdmins($data->getGroupOfMember())) == 1){
-                    throw new Exception('Cannot remove user who is the last admin user. No more admins left if this user is removed.');
-                }
-            }
-        }
-
-        $this->entityManager->remove($data);
-        $this->entityManager->flush();
-
+        $this->groupMemberService->removeUserFromGroup($data, $currentUser);
 
     }
 }

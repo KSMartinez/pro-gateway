@@ -85,6 +85,12 @@ class GroupMember
     private ?GroupMemberStatus $groupMemberStatus;
 
     /**
+     * @var string[]
+     */
+    #[ORM\Column(type: 'json', nullable: true)]
+    private array $memberRoles = [];
+
+    /**
      * @return int|null
      */
     public function getId(): ?int
@@ -131,35 +137,6 @@ class GroupMember
     }
 
     /**
-     * @return string[] | null
-     */
-    public function getRoles(): ?array
-    {
-        return array_values(array_filter($this->getUser()->getRoles(), function (string $item){
-            return in_array($item, [self::ROLE_GROUP_ADMIN, self::ROLE_GROUP_USER]);
-        }));
-
-    }
-
-    /**
-     * @param string[]|null $roles
-     * @return $this
-     */
-    public function setRoles(?array $roles): self
-    {
-
-        $userRoles = $this->user->getRoles();
-        if (!empty($roles)){
-            $userRoles = array_merge($userRoles,$roles);
-        }
-
-        //add roles to user as well
-        $this->user->setRoles(array_unique($userRoles));
-
-        return $this;
-    }
-
-    /**
      * @return GroupMemberStatus|null
      */
     public function getGroupMemberStatus(): ?GroupMemberStatus
@@ -174,6 +151,28 @@ class GroupMember
     public function setGroupMemberStatus(?GroupMemberStatus $groupMemberStatus): self
     {
         $this->groupMemberStatus = $groupMemberStatus;
+
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getMemberRoles(): array
+    {
+        return $this->memberRoles;
+    }
+
+    /**
+     * @param string[]|null $memberRoles
+     * @return $this
+     */
+    public function setMemberRoles(?array $memberRoles): self
+    {
+        if ($memberRoles == null){
+            $memberRoles = [];
+        }
+        $this->memberRoles = $memberRoles;
 
         return $this;
     }
