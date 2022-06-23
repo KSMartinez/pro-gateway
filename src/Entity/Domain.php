@@ -7,6 +7,7 @@ use App\Repository\DomainRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Class Domain
@@ -45,12 +46,14 @@ class Domain
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['offer:read'])]
     private ?int $id;
 
     /**
      * @var string
      */
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['offer:read'])]
     private string $name;
 
     /**
