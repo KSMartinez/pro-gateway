@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+
+use DateTime;  
 use Doctrine\ORM\ORMException;
 use App\Entity\EventParticipant;
 use Doctrine\ORM\OptimisticLockException;
@@ -66,6 +68,33 @@ class EventParticipantRepository extends ServiceEntityRepository
 
     
      /**
+    * @return EventParticipant[] Returns an array of Event objects
+    */
+    public function getAll()   
+    {
+    
+        # The more faster way is to check if  today.day = startingAt.day - 1 
+
+         
+        return $this->createQueryBuilder('e')  
+            ->innerJoin('e.event', 'ev')   
+            ->where('ev.startingAt = :tomorrow') 
+            ->setParameter(':tomorrow', new Datetime('+1day'))  
+            ->getQuery()            
+            ->getResult()                          
+                
+        ;      
+  
+       
+
+
+
+    }
+
+
+
+    
+     /**
     * @return boolean // We check if the user is already registered 
     * @param ?int $user_id
     * @param ?int $event_id
@@ -107,17 +136,7 @@ class EventParticipantRepository extends ServiceEntityRepository
     }
 
 
-    
-     /**
-    * @return EventParticipant[] Returns an array of EventParticipant objects
-     */
-    public function getAll()
-    {
-        return $this->createQueryBuilder('e')
-        ->getQuery()  
-        ->getResult(); 
    
-    }
 
 
     // /**

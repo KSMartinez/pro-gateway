@@ -69,8 +69,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             'method' => 'POST',
             'path' => '/user/{id}/updatePicture',
             'openapi_context' => [
-                'summary'     => 'Use this endpoint to update only the picture of the user. Use the PUT endpoint for all other updating',
-                'description' => "# Pop a great rabbit picture by color!\n\n![A great rabbit]"
+                'summary'     => 'Use this endpoint to update only the picture of the user. Use the PUT endpoint for all other updating'
                 ],
             'controller' => UpdatePictureAction::class,
             'denormalization_context' => ['groups' => ['user:updatePicture']],
@@ -121,7 +120,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         ]
     ],
 
-)]
+)]  
 class User implements UserInterface
 {
     const ROLE_ADMIN = 'ROLE_ADMIN';
@@ -155,6 +154,9 @@ class User implements UserInterface
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
+    /**
+     * @var CV|null
+     */
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: CV::class, cascade: ['persist', 'remove'])]
     private ?CV $cV;
 
@@ -430,6 +432,15 @@ class User implements UserInterface
     #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $mentorAccept;
 
+    /**
+     * @var Collection<int, GroupMember>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: GroupMember::class, orphanRemoval: true)]
+    private Collection $groupsMemberOf;
+
+    /**
+     *
+     */
 
     public function __construct()
     {
@@ -437,7 +448,7 @@ class User implements UserInterface
         $this->savedOfferSearches = new ArrayCollection();
         $this->emailNotifications = new ArrayCollection();
         $this->candidatures = new ArrayCollection();
-       
+        $this->groupsMemberOf = new ArrayCollection();
 
     }
 
@@ -538,11 +549,18 @@ class User implements UserInterface
         // $this->plainPassword = null;
     }
 
+    /**
+     * @return CV|null
+     */
     public function getCV(): ?CV
     {
         return $this->cV;
     }
 
+    /**
+     * @param CV $cV
+     * @return $this
+     */
     public function setCV(CV $cV): self
     {
         // set the owning side of the relation if necessary
@@ -620,12 +638,18 @@ class User implements UserInterface
     }
 
 
-
+    /**
+     * @return DateTimeInterface|null
+     */
     public function getBirthday(): ?\DateTimeInterface
     {
         return $this->birthday;
     }
 
+    /**
+     * @param DateTimeInterface|null $birthday
+     * @return $this
+     */
     public function setBirthday(?\DateTimeInterface $birthday): self
     {
         $this->birthday = $birthday;
@@ -633,11 +657,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getTelephone(): ?string
     {
         return $this->telephone;
     }
 
+    /**
+     * @param string|null $telephone
+     * @return $this
+     */
     public function setTelephone(?string $telephone): self
     {
         $this->telephone = $telephone;
@@ -645,11 +676,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getFirstname(): ?string
     {
         return $this->firstname;
     }
 
+    /**
+     * @param string|null $firstname
+     * @return $this
+     */
     public function setFirstname(?string $firstname): self
     {
         $this->firstname = $firstname;
@@ -657,11 +695,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getSurname(): ?string
     {
         return $this->surname;
     }
 
+    /**
+     * @param string $surname
+     * @return $this
+     */
     public function setSurname(string $surname): self
     {
         $this->surname = $surname;
@@ -685,11 +730,18 @@ class User implements UserInterface
         $this->image = $image;
     }
 
+    /**
+     * @return string|null
+     */
     public function getImageLink(): ?string
     {
         return $this->imageLink;
     }
 
+    /**
+     * @param string|null $imageLink
+     * @return $this
+     */
     public function setImageLink(?string $imageLink): self
     {
         $this->imageLink = $imageLink;
@@ -697,11 +749,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getProfilTitle(): ?string
     {
         return $this->profilTitle;
     }
 
+    /**
+     * @param string|null $profilTitle
+     * @return $this
+     */
     public function setProfilTitle(?string $profilTitle): self
     {
         $this->profilTitle = $profilTitle;
@@ -709,11 +768,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getUseFirstname(): ?string
     {
         return $this->useFirstname;
     }
 
+    /**
+     * @param string|null $useFirstname
+     * @return $this
+     */
     public function setUseFirstname(?string $useFirstname): self
     {
         $this->useFirstname = $useFirstname;
@@ -721,11 +787,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getUseSurname(): ?string
     {
         return $this->useSurname;
     }
 
+    /**
+     * @param string|null $useSurname
+     * @return $this
+     */
     public function setUseSurname(?string $useSurname): self
     {
         $this->useSurname = $useSurname;
@@ -733,11 +806,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getProfilDescription(): ?string
     {
         return $this->profilDescription;
     }
 
+    /**
+     * @param string|null $profilDescription
+     * @return $this
+     */
     public function setProfilDescription(?string $profilDescription): self
     {
         $this->profilDescription = $profilDescription;
@@ -745,11 +825,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getBirthdayIsPublic(): ?bool
     {
         return $this->birthdayIsPublic;
     }
 
+    /**
+     * @param bool $birthdayIsPublic
+     * @return $this
+     */
     public function setBirthdayIsPublic(bool $birthdayIsPublic): self
     {
         $this->birthdayIsPublic = $birthdayIsPublic;
@@ -757,11 +844,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getAddress(): ?string
     {
         return $this->address;
     }
 
+    /**
+     * @param string|null $address
+     * @return $this
+     */
     public function setAddress(?string $address): self
     {
         $this->address = $address;
@@ -769,11 +863,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getCity(): ?string
     {
         return $this->city;
     }
 
+    /**
+     * @param string|null $city
+     * @return $this
+     */
     public function setCity(?string $city): self
     {
         $this->city = $city;
@@ -781,11 +882,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getCountry(): ?string
     {
         return $this->country;
     }
 
+    /**
+     * @param string $country
+     * @return $this
+     */
     public function setCountry(string $country): self
     {
         $this->country = $country;
@@ -793,11 +901,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getCityAndCountryIsPublic(): ?bool
     {
         return $this->cityAndCountryIsPublic;
     }
 
+    /**
+     * @param bool $cityAndCountryIsPublic
+     * @return $this
+     */
     public function setCityAndCountryIsPublic(bool $cityAndCountryIsPublic): self
     {
         $this->cityAndCountryIsPublic = $cityAndCountryIsPublic;
@@ -805,11 +920,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getMailIsPublic(): ?bool
     {
         return $this->mailIsPublic;
     }
 
+    /**
+     * @param bool|null $mailIsPublic
+     * @return $this
+     */
     public function setMailIsPublic(?bool $mailIsPublic): self
     {
         $this->mailIsPublic = $mailIsPublic;
@@ -817,11 +939,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getTelephoneIsPublic(): ?bool
     {
         return $this->telephoneIsPublic;
     }
 
+    /**
+     * @param bool|null $telephoneIsPublic
+     * @return $this
+     */
     public function setTelephoneIsPublic(?bool $telephoneIsPublic): self
     {
         $this->telephoneIsPublic = $telephoneIsPublic;
@@ -829,11 +958,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getAddressIsPublic(): ?bool
     {
         return $this->addressIsPublic;
     }
 
+    /**
+     * @param bool|null $addressIsPublic
+     * @return $this
+     */
     public function setAddressIsPublic(?bool $addressIsPublic): self
     {
         $this->addressIsPublic = $addressIsPublic;
@@ -841,11 +977,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getDatasVisibleForAllMembers(): ?bool
     {
         return $this->datasVisibleForAllMembers;
     }
 
+    /**
+     * @param bool|null $datasVisibleForAllMembers
+     * @return $this
+     */
     public function setDatasVisibleForAllMembers(?bool $datasVisibleForAllMembers): self
     {
         $this->datasVisibleForAllMembers = $datasVisibleForAllMembers;
@@ -853,11 +996,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getDatasVisibleForAnnuaire(): ?bool
     {
         return $this->datasVisibleForAnnuaire;
     }
 
+    /**
+     * @param bool|null $datasVisibleForAnnuaire
+     * @return $this
+     */
     public function setDatasVisibleForAnnuaire(?bool $datasVisibleForAnnuaire): self
     {
         $this->datasVisibleForAnnuaire = $datasVisibleForAnnuaire;
@@ -865,11 +1015,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getDatasPublic(): ?bool
     {
         return $this->datasPublic;
     }
 
+    /**
+     * @param bool|null $datasPublic
+     * @return $this
+     */
     public function setDatasPublic(?bool $datasPublic): self
     {
         $this->datasPublic = $datasPublic;
@@ -877,11 +1034,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getDatasAllPrivate(): ?bool
     {
         return $this->datasAllPrivate;
     }
 
+    /**
+     * @param bool|null $datasAllPrivate
+     * @return $this
+     */
     public function setDatasAllPrivate(?bool $datasAllPrivate): self
     {
         $this->datasAllPrivate = $datasAllPrivate;
@@ -889,11 +1053,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getNewsLetterNotification(): ?bool
     {
         return $this->newsLetterNotification;
     }
 
+    /**
+     * @param bool|null $newsLetterNotification
+     * @return $this
+     */
     public function setNewsLetterNotification(?bool $newsLetterNotification): self
     {
         $this->newsLetterNotification = $newsLetterNotification;
@@ -901,11 +1072,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getRejectedCharte(): ?bool
     {
         return $this->rejectedCharte;
     }
 
+    /**
+     * @param bool|null $rejectedCharte
+     * @return $this
+     */
     public function setRejectedCharte(?bool $rejectedCharte): self
     {
         $this->rejectedCharte = $rejectedCharte;
@@ -913,11 +1091,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getAvailableToWork(): ?bool
     {
         return $this->availableToWork;
     }
 
+    /**
+     * @param bool|null $availableToWork
+     * @return $this
+     */
     public function setAvailableToWork(?bool $availableToWork): self
     {
         $this->availableToWork = $availableToWork;
@@ -935,11 +1120,18 @@ class User implements UserInterface
         return $this->candidatures;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getCompanyCreator(): ?bool
     {
         return $this->companyCreator;
     }
 
+    /**
+     * @param bool $companyCreator
+     * @return $this
+     */
     public function setCompanyCreator(bool $companyCreator): self
     {
         $this->companyCreator = $companyCreator;
@@ -947,11 +1139,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getLinkedinAccount(): ?string
     {
         return $this->linkedinAccount;
     }
 
+    /**
+     * @param string|null $linkedinAccount
+     * @return $this
+     */
     public function setLinkedinAccount(?string $linkedinAccount): self
     {
         $this->linkedinAccount = $linkedinAccount;
@@ -959,11 +1158,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getFacebookAccount(): ?string
     {
         return $this->facebookAccount;
     }
 
+    /**
+     * @param string|null $facebookAccount
+     * @return $this
+     */
     public function setFacebookAccount(?string $facebookAccount): self
     {
         $this->facebookAccount = $facebookAccount;
@@ -971,11 +1177,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getInstagramAccount(): ?string
     {
         return $this->instagramAccount;
     }
 
+    /**
+     * @param string|null $instagramAccount
+     * @return $this
+     */
     public function setInstagramAccount(?string $instagramAccount): self
     {
         $this->instagramAccount = $instagramAccount;
@@ -983,11 +1196,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getTwitterAccount(): ?string
     {
         return $this->twitterAccount;
     }
 
+    /**
+     * @param string|null $twitterAccount
+     * @return $this
+     */
     public function setTwitterAccount(?string $twitterAccount): self
     {
         $this->twitterAccount = $twitterAccount;
@@ -995,11 +1215,18 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getMentorAccept(): ?bool
     {
         return $this->mentorAccept;
     }
 
+    /**
+     * @param bool|null $mentorAccept
+     * @return $this
+     */
     public function setMentorAccept(?bool $mentorAccept): self
     {
         $this->mentorAccept = $mentorAccept;
@@ -1007,8 +1234,18 @@ class User implements UserInterface
         return $this;
     }
 
-    
-    
-      
+
+
+
+
+    /**
+     * @return Collection<int, GroupMember>
+     */
+    public function getGroupsMemberOf(): Collection
+    {
+        return $this->groupsMemberOf;
+    }
+
+
 
 }

@@ -3,30 +3,23 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\TypeOfContractRepository;
+use App\Repository\TypeOfOfferRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class TypeOfContract
- * @package App\Entity
+ *
  */
-#[ORM\Entity(repositoryClass: TypeOfContractRepository::class)]
-#[ApiResource(
-    collectionOperations: ['get'],
-    itemOperations      : ['get']
-)]
-class TypeOfContract
+#[ORM\Entity(repositoryClass: TypeOfOfferRepository::class)]
+#[ApiResource]
+class TypeOfOffer
 {
-    const CDI = 'CDI';
-    const CDD = 'CDD';
-    const VIE_VIA = 'VIE - VIA';
-    const INTERIM = 'INTERIM';
-    const CIFRE = 'CIFRE';
-    const INDIFFERENT = 'INDIFFERENT';
-    const SERVICE_CIVIQUE = 'SERVICE-CIVIQUE';
-    const POST_DOCTORANT = 'POST-DOCTORANT';
+    const EMPLOI_ETUDIANT = "EMPLOI_ETUDIANT";
+    const EMPLOI_DEBUTANT = "EMPLOI_DEBUTANT";
+    const EMPLOI_CONFIRME = "EMPLOI_CONFIRME";
+    const STAGE = "STAGE";
+    const APPRENTISSAGE = "APPRENTISSAGE";
 
     /**
      * @var int|null
@@ -34,7 +27,7 @@ class TypeOfContract
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @var string
@@ -43,14 +36,11 @@ class TypeOfContract
     private string $type;
 
     /**
-     * @var Collection<int,Offer>
+     * @var Collection<int, Offer>
      */
-    #[ORM\OneToMany(mappedBy: 'typeOfContract', targetEntity: Offer::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'typeOfOffer', targetEntity: Offer::class)]
     private Collection $offers;
 
-    /**
-     * TypeOfContract constructor.
-     */
     public function __construct()
     {
         $this->offers = new ArrayCollection();
@@ -89,5 +79,27 @@ class TypeOfContract
     public function getOffers(): Collection
     {
         return $this->offers;
+    }
+
+    public function addOffer(Offer $offer): self
+    {
+        if (!$this->offers->contains($offer)) {
+            $this->offers[] = $offer;
+            $offer->setTypeOfOffer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOffer(Offer $offer): self
+    {
+        if ($this->offers->removeElement($offer)) {
+            // set the owning side to null (unless already changed)
+            if ($offer->getTypeOfOffer() === $this) {
+                $offer->setTypeOfOffer(null);
+            }
+        }
+
+        return $this;
     }
 }

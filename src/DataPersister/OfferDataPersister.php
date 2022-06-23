@@ -15,10 +15,9 @@ class OfferDataPersister implements ContextAwareDataPersisterInterface
 {
 
     /**
-     * @param OfferService           $offerService
-     * @param EntityManagerInterface $entityManager
+     * @param OfferService $offerService
      */
-    public function __construct(private OfferService $offerService, private EntityManagerInterface $entityManager)
+    public function __construct(private OfferService $offerService)
     {
 
     }
@@ -54,7 +53,8 @@ class OfferDataPersister implements ContextAwareDataPersisterInterface
      */
     public function remove($data, array $context = [])
     {
-        $this->entityManager->remove($data);
-        $this->entityManager->flush();
+        //delete is implemented as soft delete in custom operation
+//        $this->entityManager->remove($data);
+//        $this->entityManager->flush();
     }
 }

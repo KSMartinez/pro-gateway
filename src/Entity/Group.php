@@ -12,6 +12,8 @@ use App\Controller\Group\ValidateGroupDemandAction;
 use App\Model\GroupDemand;
 use App\Repository\GroupRepository;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -109,6 +111,17 @@ class Group
     private ?User $createdBy;
 
     /**
+     * @var Collection<int, GroupMember>
+     */
+    #[ORM\OneToMany(mappedBy: 'groupOfMember', targetEntity: GroupMember::class, orphanRemoval: true)]
+    private Collection $groupMembers;
+
+    public function __construct()
+    {
+        $this->groupMembers = new ArrayCollection();
+    }
+
+    /**
      * @return int|null
      */
     public function getId(): ?int
@@ -203,4 +216,13 @@ class Group
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, GroupMember>
+     */
+    public function getGroupMembers(): Collection
+    {
+        return $this->groupMembers;
+    }
+
 }

@@ -6,6 +6,7 @@ use App\Entity\NotificationSource;
 use DateTime;
 use Exception;
 use App\Repository\EventRepository;  
+
 use App\Repository\EventParticipantRepository;
 
    
@@ -27,6 +28,7 @@ class EventAlertService
      */
     public function alertUsersOneDayBeforeTheEvent()
     {
+
 
         $eventParticipants = $this->eventParticipantRepository->findAll();   
 
@@ -200,3 +202,6 @@ class EventAlertService
     }   
 
  }   
+
+      
+

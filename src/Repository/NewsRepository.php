@@ -74,4 +74,19 @@ class NewsRepository extends ServiceEntityRepository
         ;
     }
     */
+
+        /**
+    * @return News[] Returns an array of News objects
+    */
+    public function allNews() 
+    {
+        return $this->createQueryBuilder('e')
+            ->orWhere('e.university IS NOT NULL')   
+            ->andWhere('e.publishedAt IS NOT NULL')   
+            ->getQuery()     
+            ->getResult()              
+              
+        ;
+    }
+
 }

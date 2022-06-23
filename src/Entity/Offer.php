@@ -8,18 +8,23 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Offer\ArchiveOfferAction;
 use App\Controller\Offer\CreateOfferAction;
+use App\Controller\Offer\DeleteOfferAction;
+use App\Controller\Offer\MultipleDeleteOfferAction;
+use App\Controller\Offer\MultipleValidateOfferAction;
 use App\Controller\Offer\ReactivateExpiredOfferAction;
 use App\Controller\Offer\RefuseOfferAction;
 use App\Controller\Offer\SetFulfilledOfferAction;
 use App\Controller\Offer\UpdateLogoAction;
-use App\Controller\Offer\DeleteOfferAction;
 use App\Controller\Offer\ValidateOfferAction;
 use App\Repository\OfferRepository;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\ORM\Mapping\PreUpdate;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -31,16 +36,65 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @ApiFilter(SearchFilter::class, properties={"title": "partial", "description": "partial", "city":"exact",
  *     "country":"exact", "domain":"exact"})
  * @ApiFilter(OrderFilter::class, properties={"datePosted" : "DESC"})
- * @ORM\HasLifecycleCallbacks
  */
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 #[ApiResource(
     collectionOperations: [
-        'get','create_offer' => [
+        'get', 'create_offer' => [
             'method' => 'POST',
             'path' => '/offers/create',
             'controller' => CreateOfferAction::class,
         ],
+        'multiple_delete_offers' => [
+            'method' => 'DELETE',
+            'path' => '/offer/delete/multiple',
+            'controller' => MultipleDeleteOfferAction::class,
+            'openapi_context' => [
+                'parameters' => [
+                    [
+                        'in' => 'query',
+                        'name' => 'ids',
+                        'description' => 'List of IDs to delete',
+                        'required' => true,
+                        'schema' => ['type' => 'array']
+                    ]
+                ],
+                'requestBody' => [
+                    'content' => [
+                        'application/json' => []
+                    ]
+                ]
+            ],
+            'requirements' => [],
+            'read' => false,
+            'deserialize' => false,
+            'validate' => false
+        ],
+        'multiple_validate_offers' => [
+            'method' => 'POST',
+            'path' => '/offer/validate/multiple',
+            'controller' => MultipleValidateOfferAction::class,
+            'openapi_context' => [
+                'parameters' => [
+                    [
+                        'in' => 'query',
+                        'name' => 'ids',
+                        'description' => 'List of IDs to validate',
+                        'required' => true,
+                        'schema' => ['type' => 'array']
+                    ]
+                ],
+                'requestBody' => [
+                    'content' => [
+                        'application/json' => []
+                    ]
+                ]
+            ],
+            'requirements' => [],
+            'read' => false,
+            'deserialize' => false,
+            'validate' => false
+        ]
     ],
     itemOperations: [
         'get', 'put',
@@ -79,8 +133,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             'method' => 'POST',
             'path' => '/offer/{id}/updateLogo',
             'openapi_context' => [
-                'summary' => 'Use this endpoint to update only the logo of the offer. Use the PUT endpoint for all other updating',
-                'description' => "# Pop a great rabbit picture by color!\n\n![A great rabbit]"
+                'summary' => 'Use this endpoint to update only the logo of the offer. Use the PUT endpoint for all other updating'
             ],
             'controller' => UpdateLogoAction::class,
             'denormalization_context' => ['groups' => ['offer:updateLogo']],
@@ -90,11 +143,10 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
         ],
 
-
-
     ]
 
 )]
+#[HasLifecycleCallbacks]
 class Offer
 {
 
@@ -178,13 +230,13 @@ class Offer
      * @var bool
      */
     #[ORM\Column(type: 'boolean')]
-    private bool $isDirect;
+    private bool $isDirect = false;
 
     /**
      * @var bool
      */
     #[ORM\Column(type: 'boolean')]
-    private bool $isPublic;
+    private bool $isPublic = false;
 
     /**
      * @var string|null
@@ -196,7 +248,7 @@ class Offer
      * @var bool
      */
     #[ORM\Column(type: 'boolean')]
-    private bool $isOfPartner;
+    private bool $isOfPartner = false;
 
 
     /**
@@ -273,30 +325,47 @@ class Offer
     private DateTimeInterface $dateModified;
 
     /**
+     * @var TypeOfOffer|null
+     */
+    #[ORM\ManyToOne(targetEntity: TypeOfOffer::class, inversedBy: 'offers')]
+    private ?TypeOfOffer $typeOfOffer;
+
+    /**
+     * @var SectorOfOffer|null
+     */
+    #[ORM\ManyToOne(targetEntity: SectorOfOffer::class, inversedBy: 'offers')]
+    private ?SectorOfOffer $sector;
+
+    /**
+     * @var LevelOfEducation|null
+     */
+    #[ORM\ManyToOne(targetEntity: LevelOfEducation::class, inversedBy: 'offers')]
+    private ?LevelOfEducation $levelOfEducation;
+
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $url;
+
+    /**
      *
      */
     public function __construct()
     {
         $this->candidatures = new ArrayCollection();
-
-    }
-
-    /**
-     * Gets triggered only on insert
-     *
-     * @ORM\PrePersist
-     */
-    public function onPrePersist() : void
-    {
         $this->datePosted = new DateTime('now');
+        $this->dateModified = new DateTime('now');
+
     }
 
+
     /**
-     * Gets triggered every time on update
-     *
-     * @ORM\PreUpdate
+     * @param PreUpdateEventArgs $eventArgs
+     * @return void
      */
-    public function onPreUpdate() : void
+    #[PreUpdate]
+    public function doStuffOnPreUpdate(PreUpdateEventArgs $eventArgs)
     {
         $this->dateModified = new DateTime('now');
     }
@@ -776,6 +845,82 @@ class Offer
     public function setDateModified(DateTimeInterface $dateModified): self
     {
         $this->dateModified = $dateModified;
+
+        return $this;
+    }
+
+    /**
+     * @return TypeOfOffer|null
+     */
+    public function getTypeOfOffer(): ?TypeOfOffer
+    {
+        return $this->typeOfOffer;
+    }
+
+    /**
+     * @param TypeOfOffer|null $typeOfOffer
+     * @return $this
+     */
+    public function setTypeOfOffer(?TypeOfOffer $typeOfOffer): self
+    {
+        $this->typeOfOffer = $typeOfOffer;
+
+        return $this;
+    }
+
+    /**
+     * @return SectorOfOffer|null
+     */
+    public function getSector(): ?SectorOfOffer
+    {
+        return $this->sector;
+    }
+
+    /**
+     * @param SectorOfOffer|null $sector
+     * @return $this
+     */
+    public function setSector(?SectorOfOffer $sector): self
+    {
+        $this->sector = $sector;
+
+        return $this;
+    }
+
+    /**
+     * @return LevelOfEducation|null
+     */
+    public function getLevelOfEducation(): ?LevelOfEducation
+    {
+        return $this->levelOfEducation;
+    }
+
+    /**
+     * @param LevelOfEducation|null $levelOfEducation
+     * @return $this
+     */
+    public function setLevelOfEducation(?LevelOfEducation $levelOfEducation): self
+    {
+        $this->levelOfEducation = $levelOfEducation;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string|null $url
+     * @return $this
+     */
+    public function setUrl(?string $url): self
+    {
+        $this->url = $url;
 
         return $this;
     }

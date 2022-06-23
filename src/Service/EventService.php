@@ -11,8 +11,10 @@ use App\Entity\User;
 use App\Entity\Event;
 use App\Repository\UserRepository;
 use App\Repository\EventRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\EventParticipantRepository;
 use Symfony\Component\HttpFoundation\Response;
+
 
 class EventService
 {
@@ -23,14 +25,19 @@ class EventService
      */
     const random_Events_Value = 6; 
 
+    /**
+     * @var EntityManagerInterface
+     */
+    private EntityManagerInterface $entityManager;
+
      /**     
      * @var EventRepository 
      */
     private EventRepository $eventRepository;   
 
 
-    /**     
-     * @var EventParticipantRepository   
+      /**     
+     * @var EventParticipantRepository 
      */
     private EventParticipantRepository $eventParticipantRepository; 
 
@@ -46,15 +53,14 @@ class EventService
      * @param EventParticipantRepository $eventParticipantRepository 
      */
     public function __construct(EventRepository $eventRepository, EventParticipantRepository $eventParticipantRepository,
-     UserRepository $userRepository) 
-    {
-    
-        $this->eventRepository = $eventRepository; 
+     UserRepository $userRepository,  EntityManagerInterface $entityManager){
+        $this->entityManager = $entityManager; 
+        $this->eventRepository = $eventRepository;   
+        $this->entityManager = $entityManager;
         $this->userRepository = $userRepository; 
         $this->eventParticipantRepository = $eventParticipantRepository;  
 
-    }
-
+    }    
 
 
 
@@ -69,7 +75,7 @@ class EventService
   
        for($i = 0; $i< count($events); $i++){
      
-           $val1 = DateTime::createFromInterface($events[$i]->getCreatedAt());  
+           $val1 = DateTime::createFromInterface($events[$i]->getStartingAt());  
            $array_dateTimes[$i] = $val1->format('Y-m-d H:i:s');
               
        }
@@ -121,7 +127,7 @@ class EventService
 
         foreach( $events as $event){
  
-            $dateTime = DateTime::createFromInterface($event->getCreatedAt())->format('Y-m-d H:i:s'); 
+            $dateTime = DateTime::createFromInterface($event->getStartingAt())->format('Y-m-d H:i:s'); 
 
                     if( strcmp($dateTime, $date) == 0 ){  
         
@@ -181,7 +187,30 @@ class EventService
        return $this->reOrderTable($allEvents, $result); 
    
 
-    }      
+    }    
+    
+    /**   
+     * @param Event $event
+     * @return Event  
+     * @throws Exception
+     */
+    public function updatePicture(Event $event)
+    {
+
+        if (!$event->getId()) {
+            throw new Exception('The user should have an id for updating');
+        }
+        if (!$this->eventRepository->find($event->getId())) {
+            throw new Exception('The user should have an id for updating');
+   
+        }  
+        
+        $this->entityManager->persist($event);
+        $this->entityManager->flush();
+        return $event;       
+
+
+    } 
 
 
     
@@ -209,13 +238,10 @@ class EventService
         {
             array_push($participants, $ep->getUser()->getId());  
         }  
-   
   
         $users = $this->userRepository->userEvents($participants);  
 
         return $users;  
-
-              
 
         
     } 

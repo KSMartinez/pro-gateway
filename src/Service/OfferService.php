@@ -254,5 +254,37 @@ class OfferService
         return $offer;
     }
 
+    /**
+     * @param array<string> $ids
+     * @throws Exception
+     * @return void
+     */
+    public function deleteMultipleOffers(array $ids)
+    {
+
+        foreach ($ids as $id) {
+            $offer = $this->offerRepository->find($id);
+            if ($offer) {
+                $this->deleteOffer($offer);
+            }
+        }
+    }
+
+    /**
+     * @param array<string> $idsToDelete
+     * @return void
+     * @throws Exception
+     */
+    public function validateMultipleOffers(array $idsToDelete)
+    {
+        foreach ($idsToDelete as $id) {
+
+            $offer = $this->offerRepository->find($id);
+            if ($offer){
+                $this->validateOffer($offer);
+            }
+        }
+    }
+
 
 }   
