@@ -170,12 +170,6 @@ class Event
      * @var DateTimeImmutable
      */
     #[ORM\Column(type: 'datetime_immutable', nullable: false)]
-    private DateTimeImmutable $startAt;
-
-    /**
-     * @var DateTimeImmutable
-     */
-    #[ORM\Column(type: 'datetime_immutable', nullable: false)]
     private DateTimeImmutable $endAt;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
