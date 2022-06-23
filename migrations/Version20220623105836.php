@@ -36,4 +36,9 @@ final class Version20220623105836 extends AbstractMigration
         $this->addSql('ALTER TABLE news DROP category, DROP published_at, DROP image, DROP is_public');
         $this->addSql('ALTER TABLE offer DROP url');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }
