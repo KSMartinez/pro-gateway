@@ -2,29 +2,29 @@
 
 namespace App\Entity;
 
-use DateTimeInterface;
-use Doctrine\ORM\Mapping as ORM;
-use App\Repository\UserRepository;
-use App\Controller\User\ShowPDFAction;
-use App\Controller\User\UserListAction;
-use App\Controller\User\UserEventsAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
-use App\Controller\User\ShowPDFActionCopy;
-use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Controller\User\UpdatePictureAction;
-use App\Controller\User\RejectedCharteAction;
-use App\Controller\User\checkFilledDatasAction;
-use Symfony\Component\HttpFoundation\File\File;
-use App\Filters\CompanyExperienceAnnuaireFilter;
-use Doctrine\Common\Collections\ArrayCollection;
-use App\Controller\User\CharteDutilisationAction;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\User\CharteDutilisationAction;
+use App\Controller\User\checkFilledDatasAction;
+use App\Controller\User\RejectedCharteAction;
+use App\Controller\User\ShowPDFAction;
+use App\Controller\User\ShowPDFActionCopy;
+use App\Controller\User\UpdatePictureAction;
+use App\Controller\User\UserEventsAction;
+use App\Controller\User\UserListAction;
+use App\Filters\CompanyExperienceAnnuaireFilter;
+use App\Repository\UserRepository;
+use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ApiFilter(SearchFilter::class, properties={
@@ -455,6 +455,22 @@ class User implements UserInterface
         $this->emailNotifications = new ArrayCollection();
         $this->candidatures = new ArrayCollection();
         $this->groupsMemberOf = new ArrayCollection();
+
+    }
+
+    /**
+     * @return array<Group>
+     */
+    public function getGroups(): array
+    {
+        $groups = [];
+        /** @var GroupMember[] $groupsMemberOf */
+        $groupsMemberOf = $this->getGroupsMemberOf();
+        foreach ($groupsMemberOf as $groupMemberOf) {
+            $groups[] = $groupMemberOf->getGroupOfMember();
+        }
+
+        return $groups;
 
     }
 

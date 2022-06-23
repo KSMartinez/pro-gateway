@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiFilter(SearchFilter::class, properties={"name":"exact"})
+ * @ApiFilter(SearchFilter::class, properties={"name":"partial", "createdBy": "exact"})
  */
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]

@@ -4,6 +4,7 @@
 namespace App\Service;
 
 
+use App\Entity\Group;
 use Exception;
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -237,8 +238,14 @@ class UserService
     //     return $user;               
    
     // }
-
-
+    /**
+     * @param User $user
+     * @return array<Group>
+     */
+    public function getGroupsCreatedByUser(User $user): array
+    {
+        return $this->entityManager->getRepository(Group::class)->findBy(['createdBy' => $user]);
+    }
 
 
 }
