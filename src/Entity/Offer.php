@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Offer\ArchiveOfferAction;
 use App\Controller\Offer\CreateOfferAction;
@@ -34,7 +35,9 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  *
  * @package App\Entity
  * @ApiFilter(SearchFilter::class, properties={"title": "partial", "description": "partial", "city":"exact",
- *     "country":"exact", "domain":"exact"})
+ *     "country":"exact", "domain":"exact", "typeOfContract":"exact", "typeOfOffer":"exact", "sector":"exact",
+ *     "levelOfEducation":"exact" })
+ * @ApiFilter(RangeFilter::class, properties={"minSalary","maxSalary"})
  * @ApiFilter(OrderFilter::class, properties={"datePosted" : "DESC"})
  */
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
