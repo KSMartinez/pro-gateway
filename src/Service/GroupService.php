@@ -2,9 +2,13 @@
 
 namespace App\Service;
 use App\Entity\Group;
+use App\Entity\GroupMember;
+use App\Entity\GroupMemberStatus;
 use App\Entity\GroupStatus;
 use App\Entity\User;
 use App\Model\GroupDemand;
+use App\Repository\GroupMemberRepository;
+use App\Repository\GroupMemberStatusRepository;
 use App\Repository\GroupRepository;
 use App\Repository\GroupStatusRepository;
 use DateTime;
@@ -13,7 +17,7 @@ use Exception;
 
 class GroupService
 {
-    public function __construct(private EntityManagerInterface $entityManager, private GroupRepository $groupRepository, private GroupStatusRepository $groupStatusRepository)
+    public function __construct(private GroupMemberStatusRepository $groupMemberStatusRepository, private EntityManagerInterface $entityManager, private GroupRepository $groupRepository, private GroupStatusRepository $groupStatusRepository)
     {
     }
 
@@ -39,14 +43,44 @@ class GroupService
         $group = $groupDemand->getGroup();
         $group->setGroupStatus($groupConfirmedStatus);
 
+
         if (!$group->getCreatedBy()) {
             throw new Exception("Group createdBy is null. Cannot notify user");
         }
-//        $this->notificationService->createNotification($groupDemand->getNotificationMessage(),
-//                                                       NotificationSource::GROUP_DEMAND, $group->getCreatedBy());
+
+        //add the createdBy as the member of the group
+        $groupMember = new GroupMember();
+        $groupMember->setUser($group->getCreatedBy())
+                    ->setGroupMemberStatus($this->getGroupMemberStatus(GroupMemberStatus::ACTIF))
+                    ->setMemberRoles([GroupMember::ROLE_GROUP_USER])
+                    ->setGroupOfMember($group);
+
         $this->entityManager->persist($group);
+        $this->entityManager->persist($groupMember);
         $this->entityManager->flush();
+
+
+//      $this->notificationService->createNotification($groupDemand->getNotificationMessage(),
+//      NotificationSource::GROUP_DEMAND, $group->getCreatedBy());
         return $group;
+    }
+
+    /**
+     * @param string $status
+     * @return GroupMemberStatus
+     * @throws Exception
+     */
+    private function getGroupMemberStatus(string $status): GroupMemberStatus
+    {
+
+        $groupMemberStatus = $this->groupMemberStatusRepository->findOneBy(['status' => $status]);
+
+        if (!$groupMemberStatus) {
+            throw new Exception('GroupMemberStatus with status ' . $status . ' not found. Please add this to the table');
+        }
+
+        return $groupMemberStatus;
+
     }
 
     /**
