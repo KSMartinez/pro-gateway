@@ -31,6 +31,7 @@ class OfferStatus
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['offer:read'])]
     private ?int $id;
 
     /**
