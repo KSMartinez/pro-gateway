@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\OfferStatusRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  *
@@ -36,6 +37,7 @@ class OfferStatus
      * @var string
      */
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['offer:read'])]
     private string $label;
 
     /**
