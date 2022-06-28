@@ -14,7 +14,9 @@ class GroupMemberStatusFixtures extends Fixture
             GroupMemberStatus::REFUSE,
             GroupMemberStatus::ACTIF,
             GroupMemberStatus::INACTIF,
-            GroupMemberStatus::INVITE
+            GroupMemberStatus::INVITE,
+            GroupMemberStatus::DEMANDE,
+            GroupMemberStatus::IGNORE
         ];
 
         foreach ($groupMemberStatuses as $groupMemberStatus) {

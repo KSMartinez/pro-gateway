@@ -7,9 +7,11 @@ use App\Entity\User;
 use App\Service\GroupMemberService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\BrowserKit\Response;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
-class MakeMemberGroupAdminAction extends AbstractController
+#[AsController]
+class AcceptGroupJoinRequestAction extends AbstractController
 {
     public function __construct(private GroupMemberService $groupMemberService)
     {
@@ -24,11 +26,11 @@ class MakeMemberGroupAdminAction extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        if ($this->groupMemberService->isGroupAdmin($user, $data->getGroupOfMember())){
-            return $this->groupMemberService->makeMemberGroupAdmin($data);
+        if ($this->groupMemberService->isGroupAdmin($user, $data->getGroupOfMember())) {
+            return $this->groupMemberService->acceptRequestToJoin($data);
+        } else {
+            return new Response('Not group admin', 403);
         }
-
-        return new Response("Not group admin", 403);
     }
 
 

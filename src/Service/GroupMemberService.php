@@ -6,6 +6,7 @@ use App\Entity\Group;
 use App\Entity\GroupMember;
 use App\Entity\GroupMemberStatus;
 use App\Entity\User;
+use App\Repository\GroupMemberRepository;
 use App\Repository\GroupMemberStatusRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -13,7 +14,7 @@ use Exception;
 class GroupMemberService
 {
 
-    public function __construct(private EntityManagerInterface $entityManager, private GroupMemberStatusRepository $groupMemberStatusRepository)
+    public function __construct(private EntityManagerInterface $entityManager, private GroupMemberRepository $groupMemberRepository, private GroupMemberStatusRepository $groupMemberStatusRepository)
     {
     }
 
@@ -176,6 +177,75 @@ class GroupMemberService
 
         return $member;
 
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function requestToJoinGroup(GroupMember $member): GroupMember
+    {
+        $groupMemberStatus = $this->getGroupMemberStatus(GroupMemberStatus::DEMANDE);
+        $member->setGroupMemberStatus($groupMemberStatus);
+
+        $this->entityManager->persist($member);
+        $this->entityManager->flush();
+
+        return $member;
+    }
+
+    /**
+     * @param GroupMember $member
+     * @return GroupMember
+     * @throws Exception
+     */
+    public function acceptRequestToJoin(GroupMember $member): GroupMember
+    {
+        $groupMemberStatus = $this->getGroupMemberStatus(GroupMemberStatus::ACTIF);
+        $member->setGroupMemberStatus($groupMemberStatus);
+
+        $roles = $member->getMemberRoles();
+        $roles[] = GroupMember::ROLE_GROUP_USER;
+        $member->setMemberRoles($roles);
+
+        $this->entityManager->persist($member);
+        $this->entityManager->flush();
+
+        return $member;
+    }
+
+    /**
+     * @param User  $user
+     * @param Group $group
+     * @return bool
+     */
+    public function isGroupAdmin(User $user, Group $group): bool
+    {
+        $groupMember = $this->groupMemberRepository->findOneBy(['groupOfMember' => $group, 'user' => $user]);
+        if (!$groupMember){
+            return false;
+        }
+
+        if (in_array(GroupMember::ROLE_GROUP_ADMIN, $groupMember->getMemberRoles())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param GroupMember $member
+     * @return GroupMember
+     * @throws Exception
+     */
+    public function ignoreRequestToJoinGroup(GroupMember $member): GroupMember
+    {
+        $ignoreGroupMemberStatus = $this->getGroupMemberStatus(GroupMemberStatus::IGNORE);
+        $member->setGroupMemberStatus($ignoreGroupMemberStatus);
+
+        $this->entityManager->persist($member);
+        $this->entityManager->flush();
+
+        return $member;
     }
 
 }
