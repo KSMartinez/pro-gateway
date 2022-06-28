@@ -400,36 +400,42 @@ class User implements UserInterface
      * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable:true)]
+    #[Groups(["user:write"])]
     private ?bool $companyCreator;
 
     /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(["user:write"])]
     private ?string $linkedinAccount;
 
     /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(["user:write"])]
     private ?string $facebookAccount;
 
     /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(["user:write"])]
     private ?string $instagramAccount;
 
     /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(["user:write"])]
     private ?string $twitterAccount;
 
     /**
      * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(["user:write"])]
     private ?bool $mentorAccept;
 
     /**
