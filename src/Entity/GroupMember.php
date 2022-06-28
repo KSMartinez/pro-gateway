@@ -6,7 +6,9 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\GroupMember\AcceptGroupInvitationAction;
 use App\Controller\GroupMember\InviteGroupMemberAction;
+use App\Controller\GroupMember\MakeMemberGroupAdminAction;
 use App\Controller\GroupMember\RefuseGroupInvitationAction;
+use App\Controller\GroupMember\RemoveAdminRightsFromMemberAction;
 use App\Repository\GroupMemberRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -39,6 +41,19 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
             'path' => '/group-members/invite/{id}/refuse',
             'status' => 200,
             'controller' => RefuseGroupInvitationAction::class
+        ],
+        'make_member_group_admin' => [
+            'method' => 'POST',
+            'path' => '/group-members/admin/promote/{id}',
+            'status' => 200,
+            'controller' => MakeMemberGroupAdminAction::class
+        ],
+        //todo add ROLE_ADMIN to access control
+        'remove_admin_rights_from_member' => [
+            'method' => 'POST',
+            'path' => '/group-members/admin/demote/{id}',
+            'status' => 200,
+            'controller' => RemoveAdminRightsFromMemberAction::class
         ]
     ],
     denormalizationContext: [

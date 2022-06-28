@@ -140,4 +140,42 @@ class GroupMemberService
         $this->entityManager->flush();
     }
 
+    /**
+     * @param GroupMember $member
+     * @return GroupMember
+     */
+    public function makeMemberGroupAdmin(GroupMember $member): GroupMember
+    {
+        $roles = $member->getMemberRoles();
+        $roles[] = GroupMember::ROLE_GROUP_ADMIN;
+        $member->setMemberRoles(array_unique($roles));
+
+        $this->entityManager->persist($member);
+        $this->entityManager->flush();
+
+        return $member;
+    }
+
+    /**
+     * @param GroupMember $member
+     * @return GroupMember
+     */
+    public function removeAdminRoleFromMember(GroupMember $member): GroupMember
+    {
+
+        $roles = $member->getMemberRoles();
+        $key = array_search(GroupMember::ROLE_GROUP_ADMIN, $roles);
+        if ($key) {
+            unset($roles[$key]);
+        }
+
+        $member->setMemberRoles($roles);
+
+        $this->entityManager->persist($member);
+        $this->entityManager->flush();
+
+        return $member;
+
+    }
+
 }
