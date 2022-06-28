@@ -102,10 +102,10 @@ class EmailNotificationService
     public function createEmailNotificationForEvents(array $eventParticipants, string $notificationSource, bool $forAdmin = null)
     {
 
-        $events_id = []; 
+        $events_id  = array(); 
 
         foreach($eventParticipants as $ep){
-
+        
             array_push($events_id,  $ep->getEvent()->getId());       
         }  
 
@@ -123,9 +123,9 @@ class EmailNotificationService
         if (!$messageTemplate){
             throw new Exception("Message template for the selected notification source \"" . $notificationSource->getSourceLabel() . "\" was not found. Please add this to the messageTemplate table");
         }
-    
-   
-        $this->sendMessageForNotificationOneDayBeforeEvent($eventParticipants, $notificationSource, $events_id, $forAdmin);
+
+
+        $this->sendMessageForNotificationOneDayBeforeEvent($eventParticipants, $notificationSource, $forAdmin);
 
     }
 
@@ -133,12 +133,11 @@ class EmailNotificationService
      /**
      * @param EventParticipant[] $entities 
      * @param NotificationSource $notificationSource     
-     * @param array<int> $entities_id
-     * @param bool $forAdmin   
+     * @param bool $forAdmin       
      * @return void       
      * @throws Exception             
      */
-    public function sendMessageForNotificationOneDayBeforeEvent(array $entities, NotificationSource $notificationSource, array $entities_id, bool $forAdmin = null){
+    public function sendMessageForNotificationOneDayBeforeEvent(array $entities, NotificationSource $notificationSource, bool $forAdmin = null){
 
         $messageTemplate = $this->emailTemplateRepository->getMessageTemplate($notificationSource);
 
@@ -148,11 +147,11 @@ class EmailNotificationService
         }
 
         
-        $k = 0; 
+      //  $k = 0; 
         foreach($entities as $ent){           
             $emailNotification = new EmailNotification();   
 
-            $message = $this->emailTemplateService->setMessageTemplate($messageTemplate->getMessageTemplate(), $entities_id[$k]);
+            $message = $this->emailTemplateService->setMessageTemplate($messageTemplate->getMessageTemplate(), $ent->getEvent());
 
 
 
@@ -167,7 +166,7 @@ class EmailNotificationService
                         ->setSource($notificationSource);
 
                         $this->entityManager->persist($emailNotification);
-                        $k++;  
+                      //  $k++;  
 
                 }
 
@@ -182,7 +181,7 @@ class EmailNotificationService
                     ->setSource($notificationSource);
     
                     $this->entityManager->persist($emailNotification);
-                    $k++;  
+                  //  $k++;  
 
                 }   
             }

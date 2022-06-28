@@ -19,15 +19,15 @@ class EmailTemplateService
 
       /**
      * @param string $messageTemplate   
-     * @param int $id         
+     * @param Event $event        
      * @return string     
      * @throws Exception
      */ 
-    public function setMessageTemplate(string $messageTemplate, int $id) 
-    {   
+    public function setMessageTemplate(string $messageTemplate, Event $event) 
+    {      
 
         # We gonna set the message later      
-        return $messageTemplate . " " . $id; 
+        return $messageTemplate . " " . $event->getId(); 
 
     }
    
