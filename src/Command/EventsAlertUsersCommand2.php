@@ -10,17 +10,13 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'app:events:alertUsers', description: 'Command that alert users with notifications one day before the event')]
-class EventsAlertUsersCommand extends Command
+#[AsCommand(name: 'app:events:alertUsers2', description: 'Command that alert users with notifications one week before the event')]
+class EventsAlertUsersCommand2 extends Command
 {
-
-   
-
-
     public function __construct(private EventAlertService $eventAlertService, private LoggerInterface $logger)
     {
         parent::__construct();
-    }
+    }   
     
     protected function configure(): void  
     {
@@ -32,11 +28,8 @@ class EventsAlertUsersCommand extends Command
     //todo Test this command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-
-        //dd('here');      
-
         $this->logger->info("Send an alert to the users one day before the event");
-        $this->eventAlertService->alertUsersOneDayBeforeTheEvent();  
+        $this->eventAlertService->alertUsersOneWeekBeforeTheEvent();   
         $this->logger->info("The checking has ended and email notifications have been created.");
         return Command::SUCCESS;
     }

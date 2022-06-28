@@ -38,13 +38,21 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[ApiResource(
     collectionOperations: [
-        'get',
+
+
         'post',
+
+        // Normally the path is "GET" but let's set to POST to fix the date problem and 
+        // After we gonna fix the problem with Akhil 
+        // The problem :  We can't have more than 3 routes with the same verb "GET, POST, PUT ..." 
+        // So this route is present here but invisible in Api Platform   
         'randomEventsList' => [
             'method' => 'GET',
-            'path' => '/randomEventsList',
+            'path' => '/eventsListRandom',
             'controller' => RandomEventsListAction::class,
+            
         ],
+  
 
     ],
     itemOperations: ['get','put','delete', 'patch',
@@ -150,7 +158,7 @@ class Event
      */
     #[ORM\Column(type: 'datetime_immutable')]
     private $startingAt;
-  
+     
        /**
      * @var DateTimeImmutable 
      */
@@ -165,22 +173,28 @@ class Event
     private User|null $createdBy;
 
 
-
+    
     /**
-     * @var DateTimeImmutable
+     * @var string|null  
      */
-    #[ORM\Column(type: 'datetime_immutable', nullable: false)]
-    private DateTimeImmutable $endAt;
-
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $location;
 
+     
+    /**
+     * @var string 
+     */
     #[ORM\Column(type: 'string', length: 255)]
     private string $category;
 
+     
+    /**
+     * @var string|null  
+     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $image;
 
+    
     /**
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="image")
      */
@@ -310,7 +324,7 @@ class Event
         return $this;
     }
 
-    public function getStartingAt(): ?\DateTimeImmutable
+    public function getStartingAt(): \DateTimeImmutable
     {
         return $this->startingAt;
     }
@@ -347,32 +361,6 @@ class Event
     }
 
    
-  
-
-    
-    
-    /**
-     * @return DateTimeImmutable 
-     */
-    public function getEndAt(): \DateTimeImmutable
-    {
-        return $this->endAt;
-    }
-
-    /**
-     * @param DateTimeImmutable $endAt
-     * @return $this     
-     */
-    public function setEndAt(\DateTimeImmutable $endAt): self
-    {
-        $this->endAt = $endAt;
-
-        return $this; 
-
-    }
-
-    
-
     public function getLocation(): ?string
     {
         return $this->location;

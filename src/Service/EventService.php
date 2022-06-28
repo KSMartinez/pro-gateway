@@ -75,8 +75,10 @@ class EventService
   
        for($i = 0; $i< count($events); $i++){
      
-           $val1 = DateTime::createFromInterface($events[$i]->getStartingAt());  
-           $array_dateTimes[$i] = $val1->format('Y-m-d H:i:s');
+        $dateTime =  DateTime::createFromImmutable($events[$i]->getStartingAt());
+
+         $array_dateTimes[$i] = $dateTime->format('Y-m-d H:i:s');
+     
               
        }
 
@@ -123,11 +125,15 @@ class EventService
            
       });
          
-   foreach( $array_dateTimes as $date){
+
+      foreach( $array_dateTimes as $date){
+          
+        $i = 0;   
 
         foreach( $events as $event){
- 
-            $dateTime = DateTime::createFromInterface($event->getStartingAt())->format('Y-m-d H:i:s'); 
+
+
+            $dateTime =  DateTime::createFromImmutable($events[$i]->getStartingAt())->format('Y-m-d H:i:s');
 
                     if( strcmp($dateTime, $date) == 0 ){  
         
@@ -138,11 +144,14 @@ class EventService
             
                     }   
                         
-                }    
+                    $i++; 
+                }
+                
         }   
       
+
         return $result; 
-    }
+    }   
 
 
     
@@ -152,6 +161,8 @@ class EventService
     public function randomEventsList() 
     {     
     
+
+
        $events = array(); 
        $result = array();    
     
@@ -179,6 +190,7 @@ class EventService
             }   
                 
         }
+        
 
         return $this->reOrderTable($events, $result); 
 
@@ -186,6 +198,7 @@ class EventService
    
        return $this->reOrderTable($allEvents, $result); 
    
+
 
     }    
     

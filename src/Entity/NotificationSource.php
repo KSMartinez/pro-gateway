@@ -18,12 +18,14 @@ use Doctrine\ORM\Mapping as ORM;
 class NotificationSource
 {
     const NEW_OFFER = 'NEW_OFFER';
-    const GROUP_DEMAND = 'GROUP_DEMAND';
+    const GROUP_DEMAND = 'GROUP_DEMAND';      
     const EVENT_NOTIFICATION_ONE_DAY_BEFORE = 'EVENT_NOTIFICATION_ONE_DAY_BEFORE';
-    const EVENT_NOTIFICATION_ONE_DAY_BEFORE_THE_END = 'EVENT_NOTIFICATION_ONE_DAY_BEFORE_THE_END';   
+    const EVENT_NOTIFICATION_ONE_DAY_BEFORE_THE_END = 'EVENT_NOTIFICATION_ONE_DAY_BEFORE_THE_END';  
+    const EVENT_NOTIFICATION_ONE_WEEK_BEFORE = 'EVENT_NOTIFICATION_ONE_WEEK_BEFORE'; 
+    
 
     /**
-     * @var int|null
+     * @var int|null   
      */
     #[ORM\Id]
     #[ORM\GeneratedValue]

@@ -10,11 +10,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\EmailTemplateRepository;
 use App\Repository\NotificationSourceRepository;
 use Symfony\Component\VarDumper\VarDumper;
+use App\Service\EmailTemplateService;   
+use App\Entity\EventParticipant;  
+use Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 class EmailNotificationService
 {
 
-    public function __construct(private EntityManagerInterface $entityManager, private NotificationSourceRepository $notificationSourceRepository, private EmailTemplateRepository $emailTemplateRepository)
+    public function __construct(private EntityManagerInterface $entityManager, private NotificationSourceRepository $notificationSourceRepository, 
+    private EmailTemplateRepository $emailTemplateRepository,  private EmailTemplateService $emailTemplateService)
     {
     }
 
@@ -54,31 +58,33 @@ class EmailNotificationService
 
      /**
      *  * Send notifications to the creator of an event one day before the end   
-     * @param User[] $users
+     * @param EventParticipant[] $eventParticipants
      * @param string $notificationSource  
      * @return void    
      * @throws Exception  
      */
-    public function emailNotificationOneDayBeforeTheEvent(array $users,  string $notificationSource)
+    public function emailNotificationOneDayBeforeTheEvent(array $eventParticipants,  string $notificationSource)
     {
   
-        $this->createEmailNotificationOneDayBeforeTheEvent($users, $notificationSource);            
+
+        $this->createEmailNotificationForEvents($eventParticipants, $notificationSource);            
 
     }
 
     
      /**
      * Send notifications to the creator of an event one day before the end of the event  
-     * @param User[] $users
+     * @param EventParticipant[] $eventParticipants
      * @param string $notificationSource  
+     * @param bool $forAdmin  
      * @return void    
      * @throws Exception  
      */
-    public function emailNotificationOneDayBeforeTheEndOfTheEvent(array $users, string $notificationSource)
+    public function emailNotificationOneDayBeforeTheEndOfTheEvent(array $eventParticipants, string $notificationSource, bool $forAdmin)
     {
 
-        $this->createEmailNotificationOneDayBeforeTheEvent($users, $notificationSource); 
-            
+        $this->createEmailNotificationForEvents($eventParticipants, $notificationSource, $forAdmin); 
+                
 
     }
 
@@ -87,15 +93,23 @@ class EmailNotificationService
      /**
      * For each user, if new offers are found, we create an email notification. We don't really care if notification is already created or not.
      * If there are multiple searches for the same user, multiple notifications will be created. We will deal with sending emails in another service
-     * @param User[] $users
+     * @param EventParticipant[] $eventParticipants    
      * @param string $notificationSource   
-     * @return void    
+     * @param bool $forAdmin   
+     * @return void          
      * @throws Exception  
      */
-    public function createEmailNotificationOneDayBeforeTheEvent(array $users, string $notificationSource)
+    public function createEmailNotificationForEvents(array $eventParticipants, string $notificationSource, bool $forAdmin = null)
     {
- 
 
+        $events_id = []; 
+
+        foreach($eventParticipants as $ep){
+
+            array_push($events_id,  $ep->getEvent()->getId());       
+        }  
+
+ 
         $notificationSource = $this->notificationSourceRepository->findOneBy(array('sourceLabel' => $notificationSource));
 
      
@@ -109,22 +123,73 @@ class EmailNotificationService
         if (!$messageTemplate){
             throw new Exception("Message template for the selected notification source \"" . $notificationSource->getSourceLabel() . "\" was not found. Please add this to the messageTemplate table");
         }
-      
-        foreach($users as $user){
-
-            $emailNotification = new EmailNotification();    
-
-            $emailNotification->setUser($user)
-                              ->setMessage($messageTemplate->getMessageTemplate())
-                              ->setSource($notificationSource);
     
-            $this->entityManager->persist($emailNotification);
- 
+   
+        $this->sendMessageForNotificationOneDayBeforeEvent($eventParticipants, $notificationSource, $events_id, $forAdmin);
+
+    }
+
+   
+     /**
+     * @param EventParticipant[] $entities 
+     * @param NotificationSource $notificationSource     
+     * @param array<int> $entities_id
+     * @param bool $forAdmin   
+     * @return void       
+     * @throws Exception             
+     */
+    public function sendMessageForNotificationOneDayBeforeEvent(array $entities, NotificationSource $notificationSource, array $entities_id, bool $forAdmin = null){
+
+        $messageTemplate = $this->emailTemplateRepository->getMessageTemplate($notificationSource);
+
+        
+        if (!$messageTemplate){
+            throw new Exception("Message template for the selected notification source \"" . $notificationSource->getSourceLabel() . "\" was not found. Please add this to the messageTemplate table");
+        }
+
+        
+        $k = 0; 
+        foreach($entities as $ent){           
+            $emailNotification = new EmailNotification();   
+
+            $message = $this->emailTemplateService->setMessageTemplate($messageTemplate->getMessageTemplate(), $entities_id[$k]);
+
+
+
+            if($forAdmin){
+
+                # For the alert one day before the end 
+                if( in_array( "ROLE_ADMIN",   $ent->getUser()->getRoles() ) )
+                {
+
+                        $emailNotification->setUser($ent->getUser())
+                        ->setMessage($message)
+                        ->setSource($notificationSource);
+
+                        $this->entityManager->persist($emailNotification);
+                        $k++;  
+
+                }
+
+            }
+            else{
+
+                # For the alerts one day before the event or one day before the end for non admin users  
+                if( !in_array( "ROLE_ADMIN",   $ent->getUser()->getRoles() ) )
+                {
+                    $emailNotification->setUser($ent->getUser())
+                    ->setMessage($message)
+                    ->setSource($notificationSource);
+    
+                    $this->entityManager->persist($emailNotification);
+                    $k++;  
+
+                }   
+            }
+                   
         }    
         
         $this->entityManager->flush();
-           
-       
     }
 
 

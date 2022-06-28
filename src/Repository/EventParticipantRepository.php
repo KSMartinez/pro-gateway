@@ -70,26 +70,65 @@ class EventParticipantRepository extends ServiceEntityRepository
      /**
     * @return EventParticipant[] Returns an array of Event objects
     */
-    public function getAll()   
+    public function usersToNotifyOneDayBeforeTheEvent()   
     {
     
         # The more faster way is to check if  today.day = startingAt.day - 1 
-
-         
+        $tomorrow = (new \Datetime('+1day'))->format('Y-m-d');  
         return $this->createQueryBuilder('e')  
             ->innerJoin('e.event', 'ev')   
-            ->where('ev.startingAt = :tomorrow') 
-            ->setParameter(':tomorrow', new Datetime('+1day'))  
-            ->getQuery()            
+            ->where('ev.startingAt LIKE :tomorrow') 
+            ->setParameter(':tomorrow', $tomorrow . '%')  
+            ->getQuery()             
             ->getResult()                          
-                
+                   
+        ;      
+
+       
+    }
+
+
+      /**
+    * @return EventParticipant[] Returns an array of Event objects
+    */
+    public function usersToNotifyOneWeekBeforeTheEvent()   
+    {
+    
+        # The more faster way is to check if  today.day = startingAt.day - 1 
+        $tomorrow = (new \Datetime('+7day'))->format('Y-m-d');  
+        return $this->createQueryBuilder('e')  
+            ->innerJoin('e.event', 'ev')   
+            ->where('ev.startingAt LIKE :tomorrow') 
+            ->setParameter(':tomorrow', $tomorrow . '%')  
+            ->getQuery()             
+            ->getResult()                          
+                   
         ;      
   
+
        
-
-
-
     }
+    
+     /**
+    * @return EventParticipant[] Returns an array of Event objects
+    */
+    public function usersToNotifyOneWeekBeforeTheEvents()   
+    {    
+    
+        # The more faster way is to check if  today.day = startingAt.day - 1 
+        $tomorrow = (new \Datetime('+7day'))->format('Y-m-d');  
+        return $this->createQueryBuilder('e')  
+            ->innerJoin('e.event', 'ev')   
+            ->where('ev.startingAt LIKE :tomorrow')   
+            ->setParameter(':tomorrow', $tomorrow . '%')  
+            ->getQuery()             
+            ->getResult()                          
+                   
+        ;      
+    
+  
+    }
+
 
 
 
