@@ -102,8 +102,7 @@ class GroupMemberService
         $admins = [];
 
         foreach ($members as $member) {
-            if (in_array(GroupMember::ROLE_GROUP_ADMIN, $member->getUser()
-                                                               ->getRoles())) {
+            if (in_array(GroupMember::ROLE_GROUP_ADMIN, $member->getMemberRoles())) {
                 $admins[] = $member;
             }
         }

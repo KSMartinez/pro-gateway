@@ -8,6 +8,10 @@
          bootstrap="tests/bootstrap.php"
          convertDeprecationsToExceptions="false"
 >
+    <extensions>
+        <extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
+    </extensions>
+
     <php>
         <ini name="display_errors" value="1" />
         <ini name="error_reporting" value="-1" />
