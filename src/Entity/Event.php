@@ -4,6 +4,7 @@ namespace App\Entity;
 
 
 use App\Entity\User;
+use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Faker\Provider\UserAgent;
@@ -149,16 +150,16 @@ class Event
 
 
        /**
-     * @var DateTimeImmutable 
+     * @var DateTime
      */
-    #[ORM\Column(type: 'datetime_immutable')]
-    private $startingAt;
+    #[ORM\Column(type: 'date')]
+    private DateTime $startingAt;
      
        /**
-     * @var DateTimeImmutable 
+     * @var DateTime
      */
-    #[ORM\Column(type: 'datetime_immutable')]
-    private $endingAt;
+    #[ORM\Column(type: 'date')]
+    private DateTime $endingAt;
 
 
        /**
@@ -274,7 +275,7 @@ class Event
     /**
      * @return DateTimeImmutable 
      */
-    public function getCreatedAt(): \DateTimeImmutable
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -283,7 +284,7 @@ class Event
      * @param DateTimeImmutable $createdAt
      * @return $this     
      */
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
 
@@ -319,24 +320,24 @@ class Event
         return $this;
     }
 
-    public function getStartingAt(): \DateTimeImmutable
+    public function getStartingAt(): DateTime
     {
         return $this->startingAt;
     }
 
-    public function setStartingAt(\DateTimeImmutable $startingAt): self
+    public function setStartingAt(DateTime $startingAt): self
     {
         $this->startingAt = $startingAt;
 
         return $this;
     }
 
-    public function getEndingAt(): ?\DateTimeImmutable
+    public function getEndingAt(): DateTime
     {
         return $this->endingAt;
     }
 
-    public function setEndingAt(\DateTimeImmutable $endingAt): self
+    public function setEndingAt(DateTime $endingAt): self
     {
         $this->endingAt = $endingAt;
 

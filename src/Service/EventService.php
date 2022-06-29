@@ -75,7 +75,7 @@ class EventService
   
        for($i = 0; $i< count($events); $i++){
      
-        $dateTime =  DateTime::createFromImmutable($events[$i]->getStartingAt());
+        $dateTime =  $events[$i]->getStartingAt();
 
          $array_dateTimes[$i] = $dateTime->format('Y-m-d H:i:s');
      
@@ -133,7 +133,7 @@ class EventService
         foreach( $events as $event){
 
 
-            $dateTime =  DateTime::createFromImmutable($events[$i]->getStartingAt())->format('Y-m-d H:i:s');
+            $dateTime =  $events[$i]->getStartingAt()->format('Y-m-d H:i:s');
 
                     if( strcmp($dateTime, $date) == 0 ){  
         
