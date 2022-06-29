@@ -5,10 +5,13 @@ namespace App\DataFixtures;
 use App\Entity\Domain;
 use App\Entity\SectorOfOffer;
 use App\Entity\User;
+use App\Factory\AdviceFactory;
 use App\Factory\CVFactory;
 use App\Factory\DomainFactory;
+use App\Factory\EventFactory;
 use App\Factory\ExperienceFactory;
 use App\Factory\GroupFactory;
+use App\Factory\NewsFactory;
 use App\Factory\OfferFactory;
 use App\Factory\UserFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -42,6 +45,14 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
 
         ExperienceFactory::createMany(20);
         GroupFactory::createMany(5);
+
+
+        EventFactory::createMany(10);
+        NewsFactory::createMany(10);
+        AdviceFactory::createMany(10);
+
+
+
         $manager->flush();
     }
 

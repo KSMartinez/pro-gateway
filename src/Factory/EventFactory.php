@@ -1,0 +1,74 @@
+<?php
+
+namespace App\Factory;
+
+use App\Entity\Event;
+use App\Repository\EventRepository;
+use DateTimeImmutable;
+use Zenstruck\Foundry\RepositoryProxy;
+use Zenstruck\Foundry\ModelFactory;
+use Zenstruck\Foundry\Proxy;
+
+/**
+ * @extends ModelFactory<Event>
+ *
+ * @method static Event|Proxy createOne(array $attributes = [])
+ * @method static Event[]|Proxy[] createMany(int $number, array|callable $attributes = [])
+ * @method static Event|Proxy find(object|array|mixed $criteria)
+ * @method static Event|Proxy findOrCreate(array $attributes)
+ * @method static Event|Proxy first(string $sortedField = 'id')
+ * @method static Event|Proxy last(string $sortedField = 'id')
+ * @method static Event|Proxy random(array $attributes = [])
+ * @method static Event|Proxy randomOrCreate(array $attributes = [])
+ * @method static Event[]|Proxy[] all()
+ * @method static Event[]|Proxy[] findBy(array $attributes)
+ * @method static Event[]|Proxy[] randomSet(int $number, array $attributes = [])
+ * @method static Event[]|Proxy[] randomRange(int $min, int $max, array $attributes = [])
+ * @method static EventRepository|RepositoryProxy repository()
+ * @method Event|Proxy create(array|callable $attributes = [])
+ */
+final class EventFactory extends ModelFactory
+{
+    public function __construct()
+    {
+        parent::__construct();
+
+        // TODO inject services if required (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services)
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    protected function getDefaults(): array
+    {
+        return [
+            // TODO add your default values here (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories)
+            'title' => self::faker()->text(50),
+            'description' => self::faker()->paragraphs(3, true),
+            'forAllUniversities' => self::faker()->boolean(),
+            'university' => self::faker()->company(),
+            'isPublic' => self::faker()->boolean(),
+            'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'company' => self::faker()->company(),
+            'maxNumberOfParticipants' => self::faker()->randomNumber(),
+            'startingAt' => self::faker()->dateTime(),
+            'endingAt' => self::faker()->dateTime(),
+            'location' => self::faker()->city(),
+            'category' => self::faker()->text(25),
+            'image' => self::faker()->imageUrl(),
+        ];
+    }
+
+    protected function initialize(): self
+    {
+        // see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
+        return $this
+            // ->afterInstantiate(function(Event $event): void {})
+        ;
+    }
+
+    protected static function getClass(): string
+    {
+        return Event::class;
+    }
+}
