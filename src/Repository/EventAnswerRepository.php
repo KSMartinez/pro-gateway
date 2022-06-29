@@ -79,7 +79,7 @@ class EventAnswerRepository extends ServiceEntityRepository
     
     /**
      * @param EventQuestion $eventQuestion 
-      * @return EventAnswers[] Returns an array of EventAnswers objects
+      * @return EventAnswer[] Returns an array of EventAnswers objects
      */
     public function getAnswers(EventQuestion $eventQuestion)
     {
