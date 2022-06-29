@@ -40,12 +40,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
     collectionOperations: [
 
 
-        'post',
-
-        // Normally the path is "GET" but let's set to POST to fix the date problem and 
-        // After we gonna fix the problem with Akhil 
-        // The problem :  We can't have more than 3 routes with the same verb "GET, POST, PUT ..." 
-        // So this route is present here but invisible in Api Platform   
+        'post',  
         'randomEventsList' => [
             'method' => 'GET',
             'path' => '/eventsListRandom',

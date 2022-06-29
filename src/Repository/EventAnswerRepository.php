@@ -7,6 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\EventQuestion;  
 
 /**
  * @method EventAnswer|null find($id, $lockMode = null, $lockVersion = null)
@@ -74,4 +75,25 @@ class EventAnswerRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    
+    /**
+     * @param EventQuestion $eventQuestion 
+      * @return EventAnswers[] Returns an array of EventAnswers objects
+     */
+    public function getAnswers(EventQuestion $eventQuestion)
+    {
+
+        return $this->createQueryBuilder('e')
+            ->innerJoin('e.eventQuestion', 'eq')   
+            ->where('eq.id = :val')
+            ->setParameter('val', $eventQuestion->getId())
+            ->getQuery()
+            ->getResult()
+        ;
+
+
+    }
+    
+
 }

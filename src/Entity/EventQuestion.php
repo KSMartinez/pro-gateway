@@ -8,9 +8,23 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\EventQuestionRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
+use  App\Controller\EventQuestion\EventQuestionAnswerListAction; 
+
 
 #[ORM\Entity(repositoryClass: EventQuestionRepository::class)]
-#[ApiResource()]   
+#[ApiResource(
+
+    itemOperations: [
+              
+        'get', 'put', 
+        'eventAnswers' => [
+            'method' => 'GET',      
+            'path' => '/eventAnswers/{id}',
+            'controller' => EventQuestionAnswerListAction::class,
+        ],   
+
+    ]
+)]  
 class EventQuestion
 {  
 

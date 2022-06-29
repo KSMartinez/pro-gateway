@@ -2,15 +2,19 @@
 
 namespace App\Service;
 use Exception;
+use App\Entity\EventQuestion;  
 use App\Entity\EventAnswer;
+use App\Repository\EventAnswerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\EventQuestionRepository;
+
 
 class EventQuestionService
 {
    
 
-    public function __construct(private EntityManagerInterface $entityManager, private EventQuestionRepository $eventQuestionRepository)    
+    public function __construct(private EntityManagerInterface $entityManager, private EventQuestionRepository $eventQuestionRepository,
+    private EventAnswerRepository $eventAnswerRepository)    
     {
     }
     
@@ -21,7 +25,7 @@ class EventQuestionService
      * @return EventAnswer   
      * @throws Exception
      */ 
-    public function answerQuestion(EventAnswer $data) 
+    public function saveAnswerQuestion(EventAnswer $data) 
     {   
 
 
@@ -53,6 +57,26 @@ class EventQuestionService
 
         }   
    
+    }
+
+
+     /**
+     * @param EventQuestion $data
+     * @return EventAnswer[]  
+     */ 
+    public function getAnswers(EventQuestion $data)
+    {
+
+        if($data->getId() == null ){
+
+            throw new Exception('The question must have an id to get the answers');
+  
+        }
+
+
+        return $this->eventAnswerRepository->getAnswers($data); 
+
+
     }
 
 }
