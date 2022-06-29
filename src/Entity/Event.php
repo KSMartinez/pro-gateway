@@ -40,7 +40,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 #[ApiResource(
     collectionOperations: [
 
-
+        'get',
         'post',  
         'randomEventsList' => [
             'method' => 'GET',

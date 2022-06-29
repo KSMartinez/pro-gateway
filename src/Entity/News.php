@@ -37,6 +37,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
     ],
 
 ], itemOperations: [
+    'get','put','delete',
     'updatePicture' => [
         'method' => 'POST',
         'path' => '/news/{id}/updatePicture',
