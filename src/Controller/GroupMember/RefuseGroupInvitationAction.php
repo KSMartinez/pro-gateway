@@ -3,9 +3,11 @@
 namespace App\Controller\GroupMember;
 
 use App\Entity\GroupMember;
+use App\Entity\User;
 use App\Service\GroupMemberService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 
 class RefuseGroupInvitationAction extends AbstractController
 {
@@ -19,12 +21,18 @@ class RefuseGroupInvitationAction extends AbstractController
 
     /**
      * @param GroupMember $data
-     * @return GroupMember
+     * @return GroupMember|Response
      * @throws Exception
      */
-    public function __invoke(GroupMember $data): GroupMember
+    public function __invoke(GroupMember $data): GroupMember|Response
     {
-        return $this->groupMemberService->refuseInvite($data);
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        if ($member = $this->groupMemberService->refuseInvite($data, $currentUser)) {
+            return $member;
+        }
+
+        return new Response('Current user is not the same as the member', 403);
 
     }
 }

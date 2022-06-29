@@ -37,11 +37,16 @@ class GroupMemberService
 
     /**
      * @param GroupMember $groupMember
-     * @return GroupMember
-     *@throws Exception
+     * @param User        $user
+     * @return GroupMember|false
+     * @throws Exception
      */
-    public function acceptInvite(GroupMember $groupMember): GroupMember
+    public function acceptInvite(GroupMember $groupMember, User $user): GroupMember|bool
     {
+        //Check if the current user is the same as the group member
+        if ($user->getUserIdentifier() !== $groupMember->getUser()->getUserIdentifier()){
+            return false;
+        }
 
         $groupMemberStatus = $this->getGroupMemberStatus(GroupMemberStatus::ACTIF);
         $groupMember->setGroupMemberStatus($groupMemberStatus);
@@ -77,11 +82,17 @@ class GroupMemberService
 
     /**
      * @param GroupMember $groupMember
-     * @return GroupMember
+     * @param User        $user
+     * @return GroupMember|false
      * @throws Exception
      */
-    public function refuseInvite(GroupMember $groupMember): GroupMember
+    public function refuseInvite(GroupMember $groupMember, User $user): GroupMember|bool
     {
+        //Check if the current user is the same as the group member
+        if ($user->getUserIdentifier() !== $groupMember->getUser()->getUserIdentifier()){
+            return false;
+        }
+
         $groupMemberStatus = $this->getGroupMemberStatus(GroupMemberStatus::REFUSE);
         $groupMember->setGroupMemberStatus($groupMemberStatus);
 
@@ -136,7 +147,11 @@ class GroupMemberService
             }
         }
 
-        $this->entityManager->remove($member);
+//        $this->entityManager->remove($member);
+        //We'll do soft delete instead
+        $member->setMemberRoles([]);
+        $member->setGroupMemberStatus($this->getGroupMemberStatus(GroupMemberStatus::INACTIF));
+        $this->entityManager->persist($member);
         $this->entityManager->flush();
     }
 
@@ -165,7 +180,7 @@ class GroupMemberService
 
         $roles = $member->getMemberRoles();
         $key = array_search(GroupMember::ROLE_GROUP_ADMIN, $roles);
-        if ($key) {
+        if ($key !== false) {
             unset($roles[$key]);
         }
 
