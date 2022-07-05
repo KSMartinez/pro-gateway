@@ -271,13 +271,13 @@ class OfferService
     }
 
     /**
-     * @param array<string> $idsToDelete
+     * @param array<string> $ids
      * @return void
      * @throws Exception
      */
-    public function validateMultipleOffers(array $idsToDelete)
+    public function validateMultipleOffers(array $ids)
     {
-        foreach ($idsToDelete as $id) {
+        foreach ($ids as $id) {
 
             $offer = $this->offerRepository->find($id);
             if ($offer){

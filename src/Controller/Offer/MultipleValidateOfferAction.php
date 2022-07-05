@@ -30,9 +30,9 @@ class MultipleValidateOfferAction extends AbstractController
         }
 
 
-        /** @var string $idsToDelete comma seperated IDs */
-        $idsToDelete = $ids['ids'];
-        $ids = explode(',', $idsToDelete);
+        /** @var string $idsToValidate comma seperated IDs */
+        $idsToValidate = $ids['ids'];
+        $ids = explode(',', $idsToValidate);
         $this->offerService->validateMultipleOffers($ids);
 
         return new Response('Done', 204);
