@@ -3,11 +3,13 @@
 namespace App\Factory;
 
 use App\Entity\News;
+use App\Entity\NewsCategory;
 use App\Repository\NewsRepository;
 use DateTimeImmutable;
 use Zenstruck\Foundry\RepositoryProxy;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
+use function Zenstruck\Foundry\factory;
 
 /**
  * @extends ModelFactory<News>
@@ -47,7 +49,7 @@ final class NewsFactory extends ModelFactory
             'description' => self::faker()->paragraphs(3, true),
             'forAllUniversities' => self::faker()->boolean(),
             'university' => self::faker()->company(),
-            'category' => self::faker()->text(25),
+            'category' => factory(NewsCategory::class)->random(),
             'publishedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'image' => self::faker()->imageUrl(),
             'isPublic' => self::faker()->boolean(),
