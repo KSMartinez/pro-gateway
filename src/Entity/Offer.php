@@ -382,7 +382,28 @@ class Offer
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups(['offer:read'])]
-    private ?string $url;
+    private ?string $urlCompany;
+
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['offer:read'])]
+    private ?string $urlCandidature;
+
+    /**
+     * @var bool
+     */
+    #[ORM\Column(type: 'boolean')]
+    #[Groups(['offer:read'])]
+    private bool $isAccessibleForDisabled = false;
+
+    /**
+     * @var Collection<int, OfferContact>
+     */
+    #[ORM\OneToMany(mappedBy: 'offer', targetEntity: OfferContact::class, orphanRemoval: true)]
+    #[Groups(['offer:read'])]
+    private Collection $contacts;
 
     /**
      *
@@ -393,6 +414,7 @@ class Offer
         $this->datePosted = new DateTime('now');
         $this->dateModified = new DateTime('now');
         $this->levelOfEducation = new ArrayCollection();
+        $this->contacts = new ArrayCollection();
 
     }
 
@@ -976,21 +998,96 @@ class Offer
     /**
      * @return string|null
      */
-    public function getUrl(): ?string
+    public function getUrlCompany(): ?string
     {
-        return $this->url;
+        return $this->urlCompany;
     }
 
     /**
-     * @param string|null $url
+     * @param string|null $urlCompany
      * @return $this
      */
-    public function setUrl(?string $url): self
+    public function setUrlCompany(?string $urlCompany): self
     {
-        $this->url = $url;
+        $this->urlCompany = $urlCompany;
 
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getUrlCandidature(): ?string
+    {
+        return $this->urlCandidature;
+    }
+
+    /**
+     * @param string|null $urlCandidature
+     * @return $this
+     */
+    public function setUrlCandidature(?string $urlCandidature): self
+    {
+        $this->urlCandidature = $urlCandidature;
+
+        return $this;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getIsAccessibleForDisabled(): ?bool
+    {
+        return $this->isAccessibleForDisabled;
+    }
+
+    /**
+     * @param bool $isAccessibleForDisabled
+     * @return $this
+     */
+    public function setIsAccessibleForDisabled(bool $isAccessibleForDisabled): self
+    {
+        $this->isAccessibleForDisabled = $isAccessibleForDisabled;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OfferContact>
+     */
+    public function getContacts(): Collection
+    {
+        return $this->contacts;
+    }
+
+    /**
+     * @param OfferContact $contact
+     * @return $this
+     */
+    public function addContact(OfferContact $contact): self
+    {
+        if (!$this->contacts->contains($contact)) {
+            $this->contacts[] = $contact;
+            $contact->setOffer($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param OfferContact $contact
+     * @return $this
+     */
+    public function removeContact(OfferContact $contact): self
+    {
+        if ($this->contacts->removeElement($contact)) {
+            // set the owning side to null (unless already changed)
+            if ($contact->getOffer() === $this) {
+                $contact->setOffer(null);
+            }
+        }
+
+        return $this;
+    }
 
 }

@@ -195,7 +195,7 @@ class XMLParseService
                 $this->offer->setCompanyName($data);
                 break;
             case 'URL':
-                $this->offer->setUrl($data);
+                $this->offer->setUrlCompany($data);
                 break;
             case 'REFERENCE_APEC':
                 $this->offer->setOfferId($data);
