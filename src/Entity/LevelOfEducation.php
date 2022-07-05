@@ -45,7 +45,7 @@ class LevelOfEducation
     /**
      * @var Collection<int, Offer>
      */
-    #[ORM\OneToMany(mappedBy: 'levelOfEducation', targetEntity: Offer::class)]
+    #[ORM\ManyToMany(targetEntity: Offer::class, mappedBy: 'levelOfEducation')]
     private Collection $offers;
 
     /**
@@ -99,7 +99,7 @@ class LevelOfEducation
     {
         if (!$this->offers->contains($offer)) {
             $this->offers[] = $offer;
-            $offer->setLevelOfEducation($this);
+            $offer->addLevelOfEducation($this);
         }
 
         return $this;
@@ -107,15 +107,13 @@ class LevelOfEducation
 
     /**
      * @param Offer $offer
-     * @return $this
+     * @return LevelOfEducation
      */
-    public function removeOffer(Offer $offer): self
+    public function removeOffer(Offer $offer): LevelOfEducation
     {
-        if ($this->offers->removeElement($offer)) {
-            // set the owning side to null (unless already changed)
-            if ($offer->getLevelOfEducation() === $this) {
-                $offer->setLevelOfEducation(null);
-            }
+        if ($this->offers->contains($offer)){
+            $this->offers->removeElement($offer);
+            $offer->removeLevelOfEducation($this);
         }
 
         return $this;

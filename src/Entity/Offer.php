@@ -371,11 +371,11 @@ class Offer
     private ?SectorOfOffer $sector;
 
     /**
-     * @var LevelOfEducation|null
+     * @var Collection<int, LevelOfEducation>
      */
-    #[ORM\ManyToOne(targetEntity: LevelOfEducation::class, inversedBy: 'offers')]
+    #[ORM\ManyToMany(targetEntity: LevelOfEducation::class, inversedBy: 'offers')]
     #[Groups(['offer:read'])]
-    private ?LevelOfEducation $levelOfEducation;
+    private Collection $levelOfEducation;
 
     /**
      * @var string|null
@@ -392,6 +392,7 @@ class Offer
         $this->candidatures = new ArrayCollection();
         $this->datePosted = new DateTime('now');
         $this->dateModified = new DateTime('now');
+        $this->levelOfEducation = new ArrayCollection();
 
     }
 
@@ -924,20 +925,50 @@ class Offer
     }
 
     /**
-     * @return LevelOfEducation|null
+     * @return Collection<int, LevelOfEducation>
      */
-    public function getLevelOfEducation(): ?LevelOfEducation
+    public function getLevelOfEducation(): Collection
     {
         return $this->levelOfEducation;
     }
 
     /**
-     * @param LevelOfEducation|null $levelOfEducation
+     * @param Collection<int,LevelOfEducation> $levelOfEducation
      * @return $this
      */
-    public function setLevelOfEducation(?LevelOfEducation $levelOfEducation): self
+    public function setLevelOfEducation(Collection $levelOfEducation): self
     {
         $this->levelOfEducation = $levelOfEducation;
+
+        return $this;
+    }
+
+
+    /**
+     * @param LevelOfEducation $levelOfEducation
+     * @return $this
+     */
+    public function addLevelOfEducation(LevelOfEducation $levelOfEducation): Offer
+    {
+
+        if (!$this->levelOfEducation->contains($levelOfEducation)){
+            $this->levelOfEducation->add($levelOfEducation);
+            $levelOfEducation->addOffer($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param LevelOfEducation $levelOfEducation
+     * @return $this
+     */
+    public function removeLevelOfEducation(LevelOfEducation $levelOfEducation): Offer
+    {
+        if ($this->levelOfEducation->contains($levelOfEducation)){
+            $this->levelOfEducation->removeElement($levelOfEducation);
+            $levelOfEducation->removeOffer($this);
+        }
 
         return $this;
     }
