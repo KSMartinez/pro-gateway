@@ -6,7 +6,6 @@ namespace App\Service;
 use App\Entity\Offer;
 use App\Entity\OfferStatus;
 use App\Entity\User;
-use App\Model\OfferDemand;
 use App\Repository\OfferRepository;
 use App\Repository\OfferStatusRepository;
 use DateTime;
@@ -138,15 +137,15 @@ class OfferService
     }
 
     /**
-     * @param OfferDemand $offerDemand
+     * @param Offer $offer
      * @return Offer
      * @throws Exception
      */
-    public function refuseOffer(OfferDemand $offerDemand): Offer
+    public function refuseOffer(Offer $offer): Offer
     {
         $offerStatusRefuse = $this->getOfferStatus(OfferStatus::REFUSE);
 
-        $offer = $offerDemand->getOffer();
+
 
         $offer->setOfferStatus($offerStatusRefuse);
 
