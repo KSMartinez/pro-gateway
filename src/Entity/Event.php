@@ -76,9 +76,12 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                     'method' => 'GET',      
                     'path' => '/participantList/{id}',
                     'controller' => ParticipantListAction::class,
-                ],   
-                       
-             
+                ],
+    ],
+    normalizationContext: [
+        'groups' => [
+            'event:read'
+        ]
     ]
 )]  
 class Event
@@ -91,6 +94,7 @@ class Event
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['event:read'])]
     private ?int $id = null;
 
 
@@ -98,6 +102,7 @@ class Event
      * @var string   
      */
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['event:read'])]
     private string $title;
 
 
@@ -106,6 +111,7 @@ class Event
      * @var string
      */
     #[ORM\Column(type: 'text')]
+    #[Groups(['event:read'])]
     private string $description;
 
 
@@ -113,12 +119,14 @@ class Event
      * @var boolean 
      */
     #[ORM\Column(type: 'boolean')]
+    #[Groups(['event:read'])]
     private bool $forAllUniversities;
 
     /**
      * @var string|null  
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['event:read'])]
     private ?string $university;
 
 
@@ -126,12 +134,14 @@ class Event
      * @var boolean   
      */
     #[ORM\Column(type: 'boolean')]
+    #[Groups(['event:read'])]
     private bool $isPublic;
 
     /**
      * @var DateTimeImmutable 
      */
     #[ORM\Column(type: 'datetime_immutable', nullable: false)]
+    #[Groups(['event:read'])]
     private DateTimeImmutable $createdAt;
 
 
@@ -139,6 +149,7 @@ class Event
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['event:read'])]
     private ?string $company;
 
 
@@ -146,6 +157,7 @@ class Event
      * @var int|null
      */
     #[ORM\Column(type: 'integer', nullable: true)]
+    #[Groups(['event:read'])]
     private ?int $maxNumberOfParticipants;
 
 
@@ -153,12 +165,14 @@ class Event
      * @var DateTime
      */
     #[ORM\Column(type: 'date')]
+    #[Groups(['event:read'])]
     private DateTime $startingAt;
      
        /**
      * @var DateTime
      */
     #[ORM\Column(type: 'date')]
+    #[Groups(['event:read'])]
     private DateTime $endingAt;
 
 
@@ -166,6 +180,7 @@ class Event
      * @var User|null  
      */
     #[ORM\ManyToOne(targetEntity: User::class)]
+    #[Groups(['event:read'])]
     private User|null $createdBy;
 
 
@@ -174,20 +189,24 @@ class Event
      * @var string|null  
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['event:read'])]
     private ?string $location;
 
      
     /**
-     * @var string 
+     * @var EventCategory
      */
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $category;
+    #[ORM\ManyToOne(targetEntity: EventCategory::class, cascade: ['PERSIST'], inversedBy: 'events')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['event:read'])]
+    private EventCategory $category;
 
      
     /**
      * @var string|null  
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['event:read'])]
     private ?string $image;
 
     
@@ -369,12 +388,12 @@ class Event
         return $this;
     }
 
-    public function getCategory(): ?string
+    public function getCategory(): EventCategory
     {
         return $this->category;
     }
 
-    public function setCategory(string $category): self
+    public function setCategory(EventCategory $category): self
     {
         $this->category = $category;
 

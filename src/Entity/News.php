@@ -2,19 +2,18 @@
 
 namespace App\Entity;
 
-use DateTimeImmutable;
-use DateTimeInterface;
-use Doctrine\ORM\Mapping as ORM;
-use App\Repository\NewsRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Controller\News\UpdatePictureAction;
-use Symfony\Component\HttpFoundation\File\File;
-use App\Controller\Event\RandomEventsListAction;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\Event\RandomEventsListAction;
+use App\Controller\News\UpdatePictureAction;
+use App\Repository\NewsRepository;
+use DateTimeImmutable;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ApiFilter(OrderFilter::class,properties={"publishedAt":"ASC"})
@@ -27,31 +26,38 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  * })
  */
 #[ORM\Entity(repositoryClass: NewsRepository::class)]
-#[ApiResource(collectionOperations: [
-    'get',
-    'post',
-    'randomEventsList' => [
-        'method' => 'GET',
-        'path' => '/randomEventsList',
-        'controller' => RandomEventsListAction::class,
-    ],
-
-], itemOperations: [
-    'get','put','delete',
-    'updatePicture' => [
-        'method' => 'POST',
-        'path' => '/news/{id}/updatePicture',
-        'openapi_context' => [
-            'summary'     => 'Use this endpoint to update only the picture of the news. Use the PUT endpoint for all other updating'
+#[ApiResource(
+    collectionOperations: [
+        'get',
+        'post',
+        'randomEventsList' => [
+            'method' => 'GET',
+            'path' => '/randomEventsList',
+            'controller' => RandomEventsListAction::class,
         ],
-        'controller' => UpdatePictureAction::class,
-        'denormalization_context' => ['groups' => ['news:updatePicture']],
-        'input_formats' => [
-            'multipart' => ['multipart/form-data'],
-        ]
 
-    ]
-])]
+    ],
+    itemOperations      : [
+        'get', 'put', 'delete',
+        'updatePicture' => [
+            'method' => 'POST',
+            'path' => '/news/{id}/updatePicture',
+            'openapi_context' => [
+                'summary' => 'Use this endpoint to update only the picture of the news. Use the PUT endpoint for all other updating'
+            ],
+            'controller' => UpdatePictureAction::class,
+            'denormalization_context' => ['groups' => ['news:updatePicture']],
+            'input_formats' => [
+                'multipart' => ['multipart/form-data'],
+            ]
+
+        ],
+    ],
+    normalizationContext: [
+        'groups' => [
+            'news:read'
+        ]
+    ])]
 class News
 {
 
@@ -61,6 +67,7 @@ class News
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['news:read'])]
     private ?int $id = null;
 
 
@@ -68,6 +75,7 @@ class News
      * @var string    
      */
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['news:read'])]
     private string $name;
 
 
@@ -75,6 +83,7 @@ class News
      * @var string    
      */
     #[ORM\Column(type: 'text')]
+    #[Groups(['news:read'])]
     private string $description;
 
 
@@ -82,6 +91,7 @@ class News
      * @var boolean     
      */
     #[ORM\Column(type: 'boolean')]
+    #[Groups(['news:read'])]
     private bool $forAllUniversities;
 
 
@@ -89,18 +99,19 @@ class News
      * @var string|null  
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['news:read'])]
     private ?string $university;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $category;
 
     /**
      * @var DateTimeImmutable
      */
     #[ORM\Column(type: 'datetime_immutable', nullable: false)]
+    #[Groups(['news:read'])]
     private DateTimeImmutable $publishedAt;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['news:read'])]
     private ?string $image;
 
 
@@ -111,7 +122,13 @@ class News
     public ?File $imageFile = null;
 
     #[ORM\Column(type: 'boolean')]
+    #[Groups(['news:read'])]
     private bool $isPublic;
+
+    #[ORM\ManyToOne(targetEntity: NewsCategory::class, inversedBy: 'news')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['news:read'])]
+    private NewsCategory $category;
 
     public function getId(): ?int
     {
@@ -162,18 +179,6 @@ class News
     public function setUniversity(?string $university): self
     {
         $this->university = $university;
-
-        return $this;
-    }
-
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?string $category): self
-    {
-        $this->category = $category;
 
         return $this;
     }
@@ -233,6 +238,18 @@ class News
     public function setIsPublic(bool $isPublic): self
     {
         $this->isPublic = $isPublic;
+
+        return $this;
+    }
+
+    public function getCategory(): ?NewsCategory
+    {
+        return $this->category;
+    }
+
+    public function setCategory(NewsCategory $category): self
+    {
+        $this->category = $category;
 
         return $this;
     }
