@@ -17,6 +17,7 @@ use App\Factory\UserFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use function Zenstruck\Foundry\faker;
 
 class AppFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -28,6 +29,11 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
     {
 
         OfferFactory::createMany(20);
+
+        /**
+         * This is the main fake user
+         */
+        UserFactory::createOne(['firstname' => 'Fake', 'surname' => 'User', 'email' => 'fakeuser@email.com']);
 
         /** @var User[] $users */
         $users = UserFactory::createMany(10);
