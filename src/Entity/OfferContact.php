@@ -18,11 +18,11 @@ class OfferContact
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?string $email;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?string $phone;
 
     #[ORM\ManyToOne(targetEntity: Offer::class, inversedBy: 'contacts')]

@@ -42,7 +42,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  */
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 #[ApiResource(
-    collectionOperations: [
+    collectionOperations  : [
         'get', 'create_offer' => [
             'method' => 'POST',
             'path' => '/offers/create',
@@ -99,7 +99,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             'validate' => false
         ]
     ],
-    itemOperations      : [
+    itemOperations        : [
         'get', 'put',
         'validate_offer' => ['method' => 'POST',
             'path' => '/offers/{id}/validate',
@@ -147,11 +147,15 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
         ],
 
     ],
-    normalizationContext: [
+    denormalizationContext: [
         'groups' => [
-            'offer:read'
+            'offer:write'
         ]
+],  normalizationContext  : [
+    'groups' => [
+        'offer:read'
     ]
+]
 
 )]
 #[HasLifecycleCallbacks]
@@ -164,56 +168,56 @@ class Offer
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?int $id;
 
     /**
      * @var string
      */
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private string $title;
 
     /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?string $description;
 
     /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?string $city;
 
     /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?string $country;
 
     /**
      * @var DateTimeInterface
      */
     #[ORM\Column(type: 'date')]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private DateTimeInterface $datePosted;
 
     /**
      * @var int|null
      */
     #[ORM\Column(type: 'integer', nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?int $publishDuration;
 
     /**
      * @var Domain|null
      */
     #[ORM\ManyToOne(targetEntity: Domain::class, inversedBy: 'offers')]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?Domain $domain;
 
 
@@ -221,14 +225,14 @@ class Offer
      * @var int|null
      */
     #[ORM\Column(type: 'integer', nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?int $minSalary;
 
     /**
      * @var int|null
      */
     #[ORM\Column(type: 'integer', nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?int $maxSalary;
 
     /**
@@ -236,42 +240,42 @@ class Offer
      */
     #[ORM\ManyToOne(targetEntity: TypeOfContract::class, inversedBy: 'offers')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private TypeOfContract $typeOfContract;
 
     /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?string $companyName;
 
     /**
      * @var bool
      */
     #[ORM\Column(type: 'boolean')]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private bool $isDirect = false;
 
     /**
      * @var bool
      */
     #[ORM\Column(type: 'boolean')]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private bool $isPublic = false;
 
     /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?string $postedBy;
 
     /**
      * @var bool
      */
     #[ORM\Column(type: 'boolean')]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private bool $isOfPartner = false;
 
 
@@ -280,7 +284,7 @@ class Offer
      */
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'offers')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?User $createdByUser;
 
 
@@ -288,7 +292,7 @@ class Offer
      * @var int|null
      */
     #[ORM\Column(type: 'integer', nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?int $views;
 
 
@@ -296,7 +300,7 @@ class Offer
      * @var int|null
      */
     #[ORM\Column(type: 'integer', nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?int $numberOfCandidatures;
 
 
@@ -305,7 +309,7 @@ class Offer
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?string $experience;
 
 
@@ -323,7 +327,7 @@ class Offer
     /**
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="logoLink")
      */
-    #[Groups(['offer:updateLogo'])]
+    #[Groups(['offer:updateLogo', 'offer:write'])]
     public ?File $logoFile = null;
 
     /**
@@ -338,7 +342,7 @@ class Offer
      * @var string
      */
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private string $offerId;
 
     /**
@@ -346,63 +350,63 @@ class Offer
      */
     #[ORM\ManyToOne(targetEntity: OfferStatus::class)]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private OfferStatus $offerStatus;
 
     /**
      * @var DateTimeInterface
      */
     #[ORM\Column(type: 'date')]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private DateTimeInterface $dateModified;
 
     /**
      * @var TypeOfOffer|null
      */
     #[ORM\ManyToOne(targetEntity: TypeOfOffer::class, inversedBy: 'offers')]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?TypeOfOffer $typeOfOffer;
 
     /**
      * @var SectorOfOffer|null
      */
     #[ORM\ManyToOne(targetEntity: SectorOfOffer::class, inversedBy: 'offers')]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?SectorOfOffer $sector;
 
     /**
      * @var Collection<int, LevelOfEducation>
      */
     #[ORM\ManyToMany(targetEntity: LevelOfEducation::class, inversedBy: 'offers')]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private Collection $levelOfEducation;
 
     /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?string $urlCompany;
 
     /**
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private ?string $urlCandidature;
 
     /**
      * @var bool
      */
     #[ORM\Column(type: 'boolean')]
-    #[Groups(['offer:read'])]
+    #[Groups(['offer:read', 'offer:write'])]
     private bool $isAccessibleForDisabled = false;
 
     /**
      * @var Collection<int, OfferContact>
      */
-    #[ORM\OneToMany(mappedBy: 'offer', targetEntity: OfferContact::class, orphanRemoval: true)]
-    #[Groups(['offer:read'])]
+    #[ORM\OneToMany(mappedBy: 'offer', targetEntity: OfferContact::class, cascade: ['persist'], orphanRemoval: true)]
+    #[Groups(['offer:read', 'offer:write'])]
     private Collection $contacts;
 
     /**
