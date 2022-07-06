@@ -44,7 +44,7 @@ class FakeUserLoginSubscriber implements EventSubscriberInterface
     {
         /** @var User $user */
         $user = $this->userRepository
-            ->find(['email' => 'fakeuser@email.com']);
+            ->findOneBy(['email' => 'fakeuser@email.com']);
 
         //Handle getting or creating the user entity likely with a posted form
         // The third parameter "main" can change according to the name of your firewall in security.yml
