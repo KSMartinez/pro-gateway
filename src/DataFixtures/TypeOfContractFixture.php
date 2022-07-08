@@ -21,11 +21,10 @@ class TypeOfContractFixture extends Fixture
             TypeOfContract::CDI,
             TypeOfContract::CDD,
             TypeOfContract::CIFRE,
-            TypeOfContract::INDIFFERENT,
             TypeOfContract::INTERIM,
             TypeOfContract::POST_DOCTORANT,
-            TypeOfContract::SERVICE_CIVIQUE,
-            TypeOfContract::VIE_VIA
+            TypeOfContract::CONTRAT_PROFESSIONNALISATION,
+            TypeOfContract::CONTRAT_APPRENTISSAGE
         ];
 
         foreach ($typeOfContracts as $typeOfContract) {

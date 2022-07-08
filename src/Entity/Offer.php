@@ -236,12 +236,12 @@ class Offer
     private ?int $maxSalary;
 
     /**
-     * @var TypeOfContract
+     * @var TypeOfContract|null
      */
     #[ORM\ManyToOne(targetEntity: TypeOfContract::class, inversedBy: 'offers')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups(['offer:read', 'offer:write'])]
-    private TypeOfContract $typeOfContract;
+    private ?TypeOfContract $typeOfContract;
 
     /**
      * @var string|null
@@ -626,10 +626,10 @@ class Offer
     }
 
     /**
-     * @param TypeOfContract $typeOfContract
+     * @param TypeOfContract|null $typeOfContract
      * @return $this
      */
-    public function setTypeOfContract(TypeOfContract $typeOfContract): self
+    public function setTypeOfContract(?TypeOfContract $typeOfContract): self
     {
         $this->typeOfContract = $typeOfContract;
 

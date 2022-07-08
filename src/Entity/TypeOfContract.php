@@ -22,12 +22,12 @@ class TypeOfContract
 {
     const CDI = 'CDI';
     const CDD = 'CDD';
-    const VIE_VIA = 'VIE - VIA';
     const INTERIM = 'INTERIM';
     const CIFRE = 'CIFRE';
     const INDIFFERENT = 'INDIFFERENT';
-    const SERVICE_CIVIQUE = 'SERVICE-CIVIQUE';
     const POST_DOCTORANT = 'POST-DOCTORANT';
+    const CONTRAT_APPRENTISSAGE = 'CONTRAT D\'APPRENTISSAGE';
+    const CONTRAT_PROFESSIONNALISATION = "CONTRAT DE PROFESSIONNALISATION";
 
     /**
      * @var int|null
