@@ -8,7 +8,7 @@ use App\Entity\Offer;
 use App\Entity\OfferStatus;
 use App\Entity\SectorOfOffer;
 use App\Entity\TypeOfContract;
-use App\Entity\TypeOfOffer;
+use App\Entity\OfferCategory;
 use App\Repository\OfferRepository;
 use Zenstruck\Foundry\RepositoryProxy;
 use Zenstruck\Foundry\ModelFactory;
@@ -65,7 +65,7 @@ final class OfferFactory extends ModelFactory
             'isOfPartner' => self::faker()->boolean(),
             'offerId' => self::faker()->unique()->numberBetween(0,20),
             'offerStatus' => factory(OfferStatus::class)->random(),
-            'typeOfOffer' => factory(TypeOfOffer::class)->random(),
+            'offerCategory' => factory(OfferCategory::class)->random(),
             'sector' => factory(SectorOfOffer::class)->random(),
             'levelOfEducation' => [factory(LevelOfEducation::class)->random()]
         ];

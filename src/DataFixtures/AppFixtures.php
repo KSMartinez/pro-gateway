@@ -73,7 +73,7 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
             GroupStatusFixture::class,
             TypeOfContractFixture::class,
             DomainFixture::class,
-            TypeOfOfferFixture::class,
+            OfferCategoryFixture::class,
             SectorOfOfferFixture::class,
             LevelOfEducationFixture::class,
             EventCategoryFixture::class,

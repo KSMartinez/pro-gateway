@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\TypeOfOfferRepository;
+use App\Repository\OfferCategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,15 +12,16 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  *
  */
-#[ORM\Entity(repositoryClass: TypeOfOfferRepository::class)]
+#[ORM\Entity(repositoryClass: OfferCategoryRepository::class)]
 #[ApiResource]
-class TypeOfOffer
+class OfferCategory
 {
-    const EMPLOI_ETUDIANT = "EMPLOI_ETUDIANT";
-    const EMPLOI_DEBUTANT = "EMPLOI_DEBUTANT";
-    const EMPLOI_CONFIRME = "EMPLOI_CONFIRME";
-    const STAGE = "STAGE";
-    const APPRENTISSAGE = "APPRENTISSAGE";
+    const EMPLOI_ETUDIANT = "Job étudiant";
+    const VIE_VIA = "VIE/VIA";
+    const STAGE = "Stage";
+    const ALTERNANCE = "Alternance";
+    const EMPLOI = "Emploi";
+    const SERVICE_CIVIQUE = "Service Civique";
 
     /**
      * @var int|null
@@ -41,7 +42,7 @@ class TypeOfOffer
     /**
      * @var Collection<int, Offer>
      */
-    #[ORM\OneToMany(mappedBy: 'typeOfOffer', targetEntity: Offer::class)]
+    #[ORM\OneToMany(mappedBy: 'offerCategory', targetEntity: Offer::class)]
     private Collection $offers;
 
     public function __construct()
@@ -88,7 +89,7 @@ class TypeOfOffer
     {
         if (!$this->offers->contains($offer)) {
             $this->offers[] = $offer;
-            $offer->setTypeOfOffer($this);
+            $offer->setOfferCategory($this);
         }
 
         return $this;
@@ -98,8 +99,8 @@ class TypeOfOffer
     {
         if ($this->offers->removeElement($offer)) {
             // set the owning side to null (unless already changed)
-            if ($offer->getTypeOfOffer() === $this) {
-                $offer->setTypeOfOffer(null);
+            if ($offer->getOfferCategory() === $this) {
+                $offer->setOfferCategory(null);
             }
         }
 

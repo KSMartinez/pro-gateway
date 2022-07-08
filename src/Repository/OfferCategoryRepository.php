@@ -2,31 +2,31 @@
 
 namespace App\Repository;
 
-use App\Entity\TypeOfOffer;
+use App\Entity\OfferCategory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method TypeOfOffer|null find($id, $lockMode = null, $lockVersion = null)
- * @method TypeOfOffer|null findOneBy(array $criteria, array $orderBy = null)
- * @method TypeOfOffer[]    findAll()
- * @method TypeOfOffer[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- * @extends ServiceEntityRepository<TypeOfOffer>
+ * @method OfferCategory|null find($id, $lockMode = null, $lockVersion = null)
+ * @method OfferCategory|null findOneBy(array $criteria, array $orderBy = null)
+ * @method OfferCategory[]    findAll()
+ * @method OfferCategory[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<OfferCategory>
  */
-class TypeOfOfferRepository extends ServiceEntityRepository
+class OfferCategoryRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, TypeOfOffer::class);
+        parent::__construct($registry, OfferCategory::class);
     }
 
     /**
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function add(TypeOfOffer $entity, bool $flush = true): void
+    public function add(OfferCategory $entity, bool $flush = true): void
     {
         $this->_em->persist($entity);
         if ($flush) {
@@ -38,7 +38,7 @@ class TypeOfOfferRepository extends ServiceEntityRepository
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function remove(TypeOfOffer $entity, bool $flush = true): void
+    public function remove(OfferCategory $entity, bool $flush = true): void
     {
         $this->_em->remove($entity);
         if ($flush) {
@@ -47,7 +47,7 @@ class TypeOfOfferRepository extends ServiceEntityRepository
     }
 
     // /**
-    //  * @return TypeOfOffer[] Returns an array of TypeOfOffer objects
+    //  * @return OfferCategory[] Returns an array of OfferCategory objects
     //  */
     /*
     public function findByExampleField($value)
@@ -64,7 +64,7 @@ class TypeOfOfferRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?TypeOfOffer
+    public function findOneBySomeField($value): ?OfferCategory
     {
         return $this->createQueryBuilder('t')
             ->andWhere('t.exampleField = :val')

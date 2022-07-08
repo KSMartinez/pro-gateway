@@ -35,7 +35,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  *
  * @package App\Entity
  * @ApiFilter(SearchFilter::class, properties={"title": "partial", "description": "partial", "city":"exact",
- *     "country":"exact", "domain":"exact", "typeOfContract":"exact", "typeOfOffer":"exact", "sector":"exact",
+ *     "country":"exact", "domain":"exact", "typeOfContract":"exact", "offerCategory":"exact", "sector":"exact",
  *     "levelOfEducation":"exact" })
  * @ApiFilter(RangeFilter::class, properties={"minSalary","maxSalary"})
  * @ApiFilter(OrderFilter::class, properties={"datePosted" : "DESC"})
@@ -361,11 +361,11 @@ class Offer
     private DateTimeInterface $dateModified;
 
     /**
-     * @var TypeOfOffer|null
+     * @var OfferCategory|null
      */
-    #[ORM\ManyToOne(targetEntity: TypeOfOffer::class, inversedBy: 'offers')]
+    #[ORM\ManyToOne(targetEntity: OfferCategory::class, inversedBy: 'offers')]
     #[Groups(['offer:read', 'offer:write'])]
-    private ?TypeOfOffer $typeOfOffer;
+    private ?OfferCategory $offerCategory;
 
     /**
      * @var SectorOfOffer|null
@@ -913,20 +913,20 @@ class Offer
     }
 
     /**
-     * @return TypeOfOffer|null
+     * @return OfferCategory|null
      */
-    public function getTypeOfOffer(): ?TypeOfOffer
+    public function getOfferCategory(): ?OfferCategory
     {
-        return $this->typeOfOffer;
+        return $this->offerCategory;
     }
 
     /**
-     * @param TypeOfOffer|null $typeOfOffer
+     * @param OfferCategory|null $offerCategory
      * @return $this
      */
-    public function setTypeOfOffer(?TypeOfOffer $typeOfOffer): self
+    public function setOfferCategory(?OfferCategory $offerCategory): self
     {
-        $this->typeOfOffer = $typeOfOffer;
+        $this->offerCategory = $offerCategory;
 
         return $this;
     }
