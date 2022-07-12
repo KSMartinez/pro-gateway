@@ -445,6 +445,12 @@ class User implements UserInterface
     private Collection $groupsMemberOf;
 
     /**
+     * @var Collection<int, Conversation>
+     */
+    #[ORM\ManyToMany(targetEntity: Conversation::class, mappedBy: 'users')]
+    private Collection $conversations;
+
+    /**
      *
      */
 
@@ -455,6 +461,7 @@ class User implements UserInterface
         $this->emailNotifications = new ArrayCollection();
         $this->candidatures = new ArrayCollection();
         $this->groupsMemberOf = new ArrayCollection();
+        $this->conversations = new ArrayCollection();
 
     }
 
@@ -1266,6 +1273,33 @@ class User implements UserInterface
     public function getGroupsMemberOf(): Collection
     {
         return $this->groupsMemberOf;
+    }
+
+    /**
+     * @return Collection<int, Conversation>
+     */
+    public function getConversations(): Collection
+    {
+        return $this->conversations;
+    }
+
+    public function addConversation(Conversation $conversation): self
+    {
+        if (!$this->conversations->contains($conversation)) {
+            $this->conversations[] = $conversation;
+            $conversation->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConversation(Conversation $conversation): self
+    {
+        if ($this->conversations->removeElement($conversation)) {
+            $conversation->removeUser($this);
+        }
+
+        return $this;
     }
 
 
