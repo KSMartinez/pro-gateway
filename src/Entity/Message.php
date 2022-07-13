@@ -55,6 +55,13 @@ class Message
     private User $user;
 
     /**
+     * @var MessageStatus
+     */
+    #[ORM\ManyToOne(targetEntity: MessageStatus::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private MessageStatus $messageStatus;
+
+    /**
      *
      */
     public function __construct()
@@ -142,6 +149,26 @@ class Message
     public function setUser(User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+
+    /**
+     * @return MessageStatus|null
+     */
+    public function getMessageStatus(): ?MessageStatus
+    {
+        return $this->messageStatus;
+    }
+
+    /**
+     * @param MessageStatus $messageStatus
+     * @return $this
+     */
+    public function setMessageStatus(MessageStatus $messageStatus): self
+    {
+        $this->messageStatus = $messageStatus;
 
         return $this;
     }
