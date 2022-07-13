@@ -37,7 +37,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @package App\Entity
  * @ApiFilter(SearchFilter::class, properties={"title": "partial", "description": "partial", "city":"exact",
- *     "country":"exact", "domain":"exact", "typeOfContract":"exact", "typeOfOffer":"exact", "sector":"exact",
+ *     "country":"exact", "domain":"exact", "typeOfContract":"exact", "offerCategory":"exact", "sector":"exact",
  *     "levelOfEducation":"exact" })
  * @ApiFilter(RangeFilter::class, properties={"minSalary","maxSalary"})
  * @ApiFilter(OrderFilter::class, properties={"datePosted" : "DESC"})
@@ -254,12 +254,12 @@ class Offer
     private ?int $maxSalary;
 
     /**
-     * @var TypeOfContract
+     * @var TypeOfContract|null
      */
     #[ORM\ManyToOne(targetEntity: TypeOfContract::class, inversedBy: 'offers')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups(['offer:read', 'offer:write'])]
-    private TypeOfContract $typeOfContract;
+    private ?TypeOfContract $typeOfContract;
 
     /**
      * @var string|null
@@ -408,11 +408,11 @@ class Offer
     private DateTimeInterface $dateModified;
 
     /**
-     * @var TypeOfOffer|null
+     * @var OfferCategory|null
      */
-    #[ORM\ManyToOne(targetEntity: TypeOfOffer::class, inversedBy: 'offers')]
+    #[ORM\ManyToOne(targetEntity: OfferCategory::class, inversedBy: 'offers')]
     #[Groups(['offer:read', 'offer:write'])]
-    private ?TypeOfOffer $typeOfOffer;
+    private ?OfferCategory $offerCategory;
 
     /**
      * @var SectorOfOffer|null
@@ -673,10 +673,10 @@ class Offer
     }
 
     /**
-     * @param TypeOfContract $typeOfContract
+     * @param TypeOfContract|null $typeOfContract
      * @return $this
      */
-    public function setTypeOfContract(TypeOfContract $typeOfContract): self
+    public function setTypeOfContract(?TypeOfContract $typeOfContract): self
     {
         $this->typeOfContract = $typeOfContract;
 
@@ -988,20 +988,20 @@ class Offer
     }
 
     /**
-     * @return TypeOfOffer|null
+     * @return OfferCategory|null
      */
-    public function getTypeOfOffer(): ?TypeOfOffer
+    public function getOfferCategory(): ?OfferCategory
     {
-        return $this->typeOfOffer;
+        return $this->offerCategory;
     }
 
     /**
-     * @param TypeOfOffer|null $typeOfOffer
+     * @param OfferCategory|null $offerCategory
      * @return $this
      */
-    public function setTypeOfOffer(?TypeOfOffer $typeOfOffer): self
+    public function setOfferCategory(?OfferCategory $offerCategory): self
     {
-        $this->typeOfOffer = $typeOfOffer;
+        $this->offerCategory = $offerCategory;
 
         return $this;
     }

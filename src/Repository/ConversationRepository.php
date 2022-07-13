@@ -2,31 +2,33 @@
 
 namespace App\Repository;
 
-use App\Entity\TypeOfOffer;
+use App\Entity\Conversation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method TypeOfOffer|null find($id, $lockMode = null, $lockVersion = null)
- * @method TypeOfOffer|null findOneBy(array $criteria, array $orderBy = null)
- * @method TypeOfOffer[]    findAll()
- * @method TypeOfOffer[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- * @extends ServiceEntityRepository<TypeOfOffer>
+ * @method Conversation|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Conversation|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Conversation[]    findAll()
+ * @method Conversation[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<Conversation>
+ *
+ *
  */
-class TypeOfOfferRepository extends ServiceEntityRepository
+class ConversationRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, TypeOfOffer::class);
+        parent::__construct($registry, Conversation::class);
     }
 
     /**
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function add(TypeOfOffer $entity, bool $flush = true): void
+    public function add(Conversation $entity, bool $flush = true): void
     {
         $this->_em->persist($entity);
         if ($flush) {
@@ -38,7 +40,7 @@ class TypeOfOfferRepository extends ServiceEntityRepository
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function remove(TypeOfOffer $entity, bool $flush = true): void
+    public function remove(Conversation $entity, bool $flush = true): void
     {
         $this->_em->remove($entity);
         if ($flush) {
@@ -47,15 +49,15 @@ class TypeOfOfferRepository extends ServiceEntityRepository
     }
 
     // /**
-    //  * @return TypeOfOffer[] Returns an array of TypeOfOffer objects
+    //  * @return Conversation[] Returns an array of Conversation objects
     //  */
     /*
     public function findByExampleField($value)
     {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.exampleField = :val')
             ->setParameter('val', $value)
-            ->orderBy('t.id', 'ASC')
+            ->orderBy('c.id', 'ASC')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult()
@@ -64,10 +66,10 @@ class TypeOfOfferRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?TypeOfOffer
+    public function findOneBySomeField($value): ?Conversation
     {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.exampleField = :val')
             ->setParameter('val', $value)
             ->getQuery()
             ->getOneOrNullResult()

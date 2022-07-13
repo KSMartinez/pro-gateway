@@ -53,6 +53,7 @@ final class NewsFactory extends ModelFactory
             'publishedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'image' => self::faker()->imageUrl(),
             'isPublic' => self::faker()->boolean(),
+            'chapo' => self::faker()->paragraphs(3, true),
         ];
     }
 

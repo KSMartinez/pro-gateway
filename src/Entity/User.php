@@ -19,6 +19,7 @@ use App\Repository\UserRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use App\Entity\News;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -156,6 +157,7 @@ class User implements UserInterface
     /**
      * @var string[]
      */
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
@@ -408,6 +410,14 @@ class User implements UserInterface
     private Collection $candidatures;
 
     /**
+     * @var Collection<int, News>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: News::class, orphanRemoval: true)]
+    private Collection $news;
+
+
+
+    /**
      * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable:true)]
@@ -459,9 +469,15 @@ class User implements UserInterface
     private ?\DateTimeImmutable $updatedAt;
 
     /**
-     *
+     * @var Collection<int, Conversation>
      */
+    #[ORM\ManyToMany(targetEntity: Conversation::class, mappedBy: 'users')]
+    private Collection $conversations;
 
+
+      /**
+     * User constructor.
+     */
     public function __construct()
     {
         $this->notifications = new ArrayCollection();
@@ -469,6 +485,9 @@ class User implements UserInterface
         $this->emailNotifications = new ArrayCollection();
         $this->candidatures = new ArrayCollection();
         $this->groupsMemberOf = new ArrayCollection();
+        $this->conversations = new ArrayCollection();
+        $this->news = new ArrayCollection();
+
 
     }
 
@@ -1157,6 +1176,15 @@ class User implements UserInterface
     }
 
     /**
+     * @return Collection<int, News>
+     */
+    public function getNews(): Collection
+    {
+        return $this->news;
+    }
+
+
+    /**
      * @return bool|null
      */
     public function getCompanyCreator(): ?bool
@@ -1290,6 +1318,33 @@ class User implements UserInterface
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Conversation>
+     */
+    public function getConversations(): Collection
+    {
+        return $this->conversations;
+    }
+
+    public function addConversation(Conversation $conversation): self
+    {
+        if (!$this->conversations->contains($conversation)) {
+            $this->conversations[] = $conversation;
+            $conversation->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConversation(Conversation $conversation): self
+    {
+        if ($this->conversations->removeElement($conversation)) {
+            $conversation->removeUser($this);
+        }
 
         return $this;
     }
