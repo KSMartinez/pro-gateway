@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Conversation;
 use App\Entity\Group;
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -17,7 +18,7 @@ class UserService
      * @param UserRepository $userRepository
      * @param RequestStack $requestStack
      */
-    public function __construct(private EntityManagerInterface $entityManager, private UserRepository $userRepository, private RequestStack $requestStack)
+    public function __construct(private EntityManagerInterface $entityManager, private UserRepository $userRepository, private RequestStack $requestStack, private ConversationService $conversationService)
     {
     }
 
@@ -247,6 +248,15 @@ class UserService
     public function getGroupsCreatedByUser(User $user): array
     {
         return $this->entityManager->getRepository(Group::class)->findBy(['createdBy' => $user]);
+    }
+
+    /**
+     * @param User $user
+     * @return Conversation[]
+     */
+    public function getConversationsOfUser(User $user): array
+    {
+        return $this->conversationService->getConversationsOfUser($user);
     }
 
 
