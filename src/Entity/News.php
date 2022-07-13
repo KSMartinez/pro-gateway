@@ -136,11 +136,11 @@ class News
 
 
      /**
-     * @var User 
+     * @var User|null
      */
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[Groups(['news:read'])]  
-    private User $createdBy;
+    #[Groups(['news:read'])]    
+    private ?User $createdBy;
 
 
 
@@ -322,17 +322,7 @@ class News
         return $this;
     }
 
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
-
-        return $this;
-    }
+     
 
     public function getChapo(): ?string
     {

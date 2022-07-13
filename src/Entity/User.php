@@ -457,10 +457,10 @@ class User implements UserInterface
     #[ORM\ManyToMany(targetEntity: Conversation::class, mappedBy: 'users')]
     private Collection $conversations;
 
-    /**
-     *
+  
+      /**
+     * User constructor.
      */
-
     public function __construct()
     {
         $this->notifications = new ArrayCollection();
@@ -469,6 +469,8 @@ class User implements UserInterface
         $this->candidatures = new ArrayCollection();
         $this->groupsMemberOf = new ArrayCollection();
         $this->conversations = new ArrayCollection();
+        $this->news = new ArrayCollection(); 
+
 
     }
 
