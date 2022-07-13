@@ -162,11 +162,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
 
     ],
-    /*denormalizationContext: [
+    denormalizationContext: [
         'groups' => [
             'offer:write'
         ]
-],*/  normalizationContext  : [
+],  normalizationContext  : [
     'groups' => [
         'offer:read'
     ]
