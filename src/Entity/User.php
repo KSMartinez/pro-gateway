@@ -19,6 +19,7 @@ use App\Repository\UserRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use App\Entity\News;  
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -151,6 +152,7 @@ class User implements UserInterface
     /**
      * @var string[]
      */
+    #[Groups(["user:write"])]
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
@@ -387,14 +389,19 @@ class User implements UserInterface
     private ?bool $availableToWork;
 
 
-
-
-
     /**
      * @var Collection<int, Candidature>
      */
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Candidature::class, orphanRemoval: true)]
     private Collection $candidatures;
+
+    /**
+     * @var Collection<int, News>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: News::class, orphanRemoval: true)]
+    private Collection $news;
+   
+
 
     /**
      * @var bool|null
@@ -1148,6 +1155,15 @@ class User implements UserInterface
     {
         return $this->candidatures;
     }
+
+    /**
+     * @return Collection<int, News>
+     */
+    public function getNews(): Collection
+    {
+        return $this->news;  
+    }
+   
 
     /**
      * @return bool|null

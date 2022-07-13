@@ -61,6 +61,9 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 class News
 {
 
+
+
+
     /**
      * @var int|null   
      */
@@ -79,6 +82,7 @@ class News
     private string $name;
 
 
+    
     /**
      * @var string    
      */
@@ -130,6 +134,36 @@ class News
     #[Groups(['news:read'])]
     private NewsCategory $category;
 
+
+     /**
+     * @var User 
+     */
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[Groups(['news:read'])]  
+    private User $createdBy;
+
+
+
+     /**
+     * @var string[]
+     */
+    #[ORM\Column(type: 'json')]  
+    #[Groups(["news:read"])]   
+    private array $links = [];
+
+    
+     /**
+     * @var string    
+     */
+    #[ORM\Column(type: 'text')]
+    #[Groups(['news:read'])]
+    private string $chapo;
+
+
+         
+
+  
+     
     public function getId(): ?int
     {
         return $this->id;
@@ -253,4 +287,73 @@ class News
 
         return $this;
     }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): self
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+
+    }
+
+     /**
+     * @return string[]
+     */
+    public function getLinks(): array
+    {
+        $links = $this->links;
+        
+        return array_unique($links);
+    }
+
+    /**
+     * @param string[] $links   
+     * @return $this
+     */   
+    public function setLink(array $links): self
+    {
+        $this->links = $links;
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getChapo(): ?string
+    {
+        return $this->chapo;
+    }
+
+    public function setChapo(string $chapo): self
+    {
+        $this->chapo = $chapo;
+
+        return $this;
+    }
+
+    
+   
+
+
+    
+
+    
+
+ 
+
 }
