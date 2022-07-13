@@ -77,7 +77,8 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
             SectorOfOfferFixture::class,
             LevelOfEducationFixture::class,
             EventCategoryFixture::class,
-            NewsCategoryFixture::class
+            NewsCategoryFixture::class,
+            MessageStatusFixture::class
         ];
     }
 }
