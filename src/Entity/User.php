@@ -412,7 +412,7 @@ class User implements UserInterface
     /**
      * @var Collection<int, News>
      */
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: News::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: News::class, orphanRemoval: true)]
     private Collection $news;
 
 
