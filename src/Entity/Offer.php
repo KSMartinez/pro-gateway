@@ -16,6 +16,7 @@ use App\Controller\Offer\ReactivateExpiredOfferAction;
 use App\Controller\Offer\RefuseOfferAction;
 use App\Controller\Offer\SetFulfilledOfferAction;
 use App\Controller\Offer\UpdateLogoAction;
+use App\Controller\Offer\UpdatePictureAction;
 use App\Controller\Offer\ValidateOfferAction;
 use App\Repository\OfferRepository;
 use DateTime;
@@ -29,6 +30,7 @@ use Doctrine\ORM\Mapping\PreUpdate;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Offer
@@ -145,13 +147,26 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             ]
 
         ],
+        'updatePicture' => [
+            'method' => 'POST',
+            'path' => '/offer/{id}/updatePicture',
+            'openapi_context' => [
+                'summary' => 'Use this endpoint to update only the picture of the offer, or /updateLogo by the logo. Use the PUT endpoint for all other updating'
+            ],
+            'controller' => UpdatePictureAction::class,
+            'denormalization_context' => ['groups' => ['offer:updatePicture']],
+            'input_formats' => [
+                'multipart' => ['multipart/form-data'],
+            ]
+
+        ],
 
     ],
-    denormalizationContext: [
+    /*denormalizationContext: [
         'groups' => [
             'offer:write'
         ]
-],  normalizationContext  : [
+],*/  normalizationContext  : [
     'groups' => [
         'offer:read'
     ]
@@ -159,6 +174,9 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 )]
 #[HasLifecycleCallbacks]
+/**
+ * @Vich\Uploadable()
+ */
 class Offer
 {
 
@@ -323,12 +341,41 @@ class Offer
     #[Groups(['offer:read'])]
     private ?string $logoLink = null;
 
-
     /**
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="logoLink")
      */
     #[Groups(['offer:updateLogo', 'offer:write'])]
+    #[Assert\File(
+        maxSize: '1024k',
+        mimeTypes: ['image/png', 'image/jpeg', 'image/webp'],
+    )]
+    #[Assert\Image(
+        allowSquare: true,
+        allowLandscape: false,
+        allowPortrait: false
+    )]
     public ?File $logoFile = null;
+
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['offer:read'])]
+    private ?string $image = null;
+
+    /**
+     * @Vich\UploadableField(mapping="media_object", fileNameProperty="image")
+     */
+    #[Groups(['offer:updatePicture', 'offer:write'])]
+    #[Assert\File(
+        maxSize: '1024k',
+        mimeTypes: ['image/png', 'image/jpeg', 'image/webp'],
+    )]
+    #[Assert\Image(
+        allowLandscape: true,
+        allowPortrait: false,
+    )]
+    public ?File $imageFile = null;
 
     /**
      * @var Collection<int,Candidature>
@@ -409,9 +456,10 @@ class Offer
     #[Groups(['offer:read', 'offer:write'])]
     private Collection $contacts;
 
-    /**
-     *
-     */
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $updatedAt;
+
+
     public function __construct()
     {
         $this->candidatures = new ArrayCollection();
@@ -419,7 +467,6 @@ class Offer
         $this->dateModified = new DateTime('now');
         $this->levelOfEducation = new ArrayCollection();
         $this->contacts = new ArrayCollection();
-
     }
 
 
@@ -846,6 +893,34 @@ class Offer
         $this->logoFile = $logoFile;
     }
 
+    /**
+     * @return File|null
+     */
+    public function getFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * @param File|null $imageFile
+     */
+    public function setFile(?File $imageFile): void
+    {
+        $this->imageFile = $imageFile;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
 
     /**
      * @return Collection<int, Candidature>
@@ -1090,6 +1165,18 @@ class Offer
                 $contact->setOffer(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

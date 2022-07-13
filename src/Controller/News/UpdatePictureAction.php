@@ -4,11 +4,11 @@
 namespace App\Controller\News;
 
 
-use Exception;
-use App\Entity\News; 
+use App\Entity\News;
 use App\Service\NewsService;
-use Symfony\Component\HttpKernel\Attribute\AsController;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
 /**
  * Class UpdatePictureAction
@@ -19,27 +19,18 @@ class UpdatePictureAction extends AbstractController
 {
 
     /**
-     * @var NewsService
-     */
-    private NewsService $newsService;
-
-    /**
-     * UpdatePictureAction constructor.
      * @param NewsService $newsService
      */
-    public function __construct(NewsService $newsService)
+    public function __construct(private NewsService $newsService)
     {
-        $this->newsService = $newsService;
     }
- 
 
     /**
-     * @param News $data  
      * @return News
      * @throws Exception
      */
-    public function __invoke(News $data): News
+    public function __invoke(): News
     {
-        return $this->newsService->updatePicture($data);
+        return $this->newsService->updatePicture();
     }
 }     

@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiFilter(OrderFilter::class,properties={"publishedAt":"ASC"})
@@ -58,6 +59,9 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             'news:read'
         ]
     ])]
+/**
+ * @Vich\Uploadable()
+ */
 class News
 {
 
@@ -119,6 +123,14 @@ class News
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="image")
      */
     #[Groups(['news:updatePicture'])]
+    #[Assert\File(
+        maxSize: '1024k',
+        mimeTypes: ['image/png', 'image/jpeg', 'image/webp'],
+    )]
+    #[Assert\Image(
+        allowLandscape: true,
+        allowPortrait: false,
+    )]
     public ?File $imageFile = null;
 
     #[ORM\Column(type: 'boolean')]
@@ -129,6 +141,9 @@ class News
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['news:read'])]
     private NewsCategory $category;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?DateTimeImmutable $updatedAt;
 
     public function getId(): ?int
     {
@@ -250,6 +265,18 @@ class News
     public function setCategory(NewsCategory $category): self
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

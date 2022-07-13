@@ -34,12 +34,11 @@ class UpdatePictureAction extends AbstractController
  
 
     /**
-     * @param Event $data  
      * @return Event
      * @throws Exception
      */
-    public function __invoke(Event $data): Event
+    public function __invoke(): Event
     {
-        return $this->eventService->updatePicture($data);
+        return $this->eventService->updatePicture();
     }
 }     

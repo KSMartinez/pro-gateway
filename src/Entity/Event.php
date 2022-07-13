@@ -25,6 +25,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use App\Controller\Event\DownloadParticipantListAction;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiFilter(OrderFilter::class,properties={"startAt":"ASC"})
@@ -83,7 +84,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
             'event:read'
         ]
     ]
-)]  
+)]
+/**
+ * @Vich\Uploadable()
+ */
 class Event
 {
 
@@ -214,7 +218,18 @@ class Event
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="image")
      */
     #[Groups(['event:updatePicture'])]
+    #[Assert\File(
+        maxSize: '1024k',
+        mimeTypes: ['image/png', 'image/jpeg', 'image/webp'],
+    )]
+    #[Assert\Image(
+        allowLandscape: true,
+        allowPortrait: false,
+    )]
     public ?File $imageFile = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?DatetimeImmutable $updatedAt;
 
 
     
@@ -426,6 +441,18 @@ class Event
     public function setFile(?File $imageFile): void
     {
         $this->imageFile = $imageFile;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
     }
 
 }

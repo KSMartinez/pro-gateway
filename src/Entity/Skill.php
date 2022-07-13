@@ -4,6 +4,8 @@ namespace App\Entity;
 
 
 
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\CV;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\SkillRepository;
@@ -14,6 +16,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
     collectionOperations: ['get', 'post'],
     itemOperations: ['get', 'put', 'delete']
 )]
+#[ApiFilter(SearchFilter::class, properties: ['cv' => 'exact'])]
 class Skill
 {
 

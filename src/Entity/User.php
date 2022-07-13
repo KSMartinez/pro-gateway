@@ -25,6 +25,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiFilter(SearchFilter::class, properties={
@@ -56,7 +57,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     ],
 
 
-    
+
 ],
     itemOperations        : [
         'get','put','delete', 'patch',
@@ -75,6 +76,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             'denormalization_context' => ['groups' => ['user:updatePicture']],
             'input_formats' => [
                 'multipart' => ['multipart/form-data'],
+                'json' => ['application/json'],
             ]
 
          ],
@@ -98,7 +100,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             'controller' => ShowPDFAction::class,
         ],
 
-       
+
     'user_events' => [
         'method' => 'GET',
         'path' => '/userEvents/{id}',
@@ -108,11 +110,11 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 
         ],
-    // normalizationContext: [
-    //     "groups" => [
-    //         "user:read"
-    //     ]
-    // ],
+     /*normalizationContext: [
+         "groups" => [
+             "user:read"
+         ]
+     ],*/
     shortName             : "users",
     denormalizationContext: [
         'groups' => [
@@ -120,7 +122,10 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
         ]
     ],
 
-)]  
+)]
+/**
+ * @Vich\Uploadable()
+ */
 class User implements UserInterface
 {
     const ROLE_ADMIN = 'ROLE_ADMIN';
@@ -227,12 +232,21 @@ class User implements UserInterface
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="imageLink")
      */
     #[Groups(['user:updatePicture'])]
+    #[Assert\File(
+        maxSize: '1024k',
+        mimeTypes: ['image/png', 'image/jpeg', 'image/webp'],
+    )]
+    #[Assert\Image(
+        allowSquare: true,
+        allowLandscape: false,
+        allowPortrait: false,
+    )]
     public ?File $image = null;
 
-
      /**
-     * @var string
+     * @var string|null
      */
+    /*#[Groups(['user:read'])]*/
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $imageLink;
 
@@ -387,9 +401,6 @@ class User implements UserInterface
     private ?bool $availableToWork;
 
 
-
-
-
     /**
      * @var Collection<int, Candidature>
      */
@@ -443,6 +454,9 @@ class User implements UserInterface
      */
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: GroupMember::class, orphanRemoval: true)]
     private Collection $groupsMemberOf;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $updatedAt;
 
     /**
      *
@@ -1266,6 +1280,18 @@ class User implements UserInterface
     public function getGroupsMemberOf(): Collection
     {
         return $this->groupsMemberOf;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
     }
 
 

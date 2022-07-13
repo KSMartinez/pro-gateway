@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Service;
 
 use App\Entity\Offer;
@@ -11,60 +10,29 @@ use App\Repository\OfferStatusRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Security;
 
-/**
- *
- */
 class OfferService
 {
-
     /**
-     * @var EntityManagerInterface
-     */
-    private EntityManagerInterface $entityManager;
-
-     /**
-     * @var OfferRepository      
-     */
-    private OfferRepository $offerRepository;
-
-    /**
-     * @param NotificationService    $notificationService
-     * @param OfferStatusRepository  $offerStatusRepository
+     * @param NotificationService $notificationService
+     * @param OfferStatusRepository $offerStatusRepository
+     * @param Security $security
      * @param EntityManagerInterface $entityManager
-     * @param OfferRepository        $offerRepository
+     * @param OfferRepository $offerRepository
+     * @param RequestStack $requestStack
      */
-    public function __construct(private NotificationService $notificationService, private OfferStatusRepository $offerStatusRepository, private Security $security, EntityManagerInterface $entityManager, OfferRepository $offerRepository)
+    public function __construct(
+        private NotificationService    $notificationService,
+        private OfferStatusRepository  $offerStatusRepository,
+        private Security               $security,
+        private EntityManagerInterface $entityManager,
+        private OfferRepository        $offerRepository,
+        private RequestStack           $requestStack
+    )
     {
-        $this->offerRepository = $offerRepository;
-        $this->entityManager = $entityManager;
-    }
-
-    /**
-     * @param Offer $offer
-     * @return Offer
-     * @throws Exception
-     */
-    public function validateOffer(Offer $offer): Offer
-    {
-
-        if (!$offer->getId()) {
-            throw new Exception('The offer should have an id for updating');
-        }
-        if (!$this->offerRepository->find($offer->getId())) {
-            throw new Exception('The offer should have an id for updating');
-        }
-
-        $offerStatusPubliee = $this->getOfferStatus(OfferStatus::PUBLIEE);
-
-        $offer->setOfferStatus($offerStatusPubliee);
-
-        $this->entityManager->persist($offer);
-        $this->entityManager->flush();
-
-        return $offer;
-
     }
 
     /**
@@ -80,10 +48,10 @@ class OfferService
         $user = $this->security->getUser();
 
         //check if user is admin
-        if (in_array(User::ROLE_ADMIN, $user->getRoles())){
+        if (in_array(User::ROLE_ADMIN, $user->getRoles())) {
 
             $offerStatusToSet = $this->getOfferStatus(OfferStatus::PUBLIEE);
-        }else{
+        } else {
             $offerStatusToSet = $this->getOfferStatus(OfferStatus::ATTENTE_DE_VALIDATION);
         }
         $offer->setOfferStatus($offerStatusToSet);
@@ -95,30 +63,6 @@ class OfferService
         $this->entityManager->flush();
 
         return $offer;
-
-    }
-
-
-    /**
-     * @param offer $offer
-     * @return offer  
-     * @throws Exception
-     */
-    public function updateLogo(Offer $offer): Offer
-    {
-
-        if (!$offer->getId()) {
-            throw new Exception('The offer should have an id for updating');
-        }
-        if (!$this->offerRepository->find($offer->getId())) {
-            throw new Exception('The offer should have an id for updating');
-
-        }
-
-        $this->entityManager->persist($offer);
-        $this->entityManager->flush();
-        return $offer;
-
 
     }
 
@@ -137,6 +81,70 @@ class OfferService
     }
 
     /**
+     * @return offer
+     * @throws Exception
+     */
+    public function updateLogo(): Offer
+    {
+        if ($this->requestStack->getCurrentRequest() === null) {
+            throw new Exception('Request is null');
+        }
+        $request = $this->requestStack->getCurrentRequest();
+        $object = $request->attributes->get('data');
+        if (!($object instanceof Offer)) {
+            throw new \RuntimeException('The object does not match');
+        }
+        if (!$object->getId()) {
+            throw new Exception('The user should have an id for updating');
+        }
+        if (!$this->offerRepository->find($object->getId())) {
+            throw new Exception('The user should have an id for updating');
+        }
+
+        $file = $request->files->get('logoFile');
+        if ($file instanceof File) {
+            $object->setLogoFile($file);
+            $object->setUpdatedAt(new \DateTimeImmutable());
+            $this->entityManager->persist($object);
+            $this->entityManager->flush();
+        }
+
+        return $object;
+    }
+
+    /**
+     * @return Offer
+     * @throws Exception
+     */
+    public function updatePicture(): Offer
+    {
+        if ($this->requestStack->getCurrentRequest() === null) {
+            throw new Exception('Request is null');
+        }
+        $request = $this->requestStack->getCurrentRequest();
+        $object = $request->attributes->get('data');
+        if (!($object instanceof Offer)) {
+            throw new \RuntimeException('The object does not match');
+        }
+        if (!$object->getId()) {
+            throw new Exception('The user should have an id for updating');
+        }
+        if (!$this->offerRepository->find($object->getId())) {
+            throw new Exception('The user should have an id for updating');
+        }
+        $file = $request->files->get('imageFile');
+        if ($file instanceof File) {
+            $object->setFile($file);
+            $object->setUpdatedAt(new \DateTimeImmutable());
+            $this->entityManager->persist($object);
+            $this->entityManager->flush();
+        }
+
+        return $object;
+    }
+
+
+    /**
      * @param Offer $offer
      * @return Offer
      * @throws Exception
@@ -144,7 +152,6 @@ class OfferService
     public function refuseOffer(Offer $offer): Offer
     {
         $offerStatusRefuse = $this->getOfferStatus(OfferStatus::REFUSE);
-
 
 
         $offer->setOfferStatus($offerStatusRefuse);
@@ -168,25 +175,6 @@ class OfferService
 
 
         $offer->setOfferStatus($offerStatusArchivee);
-
-
-        $this->entityManager->persist($offer);
-        $this->entityManager->flush();
-
-        return $offer;
-    }
-
-    /**
-     * @param Offer $offer
-     * @return Offer
-     * @throws Exception
-     */
-    public function deleteOffer(Offer $offer): Offer
-    {
-        $offerStatusSupprime = $this->getOfferStatus(OfferStatus::SUPPRIMEE);
-
-
-        $offer->setOfferStatus($offerStatusSupprime);
 
 
         $this->entityManager->persist($offer);
@@ -238,9 +226,9 @@ class OfferService
 
         /** @var User $user */
         $user = $this->security->getUser();
-        if (in_array(User::ROLE_ADMIN, $user->getRoles())){
+        if (in_array(User::ROLE_ADMIN, $user->getRoles())) {
             $offerStatusToSet = $this->getOfferStatus(OfferStatus::PUBLIEE);
-        }else{
+        } else {
             $offerStatusToSet = $this->getOfferStatus(OfferStatus::ATTENTE_DE_VALIDATION);
         }
 
@@ -255,8 +243,8 @@ class OfferService
 
     /**
      * @param array<string> $ids
-     * @throws Exception
      * @return void
+     * @throws Exception
      */
     public function deleteMultipleOffers(array $ids)
     {
@@ -270,6 +258,25 @@ class OfferService
     }
 
     /**
+     * @param Offer $offer
+     * @return Offer
+     * @throws Exception
+     */
+    public function deleteOffer(Offer $offer): Offer
+    {
+        $offerStatusSupprime = $this->getOfferStatus(OfferStatus::SUPPRIMEE);
+
+
+        $offer->setOfferStatus($offerStatusSupprime);
+
+
+        $this->entityManager->persist($offer);
+        $this->entityManager->flush();
+
+        return $offer;
+    }
+
+    /**
      * @param array<string> $ids
      * @return void
      * @throws Exception
@@ -279,10 +286,36 @@ class OfferService
         foreach ($ids as $id) {
 
             $offer = $this->offerRepository->find($id);
-            if ($offer){
+            if ($offer) {
                 $this->validateOffer($offer);
             }
         }
+    }
+
+    /**
+     * @param Offer $offer
+     * @return Offer
+     * @throws Exception
+     */
+    public function validateOffer(Offer $offer): Offer
+    {
+
+        if (!$offer->getId()) {
+            throw new Exception('The offer should have an id for updating');
+        }
+        if (!$this->offerRepository->find($offer->getId())) {
+            throw new Exception('The offer should have an id for updating');
+        }
+
+        $offerStatusPubliee = $this->getOfferStatus(OfferStatus::PUBLIEE);
+
+        $offer->setOfferStatus($offerStatusPubliee);
+
+        $this->entityManager->persist($offer);
+        $this->entityManager->flush();
+
+        return $offer;
+
     }
 
 

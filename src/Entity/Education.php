@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Education\CheckDatasAction;
 use App\Repository\EducationRepository;
 use DateTimeInterface;
@@ -20,7 +22,8 @@ use Doctrine\ORM\Mapping as ORM;
         ],
     ],
 
-)]   
+)]
+#[ApiFilter(SearchFilter::class, properties: ['cv' => 'exact'])]
 class Education
 {
 
