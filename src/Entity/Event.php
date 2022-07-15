@@ -537,12 +537,12 @@ class Event
         return $this;
     }
 
-    public function getRegister(): ?bool
-    {
+    public function getRegister(): bool
+    { 
         return $this->register;
     }
 
-    public function setRegister(?bool $register): self
+    public function setRegister(bool $register): self
     {
         $this->register = $register;
 
@@ -554,7 +554,7 @@ class Event
         return $this->registerBegin;
     }
 
-    public function setRegisterBegin(?\DateTimeInterface $registerBegin): self
+    public function setRegisterBegin(?\DateTime $registerBegin): self
     {
         $this->registerBegin = $registerBegin;
 
@@ -566,7 +566,7 @@ class Event
         return $this->registerEnd;
     }
 
-    public function setRegisterEnd(?\DateTimeInterface $registerEnd): self
+    public function setRegisterEnd(?\DateTime $registerEnd): self
     {
         $this->registerEnd = $registerEnd;
 
@@ -597,16 +597,27 @@ class Event
         return $this;
     }
 
-    public function getQuestions(): ?array
+   /**
+     * @return string[]
+     */
+    public function getQuestions(): array
     {
-        return $this->questions;
-    }
+        $questions = $this->questions;
 
-    public function setQuestions(?array $questions): self
+        return array_unique($questions);
+    }
+  
+    /**
+     * @param string[] $questions
+     * @return $this
+     */
+    public function setQuestions(array $questions): self
     {
         $this->questions = $questions;
 
         return $this;
     }
+
+
 
 }
