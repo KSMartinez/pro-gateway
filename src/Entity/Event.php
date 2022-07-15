@@ -3,8 +3,8 @@
 namespace App\Entity;
 
 
-use App\Entity\User;
 use DateTime;
+use App\Entity\User;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Faker\Provider\UserAgent;
@@ -20,12 +20,13 @@ use App\Controller\Event\ParticipantListAction;
 use Symfony\Component\HttpFoundation\File\File;
 use App\Controller\Event\RandomEventsListAction;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints\Time;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\Event\DownloadParticipantListAction;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiFilter(OrderFilter::class,properties={"startAt":"ASC"})
@@ -228,9 +229,66 @@ class Event
     )]
     public ?File $imageFile = null;
 
+
+
+    /**
+     * @var DatetimeImmutable
+     */
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?DatetimeImmutable $updatedAt;
 
+
+    /**
+     * @var string  
+     */  
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $startingHour;  
+
+    
+      /**
+     * @var string
+     */
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $endingHour;
+
+      /**
+     * @var boolean 
+     */
+    #[ORM\Column(type: 'boolean')]
+    private bool $register = false;
+
+
+       /**
+     * @var DateTime
+     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?DateTime $registerBegin;
+
+       /**
+     * @var DateTime
+     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?DateTime $registerEnd;
+
+
+    /**
+     * @var boolean
+     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $handicapes;  
+
+
+    /**
+     * @var string  
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $link;
+
+    /**
+     * @var string[]
+     */
+    #[ORM\Column(type: 'json', nullable: true)]
+    private array $questions = [];
 
     
     public function __construct()
@@ -451,6 +509,102 @@ class Event
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getStartingHour(): ?string
+    {
+        return $this->startingHour;
+    }
+
+    public function setStartingHour(?string $startingHour): self
+    {
+        $this->startingHour = $startingHour;
+
+        return $this;
+    }
+
+    public function getEndingHour(): ?string
+    {
+        return $this->endingHour;
+    }
+
+    public function setEndingHour(?string $endingHour): self
+    {
+        $this->endingHour = $endingHour;
+
+        return $this;
+    }
+
+    public function getRegister(): ?bool
+    {
+        return $this->register;
+    }
+
+    public function setRegister(?bool $register): self
+    {
+        $this->register = $register;
+
+        return $this;
+    }
+
+    public function getRegisterBegin(): ?\DateTimeInterface
+    {
+        return $this->registerBegin;
+    }
+
+    public function setRegisterBegin(?\DateTimeInterface $registerBegin): self
+    {
+        $this->registerBegin = $registerBegin;
+
+        return $this;
+    }
+
+    public function getRegisterEnd(): ?\DateTimeInterface
+    {
+        return $this->registerEnd;
+    }
+
+    public function setRegisterEnd(?\DateTimeInterface $registerEnd): self
+    {
+        $this->registerEnd = $registerEnd;
+
+        return $this;
+    }
+
+    public function getHandicapes(): ?bool
+    {
+        return $this->handicapes;
+    }
+
+    public function setHandicapes(?bool $handicapes): self
+    {
+        $this->handicapes = $handicapes;
+
+        return $this;
+    }
+
+    public function getLink(): ?string
+    {
+        return $this->link;
+    }
+
+    public function setLink(?string $link): self
+    {
+        $this->link = $link;
+
+        return $this;
+    }
+
+    public function getQuestions(): ?array
+    {
+        return $this->questions;
+    }
+
+    public function setQuestions(?array $questions): self
+    {
+        $this->questions = $questions;
 
         return $this;
     }
