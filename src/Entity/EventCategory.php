@@ -26,7 +26,7 @@ class EventCategory
     /**
      * @var Collection<int, Event>
      */
-    #[ORM\OneToMany(mappedBy: 'eventCategory', targetEntity: Event::class)]
+    #[ORM\OneToMany(mappedBy: 'category', targetEntity: Event::class)]
     private Collection $events;
 
     public function __construct()
