@@ -61,4 +61,32 @@ class ConversationServiceTest extends KernelTestCase
         assertEquals(3, sizeof($conversations));
 
     }
+
+    public function testGetConversationBetweenTwoUsers(){
+
+        $user1 = UserFactory::random();
+        $user2 = UserFactory::random();
+        $user3 = UserFactory::random();
+
+        $conversation1 = factory(Conversation::class)->create(['users' => [$user1, $user2] ]);
+        $conversation2 = factory(Conversation::class)->create(['users' => [$user1, $user3] ]);
+        factory(Conversation::class)->create(['users' => [$user1, $user3, $user2] ]);
+        //$user1 = $this->entityManager->getRepository(User::class)->find($user1->object()->getId());
+
+        /** @var ConversationService $service */
+        $service = $this->c->get(ConversationService::class);
+
+        /** @var Conversation $conversation */
+        $conversation = $service->getConversationBetweenTwoUsers($user1->object(), $user2->object());
+
+        assertEquals($conversation1->object()->getId(), $conversation->getId());
+
+       /* $user4 = UserFactory::random();
+
+        factory(Conversation::class)->create(['users' => [$user1, $user4]]);
+        $conversations = $service->getConversationsOfUser($user1->object());
+
+        assertEquals(3, sizeof($conversations));*/
+
+    }
 }

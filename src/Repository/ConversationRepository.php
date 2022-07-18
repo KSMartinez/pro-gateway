@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Conversation;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -37,8 +39,8 @@ class ConversationRepository extends ServiceEntityRepository
     }
 
     /**
-     * @throws ORMException
-     * @throws OptimisticLockException
+     * @param Conversation $entity
+     * @param bool         $flush
      */
     public function remove(Conversation $entity, bool $flush = true): void
     {
@@ -76,4 +78,50 @@ class ConversationRepository extends ServiceEntityRepository
         ;
     }
     */
+    /**
+     * @param User $user
+     * @return Conversation[]
+     */
+    public function getConversationsOfUser(User $user): array
+    {
+        $qb = $this->createQueryBuilder('c')
+                   ->innerJoin('c.users', 'u')
+                   ->andWhere('u = :user')
+                   ->setParameter(':user', $user)
+                   ->getQuery();
+
+        return $qb->getResult();
+    }
+
+    /**
+     * @param User $user1
+     * @param User $user2
+     * @return Conversation|null
+     * @throws NonUniqueResultException
+     */
+    public function getConversationBetweenUsers(User $user1, User $user2): ?Conversation
+    {
+
+        $qb = $this->createQueryBuilder('c')
+                   ->innerJoin('c.users', 'u')
+                   ->groupBy('c.id')
+            // 2 because we have two users. This can be extended to multiple users if we have groups conversations.
+                   ->having('COUNT(u) = 2');
+
+        //user 1
+        $qb->innerJoin('c.users', 'u' . $user1->getId())
+            ->andWhere('u'.$user1->getId().'.id IN (:user1_id)')
+            ->setParameter(':user1_id', $user1->getId());
+
+        //user2
+        $qb->innerJoin('c.users', 'u' . $user2->getId())
+           ->andWhere('u'.$user2->getId().'.id IN (:user2_id)')
+           ->setParameter(':user2_id', $user2->getId());
+
+        /** @var Conversation|null $result */
+        $result =  $qb->getQuery()->getOneOrNullResult();
+
+        return $result;
+
+    }
 }

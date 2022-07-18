@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\Conversation\CreateConversationAction;
+use App\Controller\Conversation\GetConversationsOfUserAction;
 use App\Repository\ConversationRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,10 +18,19 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: ConversationRepository::class)]
 #[ApiResource(
     collectionOperations  : [
-        'get', 'post'
+        'get',
+        'post' => [
+            'controller' => CreateConversationAction::class,
+        ]
     ],
     itemOperations        : [
-        'get', 'delete'
+        'get', 'delete',
+        'conversationsByUser' => [
+            'method' => 'GET',
+            'path' => 'conversations/user/{id}',
+            'controller' => GetConversationsOfUserAction::class,
+            'read' => false
+        ]
     ],
     denormalizationContext: [
         'groups' => [

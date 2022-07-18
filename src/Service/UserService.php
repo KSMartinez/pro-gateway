@@ -15,15 +15,16 @@ class UserService
 {
     /**
      * @param EntityManagerInterface $entityManager
-     * @param UserRepository $userRepository
-     * @param RequestStack $requestStack
+     * @param UserRepository         $userRepository
+     * @param RequestStack           $requestStack
      */
-    public function __construct(private EntityManagerInterface $entityManager, private UserRepository $userRepository, private RequestStack $requestStack, private ConversationService $conversationService)
+    public function __construct(private EntityManagerInterface $entityManager, private UserRepository $userRepository, private RequestStack $requestStack)
     {
     }
 
     /**
      * @param User $user
+     * @param bool $charteSigned
      * @return User
      */
     public function charteUtilisation(User $user, bool $charteSigned)
@@ -250,14 +251,7 @@ class UserService
         return $this->entityManager->getRepository(Group::class)->findBy(['createdBy' => $user]);
     }
 
-    /**
-     * @param User $user
-     * @return Conversation[]
-     */
-    public function getConversationsOfUser(User $user): array
-    {
-        return $this->conversationService->getConversationsOfUser($user);
-    }
+
 
 
 }
