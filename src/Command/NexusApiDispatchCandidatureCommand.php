@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
     name       : 'app:nexus:api',
     description: 'Calls the Nexus API (referred as the Intermediate API) for ReseauPro',
 )]
-class NexusApiCommand extends Command
+class NexusApiDispatchCandidatureCommand extends Command
 {
 
     protected string $name = 'app:nexus:api';
