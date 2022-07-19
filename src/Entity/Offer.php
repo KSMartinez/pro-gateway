@@ -19,6 +19,7 @@ use App\Controller\Offer\UpdateLogoAction;
 use App\Controller\Offer\UpdatePictureAction;
 use App\Controller\Offer\ValidateOfferAction;
 use App\Repository\OfferRepository;
+use App\Validator\Constraints\Offer as Assert;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -30,7 +31,8 @@ use Doctrine\ORM\Mapping\PreUpdate;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints as AssertVendor;
+
 
 /**
  * Class Offer
@@ -345,15 +347,7 @@ class Offer
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="logoLink")
      */
     #[Groups(['offer:updateLogo', 'offer:write'])]
-    #[Assert\File(
-        maxSize: '1024k',
-        mimeTypes: ['image/png', 'image/jpeg', 'image/webp'],
-    )]
-    #[Assert\Image(
-        allowSquare: true,
-        allowLandscape: false,
-        allowPortrait: false
-    )]
+    #[Assert\ImageFileRequirements]
     public ?File $logoFile = null;
 
     /**
@@ -367,14 +361,7 @@ class Offer
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="image")
      */
     #[Groups(['offer:updatePicture', 'offer:write'])]
-    #[Assert\File(
-        maxSize: '1024k',
-        mimeTypes: ['image/png', 'image/jpeg', 'image/webp'],
-    )]
-    #[Assert\Image(
-        allowLandscape: true,
-        allowPortrait: false,
-    )]
+    #[Assert\ImageFileRequirements]
     public ?File $imageFile = null;
 
     /**

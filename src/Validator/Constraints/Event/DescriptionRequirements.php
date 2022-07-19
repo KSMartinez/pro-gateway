@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Validator\Constraints\Event;
+
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Compound;
+
+#[\Attribute]
+class DescriptionRequirements extends Compound
+{
+    /**
+     * @param Constraint[] $options
+     * @return Constraint[]
+     */
+    protected function getConstraints(array $options): array
+    {
+        return [
+            new Assert\NotNull(),
+            new Assert\NotBlank(),
+            new Assert\Type('string'),
+            new Assert\Length(['min' => 12])
+        ];
+    }
+}

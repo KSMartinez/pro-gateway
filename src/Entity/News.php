@@ -14,7 +14,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\Constraints\News as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as AssertVendor;
 
 /**
  * @ApiFilter(OrderFilter::class,properties={"publishedAt":"ASC"})
@@ -36,7 +38,6 @@ use Symfony\Component\Validator\Constraints as Assert;
             'path' => '/randomEventsList',
             'controller' => RandomEventsListAction::class,
         ],
-
     ],
     itemOperations      : [
         'get', 'put', 'delete',
@@ -51,7 +52,6 @@ use Symfony\Component\Validator\Constraints as Assert;
             'input_formats' => [
                 'multipart' => ['multipart/form-data'],
             ]
-
         ],
     ],
     normalizationContext: [
@@ -64,10 +64,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class News
 {
-
-
-
-
     /**
      * @var int|null   
      */
@@ -77,23 +73,21 @@ class News
     #[Groups(['news:read'])]
     private ?int $id = null;
 
-
     /**
      * @var string    
      */
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\TitleRequirements]
     #[Groups(['news:read'])]
-    private string $name;
-
-
+    private string $title;
 
     /**
      * @var string    
      */
     #[ORM\Column(type: 'text')]
+    #[Assert\DescriptionRequirements]
     #[Groups(['news:read'])]
     private string $description;
-
 
     /**
      * @var boolean     
@@ -102,14 +96,12 @@ class News
     #[Groups(['news:read'])]
     private bool $forAllUniversities;
 
-
     /**
      * @var string|null  
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups(['news:read'])]
     private ?string $university;
-
 
     /**
      * @var DateTimeImmutable
@@ -127,14 +119,7 @@ class News
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="image")
      */
     #[Groups(['news:updatePicture'])]
-    #[Assert\File(
-        maxSize: '1024k',
-        mimeTypes: ['image/png', 'image/jpeg', 'image/webp'],
-    )]
-    #[Assert\Image(
-        allowLandscape: true,
-        allowPortrait: false,
-    )]
+    #[Assert\ImageFileRequirements]
     public ?File $imageFile = null;
 
     #[ORM\Column(type: 'boolean')]
@@ -149,15 +134,12 @@ class News
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?DateTimeImmutable $updatedAt;
 
-
      /**
      * @var User|null
      */
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[Groups(['news:read'])]
     private ?User $createdBy;
-
-
 
      /**
      * @var string[]
@@ -166,7 +148,6 @@ class News
     #[Groups(["news:read"])]
     private array $links = [];
 
-
      /**
      * @var string
      */
@@ -174,24 +155,19 @@ class News
     #[Groups(['news:read'])]
     private string $chapo;
 
-
-
-
-
-
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getTitle(): ?string
     {
-        return $this->name;
+        return $this->title;
     }
 
-    public function setName(string $name): self
+    public function setTitle(string $title): self
     {
-        $this->name = $name;
+        $this->title = $title;
 
         return $this;
     }
@@ -348,7 +324,6 @@ class News
 
         return $this;
     }
-
 
 
     public function getChapo(): ?string

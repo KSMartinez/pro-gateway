@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Validator\Constraints\NewsCategory as Assert;
 
 #[ORM\Entity(repositoryClass: NewsCategoryRepository::class)]
 #[ApiResource]
@@ -20,6 +21,7 @@ class NewsCategory
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\TitleRequirements]
     #[Groups(['news:read'])]
     private string $title;
 

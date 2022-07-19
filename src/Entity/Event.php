@@ -23,7 +23,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints\Time;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\Constraints\Event as Assert;
+use Symfony\Component\Validator\Constraints as AssertVendor;
 use App\Controller\Event\DownloadParticipantListAction;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
@@ -107,6 +108,7 @@ class Event
      * @var string   
      */
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\TitleRequirements]
     #[Groups(['event:read'])]
     private string $title;
 
@@ -116,6 +118,7 @@ class Event
      * @var string
      */
     #[ORM\Column(type: 'text')]
+    #[Assert\DescriptionRequirements]
     #[Groups(['event:read'])]
     private string $description;
 
@@ -211,6 +214,7 @@ class Event
      * @var string|null  
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[AssertVendor\Valid()]
     #[Groups(['event:read'])]
     private ?string $image;
 
@@ -219,14 +223,7 @@ class Event
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="image")
      */
     #[Groups(['event:updatePicture'])]
-    #[Assert\File(
-        maxSize: '1024k',
-        mimeTypes: ['image/png', 'image/jpeg', 'image/webp'],
-    )]
-    #[Assert\Image(
-        allowLandscape: true,
-        allowPortrait: false,
-    )]
+    #[Assert\ImageFileRequirements]
     public ?File $imageFile = null;
 
 

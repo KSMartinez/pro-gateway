@@ -26,7 +26,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints as AssertVendor;
+use App\Validator\Constraints\User as Assert;
 
 /**
  * @ApiFilter(SearchFilter::class, properties={
@@ -47,7 +48,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
-
     collectionOperations  : [
     'get',
     'post',
@@ -56,9 +56,6 @@ use Symfony\Component\Validator\Constraints as Assert;
         'path' => '/annuaireList',
         'controller' => UserListAction::class,
     ],
-
-
-
 ],
     itemOperations        : [
         'get','put','delete', 'patch',
@@ -107,8 +104,6 @@ use Symfony\Component\Validator\Constraints as Assert;
         'path' => '/userEvents/{id}',
         'controller' => UserEventsAction::class,
     ],
-
-
 
         ],
      /*normalizationContext: [
@@ -234,15 +229,7 @@ class User implements UserInterface
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="imageLink")
      */
     #[Groups(['user:updatePicture'])]
-    #[Assert\File(
-        maxSize: '1024k',
-        mimeTypes: ['image/png', 'image/jpeg', 'image/webp'],
-    )]
-    #[Assert\Image(
-        allowSquare: true,
-        allowLandscape: false,
-        allowPortrait: false,
-    )]
+    #[Assert\ImageFileRequirements]
     public ?File $image = null;
 
      /**
