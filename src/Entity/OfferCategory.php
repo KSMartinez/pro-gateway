@@ -37,7 +37,7 @@ class OfferCategory
      */
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['offer:read'])]
-    private string $type;
+    private string $label;
 
     /**
      * @var Collection<int, Offer>
@@ -61,18 +61,18 @@ class OfferCategory
     /**
      * @return string|null
      */
-    public function getType(): ?string
+    public function getLabel(): ?string
     {
-        return $this->type;
+        return $this->label;
     }
 
     /**
-     * @param string $type
+     * @param string $label
      * @return $this
      */
-    public function setType(string $type): self
+    public function setLabel(string $label): self
     {
-        $this->type = $type;
+        $this->label = $label;
 
         return $this;
     }

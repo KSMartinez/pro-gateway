@@ -28,7 +28,7 @@ class OfferCategoryFixture extends Fixture
         foreach ($offerCategories as $offerCategory) {
 
             $domainObj = new OfferCategory();
-            $domainObj->setType($offerCategory);
+            $domainObj->setLabel($offerCategory);
             $manager->persist($domainObj);
         }
 
