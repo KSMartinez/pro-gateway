@@ -45,7 +45,7 @@ final class NewsFactory extends ModelFactory
     {
         return [
             // TODO add your default values here (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories)
-            'name' => self::faker()->text(50),
+            'title' => self::faker()->text(50),
             'description' => self::faker()->paragraphs(3, true),
             'forAllUniversities' => self::faker()->boolean(),
             'university' => self::faker()->company(),
