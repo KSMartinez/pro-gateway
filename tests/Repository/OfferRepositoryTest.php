@@ -33,7 +33,7 @@ class OfferRepositoryTest extends KernelTestCase
                          ->setCompanyName("Test Company")
                          ->setCountry("France")
                          ->setDescription("This is a test job for testing with a lot of tests")
-                         ->setDomain((new Domain())->setName("Test Domain"))
+                         ->setDomain((new Domain())->setLabel("Test Domain"))
                          ->setIsActive(true)
                          ->setMaxSalary(300)
                          ->setMinSalary(100)

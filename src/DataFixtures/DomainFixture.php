@@ -43,7 +43,7 @@ class DomainFixture extends Fixture
         foreach ($domains as $domain) {
 
             $domainObj = new Domain();
-            $domainObj->setName($domain);
+            $domainObj->setLabel($domain);
             $manager->persist($domainObj);
         }
 

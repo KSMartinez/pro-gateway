@@ -54,7 +54,7 @@ class Domain
      */
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['offer:read'])]
-    private string $name;
+    private string $label;
 
     /**
      * @var Collection<int, Offer>
@@ -81,18 +81,18 @@ class Domain
     /**
      * @return string|null
      */
-    public function getName(): ?string
+    public function getLabel(): ?string
     {
-        return $this->name;
+        return $this->label;
     }
 
     /**
-     * @param string $name
+     * @param string $label
      * @return $this
      */
-    public function setName(string $name): self
+    public function setLabel(string $label): self
     {
-        $this->name = $name;
+        $this->label = $label;
 
         return $this;
     }
