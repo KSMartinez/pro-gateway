@@ -413,7 +413,7 @@ class Offer
      */
     #[ORM\ManyToMany(targetEntity: LevelOfEducation::class, inversedBy: 'offers')]
     #[Groups(['offer:read', 'offer:write'])]
-    private Collection $levelOfEducation;
+    private Collection $levelOfEducations;
 
     /**
      * @var string|null
@@ -452,7 +452,7 @@ class Offer
         $this->candidatures = new ArrayCollection();
         $this->datePosted = new DateTime('now');
         $this->dateModified = new DateTime('now');
-        $this->levelOfEducation = new ArrayCollection();
+        $this->levelOfEducations = new ArrayCollection();
         $this->contacts = new ArrayCollection();
     }
 
@@ -1015,18 +1015,18 @@ class Offer
     /**
      * @return Collection<int, LevelOfEducation>
      */
-    public function getLevelOfEducation(): Collection
+    public function getLevelOfEducations(): Collection
     {
-        return $this->levelOfEducation;
+        return $this->levelOfEducations;
     }
 
     /**
-     * @param Collection<int,LevelOfEducation> $levelOfEducation
+     * @param Collection<int,LevelOfEducation> $levelOfEducations
      * @return $this
      */
-    public function setLevelOfEducation(Collection $levelOfEducation): self
+    public function setLevelOfEducations(Collection $levelOfEducations): self
     {
-        $this->levelOfEducation = $levelOfEducation;
+        $this->levelOfEducations = $levelOfEducations;
 
         return $this;
     }
@@ -1039,8 +1039,8 @@ class Offer
     public function addLevelOfEducation(LevelOfEducation $levelOfEducation): Offer
     {
 
-        if (!$this->levelOfEducation->contains($levelOfEducation)){
-            $this->levelOfEducation->add($levelOfEducation);
+        if (!$this->levelOfEducations->contains($levelOfEducation)){
+            $this->levelOfEducations->add($levelOfEducation);
             $levelOfEducation->addOffer($this);
         }
 
@@ -1053,8 +1053,8 @@ class Offer
      */
     public function removeLevelOfEducation(LevelOfEducation $levelOfEducation): Offer
     {
-        if ($this->levelOfEducation->contains($levelOfEducation)){
-            $this->levelOfEducation->removeElement($levelOfEducation);
+        if ($this->levelOfEducations->contains($levelOfEducation)){
+            $this->levelOfEducations->removeElement($levelOfEducation);
             $levelOfEducation->removeOffer($this);
         }
 
