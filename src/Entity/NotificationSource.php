@@ -36,7 +36,7 @@ class NotificationSource
      * @var string
      */
     #[ORM\Column(type: 'string', length: 255)]
-    private string $sourceLabel;
+    private string $label;
 
     /**
      * @return int|null
@@ -49,18 +49,18 @@ class NotificationSource
     /**
      * @return string|null
      */
-    public function getSourceLabel(): ?string
+    public function getLabel(): ?string
     {
-        return $this->sourceLabel;
+        return $this->label;
     }
 
     /**
-     * @param string $sourceLabel
+     * @param string $label
      * @return $this
      */
-    public function setSourceLabel(string $sourceLabel): self
+    public function setLabel(string $label): self
     {
-        $this->sourceLabel = $sourceLabel;
+        $this->label = $label;
 
         return $this;
     }

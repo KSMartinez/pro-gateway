@@ -20,21 +20,21 @@ class MessageStatus
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private string $status;
+    private string $label;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getStatus(): ?string
+    public function getLabel(): ?string
     {
-        return $this->status;
+        return $this->label;
     }
 
-    public function setStatus(string $status): self
+    public function setLabel(string $label): self
     {
-        $this->status = $status;
+        $this->label = $label;
 
         return $this;
     }

@@ -37,7 +37,7 @@ class GroupMemberStatus
      */
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(["group_member.read"])]
-    private string $status;
+    private string $label;
 
     /**
      * @return int|null
@@ -50,24 +50,24 @@ class GroupMemberStatus
     /**
      * @return string|null
      */
-    public function getStatus(): ?string
+    public function getLabel(): ?string
     {
-        return $this->status;
+        return $this->label;
     }
 
     /**
-     * @param string $status
+     * @param string $label
      * @return $this
      */
-    public function setStatus(string $status): self
+    public function setLabel(string $label): self
     {
-        $this->status = $status;
+        $this->label = $label;
 
         return $this;
     }
 
     public function __toString(): string
     {
-        return $this->status;
+        return $this->label;
     }
 }

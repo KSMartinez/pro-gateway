@@ -39,7 +39,7 @@ class OfferRepositoryTest extends KernelTestCase
                          ->setMinSalary(100)
                          ->setNameOfSearch('Test Search #1')
                          ->setTitle('This is Test Search #1 ')
-                         ->setTypeOfContract((new TypeOfContract())->setType('Test Type'))
+                         ->setTypeOfContract((new TypeOfContract())->setLabel('Test Type'))
                          ->setUrl('url');
 //        $offerRepository = $this->c->get(OfferRepository::class);
 //        $offerRepository->getNumberOfNewOffers($savedOfferSearch);

@@ -27,7 +27,7 @@ class NotificationService
      */
     public function createNotification(string $notificationMessage, string $source, User $user)
     {
-        $groupDemandNotificationSource = $this->notificationSourceRepository->findOneBy(array('sourceLabel' => $source));
+        $groupDemandNotificationSource = $this->notificationSourceRepository->findOneBy(array('label' => $source));
         if (!$groupDemandNotificationSource) {
             throw new Exception("Notification Source for " . $source . " not found. Please add this to the notificationSource table");
         }

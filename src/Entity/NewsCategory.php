@@ -23,7 +23,7 @@ class NewsCategory
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\TitleRequirements]
     #[Groups(['news:read'])]
-    private string $title;
+    private string $label;
 
     /**
      * @var Collection<int, News>
@@ -41,14 +41,14 @@ class NewsCategory
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getLabel(): ?string
     {
-        return $this->title;
+        return $this->label;
     }
 
-    public function setTitle(string $title): self
+    public function setLabel(string $label): self
     {
-        $this->title = $title;
+        $this->label = $label;
 
         return $this;
     }

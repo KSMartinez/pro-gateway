@@ -23,7 +23,7 @@ class MessageStatusFixture extends Fixture
         foreach ($messageStatuses as $messageStatus) {
 
             $messageStatusObj = new MessageStatus();
-            $messageStatusObj->setStatus($messageStatus);
+            $messageStatusObj->setLabel($messageStatus);
             $manager->persist($messageStatusObj);
         }
 

@@ -447,7 +447,7 @@ class GroupMemberServiceTest extends WebTestCase
     private function getStatusFromString($statusString): Proxy
     {
         $groupMemberStatusFactory = factory(GroupMemberStatus::class);
-        return $groupMemberStatusFactory->find(['status' => $statusString]);
+        return $groupMemberStatusFactory->find(['label' => $statusString]);
 
     }
 

@@ -20,7 +20,7 @@ class NewsCategoryFixture extends Fixture
         //create 5 new fixtures
         for ($i = 0; $i < 5; $i++) {
             factory(NewsCategory::class)
-                ->create(['title' => faker()->colorName()]);
+                ->create(['label' => faker()->colorName()]);
         }
     }
 }

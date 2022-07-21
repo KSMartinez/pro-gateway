@@ -98,7 +98,7 @@ class XMLParseService
 
         //todo refactor and fix
         $typeOfContract = $this->entityManager->getRepository(TypeOfContract::class)
-                                              ->findOneBy(array('type' => TypeOfContract::CDI));
+                                              ->findOneBy(array('label' => TypeOfContract::CDI));
         if (!$typeOfContract){
             throw new Exception("Type of Contract " . TypeOfContract::CDI . ' not found.');
         }

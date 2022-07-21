@@ -20,7 +20,7 @@ class GroupStatusFixture extends Fixture
         foreach ($groupStatuses as $groupStatus) {
 
             $groupStatusObj = new GroupStatus();
-            $groupStatusObj->setStatus($groupStatus);
+            $groupStatusObj->setLabel($groupStatus);
             $manager->persist($groupStatusObj);
         }
 

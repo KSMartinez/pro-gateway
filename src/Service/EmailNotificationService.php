@@ -32,7 +32,7 @@ class EmailNotificationService
      */
     public function createEmailNotification(SavedOfferSearch $search, int $numberOfNewOffers)
     {
-        $notificationSource = $this->notificationSourceRepository->findOneBy(array('sourceLabel' => NotificationSource::NEW_OFFER));
+        $notificationSource = $this->notificationSourceRepository->findOneBy(array('label' => NotificationSource::NEW_OFFER));
 
         if (!$notificationSource){
             throw new Exception("Notification Source for " . NotificationSource::NEW_OFFER . " not found. Please add this to the notificationSource table");
@@ -41,7 +41,7 @@ class EmailNotificationService
         //todo Find a way to customize the message template for offers produced as a result of multiple searches.
         $messageTemplate = $this->emailTemplateRepository->getMessageTemplate($notificationSource);
         if (!$messageTemplate){
-            throw new Exception("Message template for the selected notification source \"" . $notificationSource->getSourceLabel() . "\" was not found. Please add this to the messageTemplate table");
+            throw new Exception("Message template for the selected notification source \"" . $notificationSource->getLabel() . "\" was not found. Please add this to the messageTemplate table");
         }
         $emailNotification = new EmailNotification();
         $emailNotification->setUser($search->getUser())
@@ -110,7 +110,7 @@ class EmailNotificationService
         }  
 
  
-        $notificationSource = $this->notificationSourceRepository->findOneBy(array('sourceLabel' => $notificationSource));
+        $notificationSource = $this->notificationSourceRepository->findOneBy(array('label' => $notificationSource));
 
      
         if (!$notificationSource){     
@@ -121,7 +121,7 @@ class EmailNotificationService
         //todo Find a way to customize the message template for offers produced as a result of multiple searches.
         $messageTemplate = $this->emailTemplateRepository->getMessageTemplate($notificationSource);
         if (!$messageTemplate){
-            throw new Exception("Message template for the selected notification source \"" . $notificationSource->getSourceLabel() . "\" was not found. Please add this to the messageTemplate table");
+            throw new Exception("Message template for the selected notification source \"" . $notificationSource->getLabel() . "\" was not found. Please add this to the messageTemplate table");
         }
 
 
@@ -143,7 +143,7 @@ class EmailNotificationService
 
         
         if (!$messageTemplate){
-            throw new Exception("Message template for the selected notification source \"" . $notificationSource->getSourceLabel() . "\" was not found. Please add this to the messageTemplate table");
+            throw new Exception("Message template for the selected notification source \"" . $notificationSource->getLabel() . "\" was not found. Please add this to the messageTemplate table");
         }
 
         

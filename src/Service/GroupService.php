@@ -73,7 +73,7 @@ class GroupService
     private function getGroupMemberStatus(string $status): GroupMemberStatus
     {
 
-        $groupMemberStatus = $this->groupMemberStatusRepository->findOneBy(['status' => $status]);
+        $groupMemberStatus = $this->groupMemberStatusRepository->findOneBy(['label' => $status]);
 
         if (!$groupMemberStatus) {
             throw new Exception('GroupMemberStatus with status ' . $status . ' not found. Please add this to the table');
@@ -137,7 +137,7 @@ class GroupService
      */
     private function getGroupStatus(string $status): GroupStatus
     {
-        $groupStatus = $this->groupStatusRepository->findOneBy(array('status' => $status));
+        $groupStatus = $this->groupStatusRepository->findOneBy(array('label' => $status));
         if (!$groupStatus) {
             throw new Exception('GroupStatus with label ' . $status . ' was not found in the table. Please add it correctly.');
         }

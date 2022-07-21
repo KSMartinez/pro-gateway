@@ -47,12 +47,12 @@ class GroupServiceTest extends KernelTestCase
     {
         $this->entityManager->getConnection()->beginTransaction();
         $groupStatusEnAttente = new GroupStatus();
-        $groupStatusEnAttente->setStatus(GroupStatus::EN_ATTENTE);
+        $groupStatusEnAttente->setLabel(GroupStatus::EN_ATTENTE);
         $this->entityManager->persist($groupStatusEnAttente);
 
 
         $groupStatusRefuse = new GroupStatus();
-        $groupStatusRefuse->setStatus(GroupStatus::REFUSE);
+        $groupStatusRefuse->setLabel(GroupStatus::REFUSE);
         $this->entityManager->persist($groupStatusRefuse);
 
         $user = new User();
@@ -92,12 +92,12 @@ class GroupServiceTest extends KernelTestCase
     {
         $this->entityManager->getConnection()->beginTransaction();
         $groupStatusEnAttente = new GroupStatus();
-        $groupStatusEnAttente->setStatus(GroupStatus::EN_ATTENTE);
+        $groupStatusEnAttente->setLabel(GroupStatus::EN_ATTENTE);
         $this->entityManager->persist($groupStatusEnAttente);
 
 
         $groupStatusConfirmed = new GroupStatus();
-        $groupStatusConfirmed->setStatus(GroupStatus::CONFIRME);
+        $groupStatusConfirmed->setLabel(GroupStatus::CONFIRME);
         $this->entityManager->persist($groupStatusConfirmed);
 
         $user = new User();

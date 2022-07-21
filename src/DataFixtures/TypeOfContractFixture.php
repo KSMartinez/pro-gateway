@@ -30,7 +30,7 @@ class TypeOfContractFixture extends Fixture
         foreach ($typeOfContracts as $typeOfContract) {
 
             $typeOfContractObj = new TypeOfContract();
-            $typeOfContractObj->setType($typeOfContract);
+            $typeOfContractObj->setLabel($typeOfContract);
             $manager->persist($typeOfContractObj);
         }
 

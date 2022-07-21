@@ -24,7 +24,7 @@ class MessageService
     private function saveMessage(Message $message, string $status): Message
     {
 
-        $messageStatus = $this->messageStatusRepository->findOneBy(['status' => $status]);
+        $messageStatus = $this->messageStatusRepository->findOneBy(['label' => $status]);
 
         if (!$messageStatus) {
             throw new Exception('Status ' . $status . ' not found in the MessageStatus table. Please add it');
