@@ -287,6 +287,12 @@ class Event
     #[ORM\Column(type: 'json', nullable: true)]
     private array $questions = [];
 
+    /**
+     * @var Group|null
+     */
+    #[ORM\ManyToOne(targetEntity: Group::class, inversedBy: 'events')]
+    private ?Group $associatedGroup;
+
     
     public function __construct()
     {
@@ -611,6 +617,18 @@ class Event
     public function setQuestions(array $questions): self
     {
         $this->questions = $questions;
+
+        return $this;
+    }
+
+    public function getAssociatedGroup(): ?Group
+    {
+        return $this->associatedGroup;
+    }
+
+    public function setAssociatedGroup(?Group $associatedGroup): self
+    {
+        $this->associatedGroup = $associatedGroup;
 
         return $this;
     }

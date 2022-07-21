@@ -116,9 +116,16 @@ class Group
     #[ORM\OneToMany(mappedBy: 'groupOfMember', targetEntity: GroupMember::class, orphanRemoval: true)]
     private Collection $groupMembers;
 
+    /**
+     * @var Collection<int, Event>
+     */
+    #[ORM\OneToMany(mappedBy: 'associatedGroup', targetEntity: Event::class)]
+    private Collection $events;
+
     public function __construct()
     {
         $this->groupMembers = new ArrayCollection();
+        $this->events = new ArrayCollection();
     }
 
     /**
@@ -223,6 +230,36 @@ class Group
     public function getGroupMembers(): Collection
     {
         return $this->groupMembers;
+    }
+
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(Event $event): self
+    {
+        if (!$this->events->contains($event)) {
+            $this->events[] = $event;
+            $event->setAssociatedGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): self
+    {
+        if ($this->events->removeElement($event)) {
+            // set the owning side to null (unless already changed)
+            if ($event->getAssociatedGroup() === $this) {
+                $event->setAssociatedGroup(null);
+            }
+        }
+
+        return $this;
     }
 
 }
