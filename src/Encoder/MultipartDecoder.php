@@ -4,17 +4,11 @@ namespace App\Encoder;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Serializer\Encoder\DecoderInterface;
-use function is_array;
 
-/**
- *
- */
-class MultipartDecoder implements DecoderInterface
+
+final class MultipartDecoder implements DecoderInterface
 {
 
-    /**
-     *
-     */
     public const FORMAT = 'multipart';
 
     /**
@@ -39,11 +33,22 @@ class MultipartDecoder implements DecoderInterface
         }
 
         //@phpstan-ignore-next-line
-        return array_map(static function (string $element) {
+        $array = array_map(static function (string $element) {
                 // Multipart form values will be encoded in JSON.
                 $decoded = json_decode($element, true);
-                return is_array($decoded) ? $decoded : $element;
+
+                return \is_array($decoded) ? $decoded : $element;
             } , $request->request->all()) + $request->files->all();
+
+        foreach ($array as &$value) {
+            if($value === 'false') {
+                $value = false;
+            }
+            if ($value === 'true'){
+                $value = true;
+            }
+        }
+        return $array;
     }
 
     /**
@@ -55,3 +60,4 @@ class MultipartDecoder implements DecoderInterface
         return self::FORMAT === $format;
     }
 }
+
