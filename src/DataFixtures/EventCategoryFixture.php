@@ -21,7 +21,7 @@ class EventCategoryFixture extends Fixture
         //create 5 new fixtures
         for ($i = 0; $i < 5; $i++) {
             factory(EventCategory::class)
-                ->create(['title' => faker()->colorName()]);
+                ->create(['label' => faker()->colorName()]);
         }
     }
 }

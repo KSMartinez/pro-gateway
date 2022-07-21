@@ -21,7 +21,7 @@ class EventCategory
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['event:read'])]
-    private string $title;
+    private string $label;
 
     /**
      * @var Collection<int, Event>
@@ -39,14 +39,14 @@ class EventCategory
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getLabel(): ?string
     {
-        return $this->title;
+        return $this->label;
     }
 
-    public function setTitle(string $title): self
+    public function setLabel(string $label): self
     {
-        $this->title = $title;
+        $this->label = $label;
 
         return $this;
     }
