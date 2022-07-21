@@ -43,6 +43,7 @@ final class EventFactory extends ModelFactory
      */
     protected function getDefaults(): array
     {
+        $start = self::faker()->dateTimeBetween('-3 months', '+15 days');
         return [
             // TODO add your default values here (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories)
             'title' => self::faker()->text(50),
@@ -53,8 +54,8 @@ final class EventFactory extends ModelFactory
             'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'company' => self::faker()->company(),
             'maxNumberOfParticipants' => self::faker()->randomNumber(),
-            'startingAt' => self::faker()->dateTime(),
-            'endingAt' => self::faker()->dateTime(),
+            'startingAt' => $start,
+            'endingAt' => self::faker()->dateTimeBetween($start, $start->format('Y-m-d H:i:s').'+1 months'),
             'location' => self::faker()->city(),
             'category' => factory(EventCategory::class)->random(),
             'image' => self::faker()->imageUrl(),
