@@ -43,7 +43,7 @@ final class EventFactory extends ModelFactory
      */
     protected function getDefaults(): array
     {
-        $start = self::faker()->dateTimeBetween('-3 months', '+15 days');
+        $start = self::faker()->dateTimeBetween('-3 months', '+3 months');
         return [
             // TODO add your default values here (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories)
             'title' => self::faker()->text(50),

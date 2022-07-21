@@ -53,7 +53,7 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
         GroupFactory::createMany(5);
 
 
-        EventFactory::createMany(10);
+        EventFactory::createMany(30);
         NewsFactory::createMany(10);
         AdviceFactory::createMany(10);
 
