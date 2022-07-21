@@ -1,4 +1,8 @@
 api_platform:
+    title: 'API Portail Université'
+        #description: 'API description'
+        #version: '0.0.0'
+    show_webby: false
     mapping:
         paths: ['%kernel.project_dir%/src/Entity']
     patch_formats:
