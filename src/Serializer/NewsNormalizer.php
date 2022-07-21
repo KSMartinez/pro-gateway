@@ -22,16 +22,15 @@ final class NewsNormalizer implements ContextAwareNormalizerInterface, Normalize
 
 
     /**
-     * @param $object
+     * @param News $object
      * @param string|null $format
      * @param array<mixed> $context
-     * @return array<mixed>|string|int|float|bool|ArrayObject|null
+     * @return array<mixed>|string|int|float|bool|ArrayObject<int,News>|null
      * @throws ExceptionInterface
      */
     public function normalize($object, ?string $format = null, array $context = []): array|string|int|float|bool|ArrayObject|null
     {
         $context[self::ALREADY_CALLED] = true;
-        /** @var News $object */
         $object->imageUrl = $this->storage->resolveUri($object, 'imageFile');
 
         return $this->normalizer->normalize($object, $format, $context);
@@ -39,7 +38,7 @@ final class NewsNormalizer implements ContextAwareNormalizerInterface, Normalize
 
 
     /**
-     * @param $data
+     * @param mixed $data
      * @param string|null $format
      * @param array<mixed> $context
      * @return bool

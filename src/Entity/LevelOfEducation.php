@@ -45,7 +45,7 @@ class LevelOfEducation
     /**
      * @var Collection<int, Offer>
      */
-    #[ORM\ManyToMany(targetEntity: Offer::class, mappedBy: 'levelOfEducation')]
+    #[ORM\ManyToMany(targetEntity: Offer::class, mappedBy: 'levelOfEducations')]
     private Collection $offers;
 
     /**

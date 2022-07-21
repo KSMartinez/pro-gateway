@@ -67,7 +67,7 @@ final class OfferFactory extends ModelFactory
             'offerStatus' => factory(OfferStatus::class)->random(),
             'offerCategory' => factory(OfferCategory::class)->random(),
             'sector' => factory(SectorOfOffer::class)->random(),
-            'levelOfEducation' => [factory(LevelOfEducation::class)->random()]
+            'levelOfEducations' => [factory(LevelOfEducation::class)->random()]
         ];
     }
 

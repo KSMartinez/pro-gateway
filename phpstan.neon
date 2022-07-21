@@ -1,5 +1,4 @@
 parameters:
-    checkGenericClassInNonGenericObjectType: false
     symfony:
         containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
         console_application_loader: build/phpstan/console-loader.php
