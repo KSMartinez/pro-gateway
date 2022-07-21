@@ -40,7 +40,7 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
  * @package App\Entity
  * @ApiFilter(SearchFilter::class, properties={"title": "partial", "description": "partial", "city":"exact",
  *     "country":"exact", "domain":"exact", "typeOfContract":"exact", "offerCategory":"exact", "sector":"exact",
- *     "levelOfEducation":"exact" })
+ *     "levelOfEducations":"exact" })
  * @ApiFilter(RangeFilter::class, properties={"minSalary","maxSalary"})
  * @ApiFilter(OrderFilter::class, properties={"datePosted" : "DESC"})
  */
