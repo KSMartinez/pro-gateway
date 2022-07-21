@@ -3,19 +3,20 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Event\RandomEventsListAction;
 use App\Controller\News\UpdatePictureAction;
 use App\Repository\NewsRepository;
+use DateTime;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use App\Validator\Constraints\News as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as AssertVendor;
 
 /**
@@ -31,16 +32,43 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
 #[ORM\Entity(repositoryClass: NewsRepository::class)]
 #[ApiResource(
     collectionOperations: [
-        'get',
-        'post',
+        'get'=> [
+            'normalization_context' => [
+                'groups' => [
+                    'news:read'
+                ],
+                'openapi_definition_name' => 'read collection'
+            ]
+        ],
+        'post' => [
+            'input_formats' => [
+                'multipart' => ['multipart/form-data'],
+            ],
+        ],
         'randomEventsList' => [
             'method' => 'GET',
             'path' => '/randomEventsList',
             'controller' => RandomEventsListAction::class,
         ],
     ],
-    itemOperations      : [
-        'get', 'put', 'delete',
+    iri: 'http://schema.org/News',
+    itemOperations: [
+        'get' => [
+            'normalization_context' => [
+                'groups' => [
+                    'news:read',
+                    'news:read:item'
+                ],
+                'openapi_definition_name' => 'read item'
+            ]
+        ],
+        'put' => [
+            'denormalization_context' => [
+                'groups' => ['news:update'],
+                'openapi_definition_name' => 'update item'
+            ]
+        ],
+        'delete',
         'updatePicture' => [
             'method' => 'POST',
             'path' => '/news/{id}/updatePicture',
@@ -54,9 +82,11 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
             ]
         ],
     ],
+    denormalizationContext: ['groups' => ['news:create']],
     normalizationContext: [
         'groups' => [
-            'news:read'
+            'news:read',
+            'openapi_definition_name' => 'read collection'
         ]
     ])]
 /**
@@ -78,7 +108,7 @@ class News
      */
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\TitleRequirements]
-    #[Groups(['news:read'])]
+    #[Groups(['news:read', 'news:create'])]
     private string $title;
 
     /**
@@ -86,21 +116,21 @@ class News
      */
     #[ORM\Column(type: 'text')]
     #[Assert\DescriptionRequirements]
-    #[Groups(['news:read'])]
+    #[Groups(['news:read', 'news:create'])]
     private string $description;
 
     /**
      * @var boolean     
      */
     #[ORM\Column(type: 'boolean')]
-    #[Groups(['news:read'])]
+    #[Groups(['news:read', 'news:create'])]
     private bool $forAllUniversities;
 
     /**
      * @var string|null  
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['news:read'])]
+    #[Groups(['news:read', 'news:create'])]
     private ?string $university;
 
     /**
@@ -110,29 +140,34 @@ class News
     #[Groups(['news:read'])]
     private DateTimeImmutable $publishedAt;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ApiProperty(iri: 'http://schema.org/imageUrl')]
     #[Groups(['news:read'])]
-    private ?string $image;
+    public ?string $imageUrl = null;
+
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[AssertVendor\Valid()]
+    /*#[Groups(['news:read:item', 'news:create', 'news:update', 'news:updateImageStock'])]*/
+    public ?string $imagePath = null;
 
 
     /**
-     * @Vich\UploadableField(mapping="media_object", fileNameProperty="image")
+     * @Vich\UploadableField(mapping="media_object", fileNameProperty="imagePath")
      */
-    #[Groups(['news:updatePicture'])]
+    #[Groups(['news:updatePicture', 'news:create'])]
     #[Assert\ImageFileRequirements]
     public ?File $imageFile = null;
 
     #[ORM\Column(type: 'boolean')]
-    #[Groups(['news:read'])]
+    #[Groups(['news:read', 'news:create'])]
     private bool $isPublic;
 
-    #[ORM\ManyToOne(targetEntity: NewsCategory::class, inversedBy: 'news')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['news:read'])]
-    private NewsCategory $category;
+    #[ORM\ManyToOne(targetEntity: NewsCategory::class, cascade: ['persist'], inversedBy: 'news')]
+    #[Groups(['news:read', 'news:create', 'news:update'])]
+    private ?NewsCategory $category;
 
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?DateTimeImmutable $updatedAt;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $updatedAt;
 
      /**
      * @var User|null
@@ -152,8 +187,13 @@ class News
      * @var string
      */
     #[ORM\Column(type: 'text')]
-    #[Groups(['news:read'])]
+    #[Groups(['news:read', 'news:create'])]
     private string $chapo;
+
+    public function __construct()
+    {
+        $this->publishedAt = new DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -227,17 +267,6 @@ class News
         return $this;
     }
 
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
-
-    public function setImage(?string $image): self
-    {
-        $this->image = $image;
-
-        return $this;
-    }
 
     /**
      * @return File|null
@@ -279,12 +308,12 @@ class News
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTimeInterface
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
@@ -337,15 +366,4 @@ class News
 
         return $this;
     }
-
-
-
-
-
-
-
-
-
-
-
 }

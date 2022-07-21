@@ -12,16 +12,18 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class NewsService
 {
-    /**
-     * Number of random events to display
-     */
-    const random_News_Value = 6;
+    const NUMBER_OF_RANDOM_EVENTS_TO_DISPLAY = 6;
+    const CONTENT_TYPE_JSON = 'json';
+    const DATA_JSON_PARAM = 'pathImg';
 
     /**
      * @param NewsRepository $newsRepository
      * @param RequestStack $requestStack
      */
-    public function __construct(private NewsRepository $newsRepository, private RequestStack $requestStack)
+    public function __construct(
+        private NewsRepository $newsRepository,
+        private RequestStack $requestStack,
+    )
     {
     }
 
@@ -38,10 +40,10 @@ class NewsService
 
         $rangeMax = count($allNews) - 1;
 
-        if (count($allNews) > self::random_News_Value) {
+        if (count($allNews) > self::NUMBER_OF_RANDOM_EVENTS_TO_DISPLAY) {
 
             # Let's generate 6 Random events
-            while (count($news) != self::random_News_Value) {
+            while (count($news) != self::NUMBER_OF_RANDOM_EVENTS_TO_DISPLAY) {
 
                 for ($i = 0; $i < count($allNews); $i++) {
 
@@ -159,16 +161,17 @@ class NewsService
             throw new \RuntimeException('The object does not match');
         }
         if (!$object->getId()) {
-            throw new Exception('The user should have an id for updating');
+            throw new Exception('The object should have an id for updating');
         }
         if (!$this->newsRepository->find($object->getId())) {
-            throw new Exception('The user should have an id for updating');
+            throw new Exception('The object should have an id for updating');
         }
+
         $file = $request->files->get('imageFile');
 
         if ($file instanceof File) {
             $object->setFile($file);
-            $object->setUpdatedAt(new \DateTimeImmutable());
+            $object->setUpdatedAt(new \DateTime());
         }
 
         return $object;
