@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
@@ -19,7 +20,6 @@ use App\Repository\UserRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use App\Entity\News;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -238,6 +238,10 @@ class User implements UserInterface
     /*#[Groups(['user:read'])]*/
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $imageLink;
+
+    #[ApiProperty(iri: 'http://schema.org/imageUrl')]
+    #[Groups(['user:read'])]
+    public ?string $imageUrl = null;
 
 
      /**
