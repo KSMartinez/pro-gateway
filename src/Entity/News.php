@@ -11,7 +11,7 @@ use App\Controller\Event\RandomEventsListAction;
 use App\Controller\News\UpdatePictureAction;
 use App\Repository\NewsRepository;
 use DateTime;
-use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -94,51 +94,45 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
  */
 class News
 {
-    /**
-     * @var int|null   
-     */
+
+    const VISIBILITY_PRIVATE = 'private';
+    const VISIBILITY_PUBLIC = 'public';
+    const ADMIN_VALIDATION_REQUEST_PENDING = 'pending';
+    const ADMIN_VALIDATION_REQUEST_REJECTED = 'rejected';
+    const ADMIN_VALIDATION_REQUEST_APPROVED = 'approved';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     #[Groups(['news:read'])]
     private ?int $id = null;
 
-    /**
-     * @var string    
-     */
+
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\TitleRequirements]
     #[Groups(['news:read', 'news:create'])]
     private string $title;
 
-    /**
-     * @var string    
-     */
+
     #[ORM\Column(type: 'text')]
     #[Assert\DescriptionRequirements]
     #[Groups(['news:read', 'news:create'])]
     private string $description;
 
-    /**
-     * @var boolean     
-     */
+
     #[ORM\Column(type: 'boolean')]
     #[Groups(['news:read', 'news:create'])]
     private bool $forAllUniversities;
 
-    /**
-     * @var string|null  
-     */
+
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups(['news:read', 'news:create'])]
     private ?string $university;
 
-    /**
-     * @var DateTimeImmutable
-     */
-    #[ORM\Column(type: 'datetime_immutable', nullable: false)]
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
     #[Groups(['news:read'])]
-    private DateTimeImmutable $publishedAt;
+    private ?DateTimeInterface $publishedAt;
 
     #[ApiProperty(iri: 'http://schema.org/imageUrl')]
     #[Groups(['news:read'])]
@@ -158,9 +152,16 @@ class News
     #[Assert\ImageFileRequirements]
     public ?File $imageFile = null;
 
-    #[ORM\Column(type: 'boolean')]
-    #[Groups(['news:read', 'news:create'])]
-    private bool $isPublic;
+    #[ORM\Column(
+        type: 'string', length: 255, nullable: true,
+        options: [
+            'comment' => 'private or public',
+            'default' => 'private'
+        ]
+    )]
+    #[Assert\VisibilityRequirements]
+    #[Groups(['news:read:item', 'news:create', 'news:update'])]
+    private ?string $visibility;
 
     #[ORM\ManyToOne(targetEntity: NewsCategory::class, cascade: ['persist'], inversedBy: 'news')]
     #[Groups(['news:read', 'news:create', 'news:update'])]
@@ -169,9 +170,7 @@ class News
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $updatedAt;
 
-     /**
-     * @var User|null
-     */
+
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[Groups(['news:read'])]
     private ?User $createdBy;
@@ -183,16 +182,48 @@ class News
     #[Groups(["news:read"])]
     private array $links = [];
 
-     /**
-     * @var string
-     */
+
     #[ORM\Column(type: 'text')]
+    #[Assert\ChapoRequirements]
     #[Groups(['news:read', 'news:create'])]
     private string $chapo;
 
+    #[ORM\Column(type: 'boolean', nullable: true,
+        options: [
+            'comment' => 'Is published if the request has been approved by the admin',
+            'default' => false
+        ]
+    )]
+    #[Groups(['news:read:item'])]
+    private ?bool $published;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['news:read:item'])]
+    private ?string $adminValidationRequest;
+
+    #[ORM\Column(type: 'boolean', nullable: true,
+        options: [
+            'default' => false
+        ]
+    )]
+    #[Groups(['news:create', 'news:update'])]
+    private ?bool $publishInMyName;
+
+    #[ORM\Column(type: 'boolean', nullable: true, options: ['comment' => 'Would like to publish', 'default' => false])]
+    #[Groups(['news:read:item', 'news:create', 'news:update'])]
+    private ?bool $wantToPublish;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $createdAt;
+
     public function __construct()
     {
-        $this->publishedAt = new DateTimeImmutable();
+        $this->publishedAt = new DateTime();
+        $this->createdAt = new Datetime();
+        $this->wantToPublish = false;
+        $this->visibility = self::VISIBILITY_PRIVATE;
+        $this->published = false;
+        $this->publishInMyName = false;
     }
 
     public function getId(): ?int
@@ -224,7 +255,7 @@ class News
         return $this;
     }
 
-    public function getForAllUniversities(): ?bool
+    public function isForAllUniversities(): ?bool
     {
         return $this->forAllUniversities;
     }
@@ -249,26 +280,6 @@ class News
     }
 
     /**
-     * @return DateTimeImmutable 
-     */
-    public function getPublishedAt(): \DateTimeImmutable
-    {
-        return $this->publishedAt;
-    }
-
-    /**
-     * @param DateTimeImmutable $publishedAt
-     * @return $this     
-     */
-    public function setPublishedAt(\DateTimeImmutable $publishedAt): self
-    {
-        $this->publishedAt = $publishedAt;
-
-        return $this;
-    }
-
-
-    /**
      * @return File|null
      */
     public function getFile(): ?File
@@ -282,18 +293,6 @@ class News
     public function setFile(?File $imageFile): void
     {
         $this->imageFile = $imageFile;
-    }
-
-    public function getIsPublic(): ?bool
-    {
-        return $this->isPublic;
-    }
-
-    public function setIsPublic(bool $isPublic): self
-    {
-        $this->isPublic = $isPublic;
-
-        return $this;
     }
 
     public function getCategory(): ?NewsCategory
@@ -365,5 +364,97 @@ class News
         $this->chapo = $chapo;
 
         return $this;
+    }
+
+    public function getVisibility(): ?string
+    {
+        return $this->visibility;
+    }
+
+    public function setVisibility(?string $visibility): self
+    {
+        $this->visibility = $visibility;
+
+        return $this;
+    }
+
+    public function isWantToPublish(): ?bool
+    {
+        return $this->wantToPublish;
+    }
+
+    public function setWantToPublish(?bool $wantToPublish): self
+    {
+        $this->wantToPublish = $wantToPublish;
+
+        if ($this->wantToPublish) {
+            $this->setAdminValidationRequest(self::ADMIN_VALIDATION_REQUEST_PENDING);
+        }
+
+        if (!$this->wantToPublish) {
+            $this->setPublished(false);
+            $this->setAdminValidationRequest(null);
+        }
+
+        return $this;
+    }
+
+    public function isPublished(): ?bool
+    {
+        return $this->published;
+    }
+
+    public function getPublishedAt(): ?\DateTimeInterface
+    {
+        return $this->publishedAt;
+    }
+
+    public function setPublishedAt(?\DateTimeInterface $publishedAt): self
+    {
+        $this->publishedAt = $publishedAt;
+
+        return $this;
+    }
+
+    public function setAdminValidationRequest(?string $adminValidationRequest): self
+    {
+        $this->adminValidationRequest = $adminValidationRequest;
+
+        if ($this->isApproved() && $this->wantToPublish) {
+            $this->setPublished(true);
+        }
+
+        if ($this->isRejected() && $this->wantToPublish) {
+            $this->setPublished(false);
+            $this->setWantToPublish(null);
+        }
+
+        if ($this->isPending() && $this->wantToPublish) {
+            $this->setPublished(false);
+        }
+
+        return $this;
+    }
+
+    private function isApproved(): bool
+    {
+        return $this->adminValidationRequest === self::ADMIN_VALIDATION_REQUEST_APPROVED;
+    }
+
+    private function setPublished(?bool $published): self
+    {
+        $this->published = $published;
+
+        return $this;
+    }
+
+    private function isRejected(): bool
+    {
+        return $this->adminValidationRequest === self::ADMIN_VALIDATION_REQUEST_REJECTED;
+    }
+
+    private function isPending(): bool
+    {
+        return $this->adminValidationRequest === self::ADMIN_VALIDATION_REQUEST_PENDING;
     }
 }

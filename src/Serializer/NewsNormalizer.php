@@ -22,13 +22,13 @@ final class NewsNormalizer implements ContextAwareNormalizerInterface, Normalize
 
 
     /**
-     * @param $object
+     * @param mixed $object
      * @param string|null $format
      * @param array<mixed> $context
-     * @return array<mixed>|string|int|float|bool|ArrayObject|null
+     * @return array<mixed>|string|int|float|bool|ArrayObject<int, News>|null
      * @throws ExceptionInterface
      */
-    public function normalize($object, ?string $format = null, array $context = []): array|string|int|float|bool|ArrayObject|null
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array|float|bool|int|string|ArrayObject|null
     {
         $context[self::ALREADY_CALLED] = true;
         /** @var News $object */
@@ -39,12 +39,12 @@ final class NewsNormalizer implements ContextAwareNormalizerInterface, Normalize
 
 
     /**
-     * @param $data
+     * @param mixed $data
      * @param string|null $format
      * @param array<mixed> $context
      * @return bool
      */
-    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         if (isset($context[self::ALREADY_CALLED])) {
             return false;

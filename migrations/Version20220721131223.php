@@ -32,4 +32,10 @@ final class Version20220721131223 extends AbstractMigration
         $this->addSql('DROP INDEX UNIQ_4F72BA902B36786B ON news_category');
         $this->addSql('ALTER TABLE news_category CHANGE title title VARCHAR(255) NOT NULL');
     }
+
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }
