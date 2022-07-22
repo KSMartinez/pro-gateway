@@ -290,6 +290,7 @@ class Event
     /**
      * @var Group|null
      */
+    #[Groups(['event:read'])]
     #[ORM\ManyToOne(targetEntity: Group::class, inversedBy: 'events')]
     private ?Group $associatedGroup;
 
