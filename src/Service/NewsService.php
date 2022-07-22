@@ -82,9 +82,11 @@ class NewsService
 
         for ($i = 0; $i < count($news); $i++) {
 
-            $val1 = DateTime::createFromInterface($news[$i]->getPublishedAt());
-            $array_dateTimes[$i] = $val1->format('Y-m-d H:i:s');
-
+            $dateOfPublication = $news[$i]->getPublishedAt();
+            if($dateOfPublication !== null) {
+                $val1 = DateTime::createFromInterface($dateOfPublication);
+                $array_dateTimes[$i] = $val1->format('Y-m-d H:i:s');
+            }
         }
 
         usort($array_dateTimes, function ($time1, $time2) {
@@ -125,20 +127,17 @@ class NewsService
         });
 
         foreach ($array_dateTimes as $date) {
-
             foreach ($news as $new) {
+                $dateOfPub = $new->getPublishedAt();
+                if($dateOfPub !== null) {
+                    $dateTime = DateTime::createFromInterface($dateOfPub)->format('Y-m-d H:i:s');
 
-                $dateTime = DateTime::createFromInterface($new->getPublishedAt())->format('Y-m-d H:i:s');
-
-                if (strcmp($dateTime, $date) == 0) {
-
-                    if (!in_array($new, $result)) {
-
-                        array_push($result, $new);
+                    if (strcmp($dateTime, $date) == 0) {
+                        if (!in_array($new, $result)) {
+                            array_push($result, $new);
+                        }
                     }
-
                 }
-
             }
         }
 
