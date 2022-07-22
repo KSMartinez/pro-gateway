@@ -6,6 +6,7 @@ namespace App\Service;
 use App\Entity\News;
 use App\Repository\NewsRepository;
 use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -19,10 +20,12 @@ class NewsService
     /**
      * @param NewsRepository $newsRepository
      * @param RequestStack $requestStack
+     * @param EntityManagerInterface $entityManager
      */
     public function __construct(
         private NewsRepository $newsRepository,
         private RequestStack $requestStack,
+        private EntityManagerInterface $entityManager
     )
     {
     }
@@ -174,5 +177,40 @@ class NewsService
         }
 
         return $object;
+    }
+
+    /**
+     * @return News|void
+     * @throws Exception
+     */
+    public function updateImageStock()
+    {
+        if ($this->requestStack->getCurrentRequest() === null) {
+            throw new Exception('Request is null');
+        }
+        $request = $this->requestStack->getCurrentRequest();
+        $object = $request->attributes->get('data');
+
+        if (!($object instanceof News)) {
+            throw new \RuntimeException('The object does not match');
+        }
+        if (!$object->getId()) {
+            throw new Exception('The object should have an id for updating');
+        }
+        if (!$this->newsRepository->find($object->getId())) {
+            throw new Exception('The object should have an id for updating');
+        }
+
+        if ($request->getContentType() === self::CONTENT_TYPE_JSON) {
+            $arrayDataJson = json_decode($request->getContent(), true);
+            if (is_array($arrayDataJson)) {
+                $pathFilename = $arrayDataJson[self::DATA_JSON_PARAM];
+                $object->setImagePath($pathFilename);
+                $this->entityManager->flush();
+
+                return $object;
+            }
+            throw new Exception();
+        }
     }
 }
