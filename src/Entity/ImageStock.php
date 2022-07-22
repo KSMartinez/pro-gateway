@@ -19,7 +19,13 @@ use ApiPlatform\Core\Annotation\ApiResource;
             ],
         ],
     ],
-    itemOperations: ['get'],
+    itemOperations: [
+        'get' => [
+            'openapi_context' => [
+                "summary" => "hidden"
+            ]
+        ],
+    ],
     paginationEnabled: false
 )]
 class ImageStock

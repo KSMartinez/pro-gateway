@@ -140,8 +140,6 @@ class News
 
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[AssertVendor\Valid()]
-    /*#[Groups(['news:read:item', 'news:create', 'news:update', 'news:updateImageStock'])]*/
     public ?string $imagePath = null;
 
 
