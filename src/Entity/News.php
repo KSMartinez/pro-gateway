@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Event\RandomEventsListAction;
+use App\Controller\News\UpdateImageStockAction;
 use App\Controller\News\UpdatePictureAction;
 use App\Repository\NewsRepository;
 use DateTime;
@@ -79,6 +80,18 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
             'denormalization_context' => ['groups' => ['news:updatePicture']],
             'input_formats' => [
                 'multipart' => ['multipart/form-data'],
+            ]
+        ],
+        'updateImageStock' => [
+            'method' => 'POST',
+            'path' => '/news/{id}/updateImageStock',
+            'openapi_context' => [
+                'summary' => 'Use this endpoint to update only the picture of "banque d\'images"'
+            ],
+            'controller' => UpdateImageStockAction::class,
+            'denormalization_context' => ['groups' => ['news:updateImageStock']],
+            'input_formats' => [
+                'json' => ['application/json'],
             ]
         ],
     ],
@@ -454,5 +467,17 @@ class News
     private function isPending(): bool
     {
         return $this->adminValidationRequest === self::ADMIN_VALIDATION_REQUEST_PENDING;
+    }
+
+    public function getImagePath(): ?string
+    {
+        return $this->imagePath;
+    }
+
+    public function setImagePath(?string $imagePath): self
+    {
+        $this->imagePath = $imagePath;
+
+        return $this;
     }
 }
