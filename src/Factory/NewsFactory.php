@@ -51,7 +51,7 @@ final class NewsFactory extends ModelFactory
             'university' => self::faker()->company(),
             'category' => factory(NewsCategory::class)->random(),
             'publishedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'image' => self::faker()->imageUrl(),
+            'imagePath' => self::faker()->imageUrl(),
             'isPublic' => self::faker()->boolean(),
             'chapo' => self::faker()->paragraphs(3, true),
         ];
