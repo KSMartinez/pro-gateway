@@ -125,12 +125,12 @@ class Group
     private Collection $events;
 
     #[Groups(["group:read"])]
-    #[ORM\Column(type: 'boolean')]
-    private bool $isPublic;
+    #[ORM\Column(type: 'boolean', nullable:true)]
+    private ?bool $isPublic;
 
     #[Groups(["group:read"])]
-    #[ORM\Column(type: 'boolean')]
-    private bool $isInstitutional;
+    #[ORM\Column(type: 'boolean', nullable:true)]
+    private ?bool $isInstitutional;
 
 
     public function __construct()
@@ -273,24 +273,24 @@ class Group
         return $this;
     }
 
-    public function getIsPublic(): bool
+    public function getIsPublic(): ?bool
     {
         return $this->isPublic;
     }
 
-    public function setIsPublic(bool $isPublic): self
+    public function setIsPublic(?bool $isPublic): self
     {
         $this->isPublic = $isPublic;
 
         return $this;
     }
 
-    public function getIsInstitutional():bool
+    public function getIsInstitutional(): ?bool
     {
         return $this->isInstitutional;
     }
 
-    public function setIsInstitutional(bool $isInstitutional): self
+    public function setIsInstitutional(?bool $isInstitutional): self
     {
         $this->isInstitutional = $isInstitutional;
 

@@ -51,7 +51,9 @@ final class GroupFactory extends ModelFactory
             'dateCreated' => self::faker()->dateTime(),
             'description' => self::faker()->text(),
             'groupStatus' => factory(GroupStatus::class)->random(),
-            'createdBy' => UserFactory::random()
+            'createdBy' => UserFactory::random(), 
+            'isPublic' => self::faker()->boolean(),
+            'isInstitutional' => self::faker()->boolean(),
         ];
     }
 
