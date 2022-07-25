@@ -113,14 +113,25 @@ class Group
     /**
      * @var Collection<int, GroupMember>
      */
+    #[Groups(["group:read"])]
     #[ORM\OneToMany(mappedBy: 'groupOfMember', targetEntity: GroupMember::class, orphanRemoval: true)]
     private Collection $groupMembers;
 
     /**
      * @var Collection<int, Event>
      */
+    #[Groups(["group:read"])]
     #[ORM\OneToMany(mappedBy: 'associatedGroup', targetEntity: Event::class)]
     private Collection $events;
+
+    #[Groups(["group:read"])]
+    #[ORM\Column(type: 'boolean')]
+    private bool $isPublic;
+
+    #[Groups(["group:read"])]
+    #[ORM\Column(type: 'boolean')]
+    private bool $isInstitutional;
+
 
     public function __construct()
     {
@@ -262,4 +273,27 @@ class Group
         return $this;
     }
 
+    public function getIsPublic(): bool
+    {
+        return $this->isPublic;
+    }
+
+    public function setIsPublic(bool $isPublic): self
+    {
+        $this->isPublic = $isPublic;
+
+        return $this;
+    }
+
+    public function getIsInstitutional():bool
+    {
+        return $this->isInstitutional;
+    }
+
+    public function setIsInstitutional(bool $isInstitutional): self
+    {
+        $this->isInstitutional = $isInstitutional;
+
+        return $this;
+    }
 }
