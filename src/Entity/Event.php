@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use DateTime;
 use App\Entity\User;
 use DateTimeImmutable;
@@ -42,20 +43,44 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[ApiResource(
     collectionOperations: [
-
-        'get',
-        'post',  
+        'get'=> [
+            'normalization_context' => [
+                'groups' => [
+                    'event:read'
+                ],
+                'openapi_definition_name' => 'read collection'
+            ]
+        ],
+        'post' => [
+            'input_formats' => [
+                'multipart' => ['multipart/form-data'],
+            ],
+        ],
         'randomEventsList' => [
             'method' => 'GET',
             'path' => '/eventsListRandom',
             'controller' => RandomEventsListAction::class,
-            
         ],
-  
-
     ],
-    itemOperations: ['get','put','delete', 'patch',
-           
+    iri: 'http://schema.org/Event',
+    itemOperations: [
+        'get' => [
+        'normalization_context' => [
+            'groups' => [
+                'event:read',
+                'event:read:item'
+            ],
+            'openapi_definition_name' => 'read item'
+        ]
+    ],
+        'put' => [
+            'denormalization_context' => [
+                'groups' => ['event:update'],
+                'openapi_definition_name' => 'update item'
+            ]
+        ],
+        'delete',
+        'patch',
         'updatePicture' => [
             'method' => 'POST',
             'path' => '/event/{id}/updatePicture',
@@ -81,9 +106,11 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                     'controller' => ParticipantListAction::class,
                 ],
     ],
+    denormalizationContext: ['groups' => ['event:create']],
     normalizationContext: [
         'groups' => [
-            'event:read'
+            'event:read',
+            'openapi_definition_name' => 'read collection'
         ]
     ]
 )]
@@ -92,7 +119,6 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  */
 class Event
 {
-
 
     /**
      * @var int|null
@@ -109,9 +135,8 @@ class Event
      */
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\TitleRequirements]
-    #[Groups(['event:read'])]
+    #[Groups(['event:read', 'event:create'])]
     private string $title;
-
 
 
     /**
@@ -119,7 +144,7 @@ class Event
      */
     #[ORM\Column(type: 'text')]
     #[Assert\DescriptionRequirements]
-    #[Groups(['event:read'])]
+    #[Groups(['event:read', 'event:create'])]
     private string $description;
 
 
@@ -127,14 +152,15 @@ class Event
      * @var boolean 
      */
     #[ORM\Column(type: 'boolean')]
-    #[Groups(['event:read'])]
+    #[Assert\ForAllUniversitiesRequirements]
+    #[Groups(['event:read', 'event:create'])]
     private bool $forAllUniversities;
 
     /**
      * @var string|null  
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['event:read'])]
+    #[Groups(['event:read', 'event:create'])]
     private ?string $university;
 
 
@@ -142,7 +168,7 @@ class Event
      * @var boolean   
      */
     #[ORM\Column(type: 'boolean')]
-    #[Groups(['event:read'])]
+    #[Groups(['event:read', 'event:create'])]
     private bool $isPublic;
 
     /**
@@ -157,7 +183,7 @@ class Event
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['event:read'])]
+    #[Groups(['event:read', 'event:create'])]
     private ?string $company;
 
 
@@ -165,7 +191,8 @@ class Event
      * @var int|null
      */
     #[ORM\Column(type: 'integer', nullable: true)]
-    #[Groups(['event:read'])]
+    #[Assert\MaxNumberOfParticipantsRequirements]
+    #[Groups(['event:read', 'event:create'])]
     private ?int $maxNumberOfParticipants;
 
 
@@ -173,14 +200,14 @@ class Event
      * @var DateTime
      */
     #[ORM\Column(type: 'date')]
-    #[Groups(['event:read'])]
+    #[Groups(['event:read', 'event:create'])]
     private DateTime $startingAt;
      
        /**
      * @var DateTime
      */
     #[ORM\Column(type: 'date')]
-    #[Groups(['event:read'])]
+    #[Groups(['event:read', 'event:create'])]
     private DateTime $endingAt;
 
 
@@ -197,7 +224,7 @@ class Event
      * @var string|null  
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['event:read'])]
+    #[Groups(['event:read', 'event:create'])]
     private ?string $location;
 
      
@@ -206,47 +233,42 @@ class Event
      */
     #[ORM\ManyToOne(targetEntity: EventCategory::class, cascade: ['PERSIST'], inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['event:read'])]
+    #[Groups(['event:read', 'event:create'])]
     private EventCategory $category;
 
-     
-    /**
-     * @var string|null  
-     */
+
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[AssertVendor\Valid()]
     #[Groups(['event:read'])]
-    private ?string $image;
+    public ?string $imagePath = null;
 
     
     /**
-     * @Vich\UploadableField(mapping="media_object", fileNameProperty="image")
+     * @Vich\UploadableField(mapping="media_object", fileNameProperty="imagePath")
      */
-    #[Groups(['event:updatePicture'])]
+    #[Groups(['event:updatePicture', 'event:create'])]
     #[Assert\ImageFileRequirements]
     public ?File $imageFile = null;
 
+    #[ApiProperty(iri: 'http://schema.org/imageUrl')]
+    #[Groups(['event:read'])]
+    public ?string $imageUrl = null;
 
 
     /**
-     * @var DatetimeImmutable
+     * @var DateTimeInterface|null
      */
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?DatetimeImmutable $updatedAt;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?DateTimeInterface $updatedAt;
 
 
-    /**
-     * @var string  
-     */  
-    #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $startingHour;  
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[Groups(['event:create'])]
+    private ?\DateTimeInterface $startingHour;
 
-    
-      /**
-     * @var string
-     */
-    #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $endingHour;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[Groups(['event:create'])]
+    private ?\DateTimeInterface $endingHour;
 
       /**
      * @var boolean 
@@ -256,15 +278,17 @@ class Event
 
 
        /**
-     * @var DateTime
+     * @var DateTime|null
      */
     #[ORM\Column(type: 'datetime', nullable: true)]
+    #[Groups(['event:create'])]
     private ?DateTime $registerBegin;
 
        /**
      * @var DateTime
      */
     #[ORM\Column(type: 'datetime', nullable: true)]
+    #[Groups(['event:create'])]
     private ?DateTime $registerEnd;
 
 
@@ -272,7 +296,8 @@ class Event
      * @var boolean
      */
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $handicapes;  
+    #[Groups(['event:create'])]
+    private ?bool $adaptedToHandicapped;
 
 
     /**
@@ -297,6 +322,7 @@ class Event
     
     public function __construct()
     {
+        $this->createdAt = new DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -328,7 +354,6 @@ class Event
 
         return $this;
     }
-
 
 
     public function getForAllUniversities(): ?bool
@@ -386,10 +411,6 @@ class Event
 
         return $this;
     }
-
-
-
-
 
 
     public function getCompany(): ?string
@@ -477,14 +498,14 @@ class Event
         return $this;
     }
 
-    public function getImage(): ?string
+    public function getImagePath(): ?string
     {
-        return $this->image;
+        return $this->imagePath;
     }
 
-    public function setImage(?string $image): self
+    public function setImagePath(?string $imagePath): self
     {
-        $this->image = $image;
+        $this->imagePath = $imagePath;
 
         return $this;
     }
@@ -505,36 +526,36 @@ class Event
         $this->imageFile = $imageFile;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTimeInterface
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
         return $this;
     }
 
-    public function getStartingHour(): ?string
+    public function getStartingHour(): ?\DateTimeInterface
     {
         return $this->startingHour;
     }
 
-    public function setStartingHour(?string $startingHour): self
+    public function setStartingHour(?DateTimeInterface $startingHour): self
     {
         $this->startingHour = $startingHour;
 
         return $this;
     }
 
-    public function getEndingHour(): ?string
+    public function getEndingHour(): ?\DateTimeInterface
     {
         return $this->endingHour;
     }
 
-    public function setEndingHour(?string $endingHour): self
+    public function setEndingHour(?DatetimeInterface $endingHour): self
     {
         $this->endingHour = $endingHour;
 
@@ -577,14 +598,14 @@ class Event
         return $this;
     }
 
-    public function getHandicapes(): ?bool
+    public function isAdaptedToHandicapped(): ?bool
     {
-        return $this->handicapes;
+        return $this->adaptedToHandicapped;
     }
 
-    public function setHandicapes(?bool $handicapes): self
+    public function setAdaptedToHandicapped(?bool $adaptedToHandicapped): self
     {
-        $this->handicapes = $handicapes;
+        $this->adaptedToHandicapped = $adaptedToHandicapped;
 
         return $this;
     }
@@ -633,7 +654,5 @@ class Event
 
         return $this;
     }
-
-
 
 }

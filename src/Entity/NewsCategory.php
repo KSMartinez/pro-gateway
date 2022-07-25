@@ -30,7 +30,6 @@ class NewsCategory
         options: ['default' => self::DEFAULT_CATEGORY]
     )]
     #[Assert\TitleRequirements]
-    #[AssertVendor\Valid()]
     #[Groups(['news:read', 'news:read:item', 'news:create'])]
     private ?string $label;
 
@@ -39,6 +38,7 @@ class NewsCategory
      */
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: News::class)]
     private Collection $news;
+
 
     public function __construct()
     {
