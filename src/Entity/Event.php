@@ -261,12 +261,12 @@ class Event
     private ?DateTimeInterface $updatedAt;
 
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: 'time', nullable: true)]
     #[Groups(['event:create'])]
     private ?\DateTimeInterface $startingHour;
 
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: 'time', nullable: true)]
     #[Groups(['event:create'])]
     private ?\DateTimeInterface $endingHour;
 
