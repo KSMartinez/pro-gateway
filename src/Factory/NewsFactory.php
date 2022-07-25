@@ -51,7 +51,7 @@ final class NewsFactory extends ModelFactory
             'university' => self::faker()->company(),
             'category' => factory(NewsCategory::class)->random(),
             'publishedAt' => DateTime::createFromInterface(self::faker()->dateTime()),
-            'imagePath' => self::faker()->imageUrl(),
+            'imageUrl' => self::faker()->imageUrl(),
             'visibility' => 'private',
             'chapo' => self::faker()->paragraphs(3, true),
         ];
