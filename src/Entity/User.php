@@ -230,7 +230,7 @@ class User implements UserInterface
      */
     #[Groups(['user:updatePicture'])]
     #[Assert\ImageFileRequirements]
-    public ?File $image = null;
+    public ?File $imageFile = null;
 
      /**
      * @var string|null
@@ -765,15 +765,15 @@ class User implements UserInterface
      */
     public function getFile(): ?File
     {
-        return $this->image;
+        return $this->imageFile;
     }
 
     /**
-     * @param File|null $image
+     * @param File|null $imageFile
      */
-    public function setFile(?File $image): void
+    public function setFile(?File $imageFile): void
     {
-        $this->image = $image;
+        $this->imageFile = $imageFile;
     }
 
     /**
