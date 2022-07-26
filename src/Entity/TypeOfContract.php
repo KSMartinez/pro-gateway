@@ -55,7 +55,6 @@ class TypeOfContract
      * @var Collection<int, OfferDraft>
      */
     #[ORM\OneToMany(mappedBy: 'typeOfContract', targetEntity: OfferDraft::class)]
-    #[Groups(['offer:read'])]
     private Collection $offerDrafts;
 
     /**
