@@ -152,7 +152,6 @@ class Event
      * @var boolean 
      */
     #[ORM\Column(type: 'boolean')]
-    #[Assert\ForAllUniversitiesRequirements]
     #[Groups(['event:read', 'event:create'])]
     private bool $forAllUniversities;
 
@@ -191,7 +190,6 @@ class Event
      * @var int|null
      */
     #[ORM\Column(type: 'integer', nullable: true)]
-    #[Assert\MaxNumberOfParticipantsRequirements]
     #[Groups(['event:read', 'event:create'])]
     private ?int $maxNumberOfParticipants;
 
