@@ -52,11 +52,19 @@ class TypeOfContract
     private Collection $offers;
 
     /**
+     * @var Collection<int, OfferDraft>
+     */
+    #[ORM\OneToMany(mappedBy: 'typeOfContract', targetEntity: OfferDraft::class)]
+    #[Groups(['offer:read'])]
+    private Collection $offerDrafts;
+
+    /**
      * TypeOfContract constructor.
      */
     public function __construct()
     {
         $this->offers = new ArrayCollection();
+        $this->offerDrafts = new ArrayCollection();
     }
 
     /**
@@ -92,5 +100,35 @@ class TypeOfContract
     public function getOffers(): Collection
     {
         return $this->offers;
+    }
+
+    /**
+     * @return Collection<int, OfferDraft>
+     */
+    public function getOfferDrafts(): Collection
+    {
+        return $this->offerDrafts;
+    }
+
+    public function addOfferDraft(OfferDraft $offerDraft): self
+    {
+        if (!$this->offerDrafts->contains($offerDraft)) {
+            $this->offerDrafts[] = $offerDraft;
+            $offerDraft->setTypeOfContract($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOfferDraft(OfferDraft $offerDraft): self
+    {
+        if ($this->offerDrafts->removeElement($offerDraft)) {
+            // set the owning side to null (unless already changed)
+            if ($offerDraft->getTypeOfContract() === $this) {
+                $offerDraft->setTypeOfContract(null);
+            }
+        }
+
+        return $this;
     }
 }

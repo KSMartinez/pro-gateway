@@ -49,11 +49,18 @@ class LevelOfEducation
     private Collection $offers;
 
     /**
+     * @var Collection<int, OfferDraft>
+     */
+    #[ORM\ManyToMany(targetEntity: OfferDraft::class, mappedBy: 'levelOfEducations')]
+    private Collection $offerDrafts;
+
+    /**
      *
      */
     public function __construct()
     {
         $this->offers = new ArrayCollection();
+        $this->offerDrafts = new ArrayCollection();
     }
 
     /**
@@ -114,6 +121,33 @@ class LevelOfEducation
         if ($this->offers->contains($offer)){
             $this->offers->removeElement($offer);
             $offer->removeLevelOfEducation($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OfferDraft>
+     */
+    public function getOfferDrafts(): Collection
+    {
+        return $this->offerDrafts;
+    }
+
+    public function addOfferDraft(OfferDraft $offerDraft): self
+    {
+        if (!$this->offerDrafts->contains($offerDraft)) {
+            $this->offerDrafts[] = $offerDraft;
+            $offerDraft->addLevelOfEducation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOfferDraft(OfferDraft $offerDraft): self
+    {
+        if ($this->offerDrafts->removeElement($offerDraft)) {
+            $offerDraft->removeLevelOfEducation($this);
         }
 
         return $this;
