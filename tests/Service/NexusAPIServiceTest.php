@@ -4,6 +4,7 @@ namespace App\Tests\Service;
 
 use App\Entity\Candidature;
 use App\Entity\Offer;
+use App\Entity\OfferStatus;
 use App\Entity\User;
 use App\Factory\OfferFactory;
 use App\Factory\UserFactory;
@@ -79,4 +80,27 @@ class NexusAPIServiceTest extends KernelTestCase
         //$this->entityManager->getConnection()->rollback();
 
     }
+
+    /**
+     * @return void
+     */
+    public function testRequestNexusForOffers(){
+
+        $nexusService = $this->containerInstance->get(NexusAPIService::class);
+
+        /** @var Offer[] $offers */
+        $offers = $nexusService->requestNexusForOffers();
+
+        $status = $this->entityManager->getRepository(OfferStatus::class)->findOneBy(['label' => OfferStatus::PUBLIEE]);
+        foreach ($offers as $offer) {
+
+            $offer->setOfferStatus($status);
+            $this->entityManager->persist($offer);
+        }
+
+        $this->entityManager->flush();
+
+    }
+
+
 }

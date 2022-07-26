@@ -272,7 +272,7 @@ class OfferServiceTest extends WebTestCase
         $offer->setOfferStatus($this->entityManager->getReference(OfferStatus::class, $offer->getOfferStatus()->getId()));
         $offer->setSector($this->entityManager->getReference(SectorOfOffer::class, $offer->getSector()->getId()));
         $offer->setCreatedByUser($user);
-        $offer->setLevelOfEducation(new ArrayCollection([$this->entityManager->getReference(LevelOfEducation::class, $offer->getLevelOfEducation()->first()->getId())]));
+        $offer->setLevelOfEducations(new ArrayCollection([$this->entityManager->getReference(LevelOfEducation::class, $offer->getLevelOfEducations()->first()->getId())]));
 
         //login
 

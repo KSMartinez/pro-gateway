@@ -2,12 +2,23 @@
 
 namespace App\Service;
 
+use ApiPlatform\Core\Serializer\JsonEncoder;
 use App\Entity\Candidature;
+use App\Entity\LevelOfEducation;
+use App\Entity\Offer;
+use App\Repository\LevelOfEducationRepository;
+use App\Serializer\DoctrineEntityNormalizer;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -23,19 +34,20 @@ class NexusAPIService
     /**
      *
      */
-    const API_URL = 'http://127.0.0.1:8082/api/';
+    const API_URL = 'http://127.0.0.1:8081/api/';
     /**
      *
      */
     const CURRENT_UNI = "XYZ Uni";
 
     /**
-     * @param HttpClientInterface    $httpClient
-     * @param EntityManagerInterface $entityManager
-     * @param LoggerInterface        $logger
-     * @param string                 $projectDir
+     * @param DoctrineEntityNormalizer $doctrineEntityNormalizer
+     * @param HttpClientInterface      $httpClient
+     * @param EntityManagerInterface   $entityManager
+     * @param LoggerInterface          $logger
+     * @param string                   $projectDir
      */
-    public function __construct(private HttpClientInterface $httpClient, private EntityManagerInterface $entityManager, private LoggerInterface $logger, private string $projectDir)
+    public function __construct(private DoctrineEntityNormalizer $doctrineEntityNormalizer, private HttpClientInterface $httpClient, private EntityManagerInterface $entityManager, private LoggerInterface $logger, private string $projectDir)
     {
     }
 
@@ -76,7 +88,7 @@ class NexusAPIService
     {
         $candidatureUrl = 'candidatures';
         $candidature = $this->entityManager->getRepository(Candidature::class)
-                                           ->find($candidatureId);
+            ->find($candidatureId);
         if (!$candidature){
             throw new Exception('Cannot find candidature with id ' . $candidatureId);
         }
@@ -107,7 +119,7 @@ class NexusAPIService
      * @param array<mixed> $candidatureArray
      * @return mixed[]
      */
-    private function prepBodyOfRequestForCandidature(array $candidatureArray)
+    private function prepBodyOfRequestForCandidature(array $candidatureArray): array
     {
         //add university to user
         $userID = $candidatureArray['user'];
@@ -121,5 +133,45 @@ class NexusAPIService
         unset($candidatureArray['id']);
         return $candidatureArray;
 
+    }
+
+    /**
+     * @return Offer[]
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function requestNexusForOffers(): array
+    {
+        $offerUrl = 'offers';
+
+        $res = $this->httpClient->request(
+            'GET',
+            self::API_URL . $offerUrl,
+            [
+                'headers' => ['accept' => 'application/json']
+            ]
+        );
+
+        /*if ($res->getStatusCode() != 201){
+            $this->logger->error('Request to create candidature with Nexus returned with return code ' . $res->getStatusCode() . ' and content ' . $res->getContent());
+        }*/
+
+
+        $offers = $res->getContent();
+        /** @var LevelOfEducationRepository $repo */
+        $repo = $this->entityManager->getRepository(LevelOfEducation::class);
+        //dd($offers);
+        $serializer = new Serializer(
+            [new DateTimeNormalizer(), $this->doctrineEntityNormalizer, new ArrayDenormalizer(), new ObjectNormalizer(null,
+                                                                                                                      null,
+                                                                                                                      null,
+                                                                                                                      new ReflectionExtractor())],
+            [new JsonEncoder('json')]
+        );
+
+
+        return $serializer->deserialize($offers, 'App\Entity\Offer[]', 'json');
     }
 }

@@ -8,11 +8,17 @@ use App\Entity\User;
 use App\Repository\OfferRepository;
 use App\Repository\OfferStatusRepository;
 use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class OfferService
 {
@@ -30,7 +36,8 @@ class OfferService
         private Security               $security,
         private EntityManagerInterface $entityManager,
         private OfferRepository        $offerRepository,
-        private RequestStack           $requestStack
+        private RequestStack           $requestStack,
+        private NexusAPIService $nexusAPIService
     )
     {
     }
@@ -92,7 +99,7 @@ class OfferService
         $request = $this->requestStack->getCurrentRequest();
         $object = $request->attributes->get('data');
         if (!($object instanceof Offer)) {
-            throw new \RuntimeException('The object does not match');
+            throw new RuntimeException('The object does not match');
         }
         if (!$object->getId()) {
             throw new Exception('The user should have an id for updating');
@@ -104,7 +111,7 @@ class OfferService
         $file = $request->files->get('logoFile');
         if ($file instanceof File) {
             $object->setLogoFile($file);
-            $object->setUpdatedAt(new \DateTimeImmutable());
+            $object->setUpdatedAt(new DateTimeImmutable());
             $this->entityManager->persist($object);
             $this->entityManager->flush();
         }
@@ -124,7 +131,7 @@ class OfferService
         $request = $this->requestStack->getCurrentRequest();
         $object = $request->attributes->get('data');
         if (!($object instanceof Offer)) {
-            throw new \RuntimeException('The object does not match');
+            throw new RuntimeException('The object does not match');
         }
         if (!$object->getId()) {
             throw new Exception('The user should have an id for updating');
@@ -135,7 +142,7 @@ class OfferService
         $file = $request->files->get('imageFile');
         if ($file instanceof File) {
             $object->setFile($file);
-            $object->setUpdatedAt(new \DateTimeImmutable());
+            $object->setUpdatedAt(new DateTimeImmutable());
             $this->entityManager->persist($object);
             $this->entityManager->flush();
         }
@@ -316,6 +323,19 @@ class OfferService
 
         return $offer;
 
+    }
+
+    /**
+     * @return Offer[]
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function pollNexusForNewOffers(): array
+    {
+
+        return $this->nexusAPIService->requestNexusForOffers();
     }
 
 
