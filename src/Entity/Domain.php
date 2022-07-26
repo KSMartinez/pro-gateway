@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\DomainRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\OfferDraft;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\DomainRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
@@ -63,11 +64,19 @@ class Domain
     private Collection $offers;
 
     /**
+     * @var Collection<int, OfferDraft>
+     */
+    #[ORM\OneToMany(mappedBy: 'domain', targetEntity: OfferDraft::class)]
+    private Collection $offersDrafts;
+
+
+    /**
      * Domain constructor.
      */
     public function __construct()
     {
         $this->offers = new ArrayCollection();
+        $this->offersDrafts = new ArrayCollection();
     }
 
     /**
@@ -129,6 +138,36 @@ class Domain
             // set the owning side to null (unless already changed)
             if ($offer->getDomain() === $this) {
                 $offer->setDomain(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OfferDraft>
+     */
+    public function getOfferDrafts(): Collection
+    {
+        return $this->offersDrafts;
+    }
+
+    public function addOfferDraft(OfferDraft $offersDraft): self
+    {
+        if (!$this->offersDrafts->contains($offersDraft)) {
+            $this->offersDrafts[] = $offersDraft;
+            $offersDraft->setDomain($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOfferDraft(OfferDraft $offersDraft): self
+    {
+        if ($this->offersDrafts->removeElement($offersDraft)) {
+            // set the owning side to null (unless already changed)
+            if ($offersDraft->getDomain() === $this) {
+                $offersDraft->setDomain(null);
             }
         }
 

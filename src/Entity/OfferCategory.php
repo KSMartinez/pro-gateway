@@ -45,9 +45,16 @@ class OfferCategory
     #[ORM\OneToMany(mappedBy: 'offerCategory', targetEntity: Offer::class)]
     private Collection $offers;
 
+    /**
+     * @var Collection<int, OfferDraft>
+     */
+    #[ORM\OneToMany(mappedBy: 'offerCategory', targetEntity: OfferDraft::class)]
+    private Collection $offerDrafts;
+
     public function __construct()
     {
         $this->offers = new ArrayCollection();
+        $this->offerDrafts = new ArrayCollection();
     }
 
     /**
@@ -101,6 +108,36 @@ class OfferCategory
             // set the owning side to null (unless already changed)
             if ($offer->getOfferCategory() === $this) {
                 $offer->setOfferCategory(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OfferDraft>
+     */
+    public function getOfferDrafts(): Collection
+    {
+        return $this->offerDrafts;
+    }
+
+    public function addOfferDraft(OfferDraft $offerDraft): self
+    {
+        if (!$this->offerDrafts->contains($offerDraft)) {
+            $this->offerDrafts[] = $offerDraft;
+            $offerDraft->setOfferCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOfferDraft(OfferDraft $offerDraft): self
+    {
+        if ($this->offerDrafts->removeElement($offerDraft)) {
+            // set the owning side to null (unless already changed)
+            if ($offerDraft->getOfferCategory() === $this) {
+                $offerDraft->setOfferCategory(null);
             }
         }
 

@@ -2,32 +2,32 @@
 
 namespace App\Entity;
 
+use DateTimeInterface;
+use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserRepository;
+use App\Controller\User\ShowPDFAction;
+use App\Controller\User\UserListAction;
+use App\Controller\User\UserEventsAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
+use App\Controller\User\ShowPDFActionCopy;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Controller\User\CharteDutilisationAction;
-use App\Controller\User\checkFilledDatasAction;
-use App\Controller\User\RejectedCharteAction;
-use App\Controller\User\ShowPDFAction;
-use App\Controller\User\ShowPDFActionCopy;
 use App\Controller\User\UpdatePictureAction;
-use App\Controller\User\UserEventsAction;
-use App\Controller\User\UserListAction;
-use App\Filters\CompanyExperienceAnnuaireFilter;
-use App\Repository\UserRepository;
-use DateTimeInterface;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use App\Controller\User\RejectedCharteAction;
+use App\Validator\Constraints\User as Assert;
+use App\Controller\User\checkFilledDatasAction;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
+use App\Filters\CompanyExperienceAnnuaireFilter;
+use Doctrine\Common\Collections\ArrayCollection;
+use App\Controller\User\CharteDutilisationAction;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\Security\Core\User\UserInterface;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use Symfony\Component\Validator\Constraints as AssertVendor;
-use App\Validator\Constraints\User as Assert;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  * @ApiFilter(SearchFilter::class, properties={
@@ -406,8 +406,6 @@ class User implements UserInterface
     #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: News::class, orphanRemoval: true)]
     private Collection $news;
 
-
-
     /**
      * @var bool|null
      */
@@ -465,8 +463,7 @@ class User implements UserInterface
     #[ORM\ManyToMany(targetEntity: Conversation::class, mappedBy: 'users')]
     private Collection $conversations;
 
-
-      /**
+    /**
      * User constructor.
      */
     public function __construct()
@@ -478,8 +475,6 @@ class User implements UserInterface
         $this->groupsMemberOf = new ArrayCollection();
         $this->conversations = new ArrayCollection();
         $this->news = new ArrayCollection();
-
-
     }
 
     /**
