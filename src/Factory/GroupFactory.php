@@ -4,10 +4,14 @@ namespace App\Factory;
 
 use App\Entity\Group;
 use App\Entity\GroupStatus;
-use App\Repository\GroupRepository;
-use Zenstruck\Foundry\RepositoryProxy;
-use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
+use App\Entity\GroupCategory;
+use App\Entity\EducationDomain;
+use App\Entity\EducationComposante;
+use App\Entity\EducationSpeciality;
+use App\Repository\GroupRepository;
+use Zenstruck\Foundry\ModelFactory;
+use Zenstruck\Foundry\RepositoryProxy;
 use function Zenstruck\Foundry\factory;
 
 /**
@@ -54,6 +58,10 @@ final class GroupFactory extends ModelFactory
             'createdBy' => UserFactory::random(), 
             'isPublic' => self::faker()->boolean(),
             'isInstitutional' => self::faker()->boolean(),
+            'groupCategory' => factory(GroupCategory::class)->random(),
+            'educationDomain' => factory(EducationDomain::class)->random(),
+            'educationComposante' => factory(EducationComposante::class)->random(),
+            'educationSpeciality' => factory(EducationSpeciality::class)->random(),
         ];
     }
 

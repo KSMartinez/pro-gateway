@@ -37,7 +37,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ]
     ],
        itemOperations        : [
-        'get','put','delete',
+        'get','put', 'patch','delete',
         'validate_group_demand' => [
             'method' => 'post',
             'path' => '/groups/demande/{id}/validate',
@@ -124,13 +124,54 @@ class Group
     #[ORM\OneToMany(mappedBy: 'associatedGroup', targetEntity: Event::class)]
     private Collection $events;
 
+    /**
+     * @var bool|null
+     */
     #[Groups(["group:read"])]
     #[ORM\Column(type: 'boolean', nullable:true)]
     private ?bool $isPublic;
 
+    /**
+     * @var bool|null
+     */
     #[Groups(["group:read"])]
     #[ORM\Column(type: 'boolean', nullable:true)]
     private ?bool $isInstitutional;
+
+    /**
+     * @var DateTimeInterface|null
+     */
+    #[ORM\Column(type: 'date', nullable: true)]
+    #[Groups(["group:read"])]
+    private ?DateTimeInterface $graduationYear;
+
+    /**
+     * @var GroupCategory|null
+     */
+    #[ORM\ManyToOne(targetEntity: GroupCategory::class, inversedBy: 'groups')]
+    #[Groups(["group:read"])]
+    private ?GroupCategory $groupCategory;
+
+    /**
+     * @var EducationDomain|null
+     */
+    #[ORM\ManyToOne(targetEntity: EducationDomain::class, inversedBy: 'groups')]
+    #[Groups(["group:read"])]
+    private ?EducationDomain $educationDomain;
+
+    /**
+     * @var EducationComposante|null
+     */
+    #[ORM\ManyToOne(targetEntity: EducationComposante::class, inversedBy: 'groups')]
+    #[Groups(['group:read'])]
+    private ?EducationComposante $educationComposante;
+
+    /**
+     * @var EducationSpeciality|null
+     */
+    #[ORM\ManyToOne(targetEntity: EducationSpeciality::class, inversedBy: 'groups')]
+    #[Groups(['group:read'])]
+    private ?EducationSpeciality $educationSpeciality;
 
 
     public function __construct()
@@ -293,6 +334,66 @@ class Group
     public function setIsInstitutional(?bool $isInstitutional): self
     {
         $this->isInstitutional = $isInstitutional;
+
+        return $this;
+    }
+
+    public function getGraduationYear(): ?\DateTimeInterface
+    {
+        return $this->graduationYear;
+    }
+
+    public function setGraduationYear(?\DateTimeInterface $graduationYear): self
+    {
+        $this->graduationYear = $graduationYear;
+
+        return $this;
+    }
+
+    public function getGroupCategory(): ?GroupCategory
+    {
+        return $this->groupCategory;
+    }
+
+    public function setGroupCategory(?GroupCategory $groupCategory): self
+    {
+        $this->groupCategory = $groupCategory;
+
+        return $this;
+    }
+
+    public function getEducationDomain(): ?EducationDomain
+    {
+        return $this->educationDomain;
+    }
+
+    public function setEducationDomain(?EducationDomain $educationDomain): self
+    {
+        $this->educationDomain = $educationDomain;
+
+        return $this;
+    }
+
+    public function getEducationComposante(): ?EducationComposante
+    {
+        return $this->educationComposante;
+    }
+
+    public function setEducationComposante(?EducationComposante $educationComposante): self
+    {
+        $this->educationComposante = $educationComposante;
+
+        return $this;
+    }
+
+    public function getEducationSpeciality(): ?EducationSpeciality
+    {
+        return $this->educationSpeciality;
+    }
+
+    public function setEducationSpeciality(?EducationSpeciality $educationSpeciality): self
+    {
+        $this->educationSpeciality = $educationSpeciality;
 
         return $this;
     }

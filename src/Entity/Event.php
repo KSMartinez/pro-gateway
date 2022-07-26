@@ -211,7 +211,7 @@ class Event
     private DateTime $endingAt;
 
 
-       /**
+    /**
      * @var User|null  
      */
     #[ORM\ManyToOne(targetEntity: User::class)]
@@ -270,21 +270,21 @@ class Event
     #[Groups(['event:create'])]
     private ?\DateTimeInterface $endingHour;
 
-      /**
+    /**
      * @var boolean 
      */
     #[ORM\Column(type: 'boolean')]
     private bool $register = false;
 
 
-       /**
+    /**
      * @var DateTime|null
      */
     #[ORM\Column(type: 'datetime', nullable: true)]
     #[Groups(['event:create'])]
     private ?DateTime $registerBegin;
 
-       /**
+    /**
      * @var DateTime
      */
     #[ORM\Column(type: 'datetime', nullable: true)]
