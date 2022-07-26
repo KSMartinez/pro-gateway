@@ -18,10 +18,27 @@ class EventCategoryFixture extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        //create 5 new fixtures
-        for ($i = 0; $i < 5; $i++) {
-            factory(EventCategory::class)
-                ->create(['label' => faker()->colorName()]);
+        $categories = [
+            "Recherche",
+            "Rencontre",
+            "Exposition",
+            "Conférence",
+            "Séminaire",
+            "Spectacle",
+            "Soutenance",
+            "Performance",
+            "Stands",
+            "Tribune",
+            "Atelier",
+            "Cérémonie",
+            "Colloque",
+            "Autre"
+        ];
+
+        foreach ($categories as $category) {
+            factory(EventCategory::class)->create([
+                'label' => $category
+            ]);
         }
     }
 }
