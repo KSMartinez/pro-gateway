@@ -190,7 +190,7 @@ class News
      * @var string[]
      */
     #[ORM\Column(type: 'json')]
-    #[Groups(["news:read"])]
+    #[Groups(["news:read", 'news:create'])]
     private array $links = [];
 
 
@@ -357,7 +357,7 @@ class News
      * @param string[] $links
      * @return $this
      */
-    public function setLink(array $links): self
+    public function setLinks(array $links): self
     {
         $this->links = $links;
 
@@ -479,5 +479,21 @@ class News
         $this->imagePath = $imagePath;
 
         return $this;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getPublishInMyName(): ?bool
+    {
+        return $this->publishInMyName;
+    }
+
+    /**
+     * @param bool|null $publishInMyName
+     */
+    public function setPublishInMyName(?bool $publishInMyName): void
+    {
+        $this->publishInMyName = $publishInMyName;
     }
 }
