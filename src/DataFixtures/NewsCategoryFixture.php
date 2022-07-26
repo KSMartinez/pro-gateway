@@ -17,10 +17,25 @@ class NewsCategoryFixture extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        //create 5 new fixtures
-        for ($i = 0; $i < 5; $i++) {
-            factory(NewsCategory::class)
-                ->create(['label' => faker()->colorName()]);
+        $categories = [
+            "Recrutement",
+            "Distinction",
+            "Étudiant",
+            "Formation",
+            "Gouvernance",
+            "Hommage",
+            "International",
+            "Project",
+            "Pratique",
+            "Recherche",
+            "Regard sur",
+            "Autre"
+        ];
+
+        foreach ($categories as $category) {
+            factory(EventCategory::class)->create([
+                'label' => $category
+            ]);
         }
     }
 }
