@@ -37,7 +37,6 @@ class EducationSpeciality
      * @var Collection<int, Group>
      */
     #[ORM\OneToMany(mappedBy: 'educationSpeciality', targetEntity: Group::class)]
-    #[Groups(['group:read'])]
     private Collection $groups;
 
     public function __construct()
