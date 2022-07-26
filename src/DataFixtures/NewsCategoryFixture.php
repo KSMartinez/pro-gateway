@@ -33,7 +33,7 @@ class NewsCategoryFixture extends Fixture
         ];
 
         foreach ($categories as $category) {
-            factory(EventCategory::class)->create([
+            factory(NewsCategory::class)->create([
                 'label' => $category
             ]);
         }
