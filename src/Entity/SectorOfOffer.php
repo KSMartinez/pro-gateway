@@ -131,6 +131,17 @@ class SectorOfOffer
     #[ORM\OneToMany(mappedBy: 'sector', targetEntity: Offer::class)]
     private Collection $offers;
 
+    /**
+     * @var Collection<int, OfferDraft>
+     */
+    #[ORM\OneToMany(mappedBy: 'sector', targetEntity: OfferDraft::class)]
+    private Collection $offerDrafts;
+
+    public function __construct()
+    {
+        $this->offerDrafts = new ArrayCollection();
+    }
+
 
     /**
      * @return void
@@ -199,6 +210,36 @@ class SectorOfOffer
             // set the owning side to null (unless already changed)
             if ($offer->getSector() === $this) {
                 $offer->setSector(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OfferDraft>
+     */
+    public function getOfferDrafts(): Collection
+    {
+        return $this->offerDrafts;
+    }
+
+    public function addOfferDraft(OfferDraft $offerDraft): self
+    {
+        if (!$this->offerDrafts->contains($offerDraft)) {
+            $this->offerDrafts[] = $offerDraft;
+            $offerDraft->setSector($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOfferDraft(OfferDraft $offerDraft): self
+    {
+        if ($this->offerDrafts->removeElement($offerDraft)) {
+            // set the owning side to null (unless already changed)
+            if ($offerDraft->getSector() === $this) {
+                $offerDraft->setSector(null);
             }
         }
 

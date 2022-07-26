@@ -172,4 +172,6 @@ class Candidature
             'offerId' => ($this->getOffer()?->getOfferId()),
         ];
     }
+
+
 }

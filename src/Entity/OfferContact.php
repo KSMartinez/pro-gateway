@@ -34,6 +34,18 @@ class OfferContact
     //@phpstan-ignore-next-line
     private ?Offer $offer;
 
+    /**
+     * @var OfferDraft|null
+     */
+    #[ORM\ManyToOne(targetEntity: OfferDraft::class, inversedBy: 'contacts')]
+    #[ORM\JoinColumn(nullable: false)]
+    /**
+     * We ignore the phpstan error below because the offer can be set to null when the contact is removed
+     * from the offer (for modification). The orphanRemoval should then delete the contact
+     */
+    //@phpstan-ignore-next-line
+    private ?OfferDraft $offerDraft;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -71,6 +83,18 @@ class OfferContact
     public function setOffer(?Offer $offer): self
     {
         $this->offer = $offer;
+
+        return $this;
+    }
+
+    public function getOfferDraft(): ?OfferDraft
+    {
+        return $this->offerDraft;
+    }
+
+    public function setOfferDraft(?OfferDraft $offerDraft): self
+    {
+        $this->offerDraft = $offerDraft;
 
         return $this;
     }
