@@ -19,6 +19,10 @@ use Exception;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Zenstruck\Foundry\Proxy;
 use function PHPUnit\Framework\assertEmpty;
 use function PHPUnit\Framework\assertEquals;
@@ -281,4 +285,62 @@ class OfferServiceTest extends WebTestCase
 
         self::assertNotNull($offer->getId());
     }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    public function testPollNexusForNewOffers(){
+
+        $numberOfOffers = OfferFactory::count();
+        $numberOfOffersOnNexus = 10;
+
+        /** @var Offer[] $offers */
+        $offers = $this->service->pollNexusForNewOffers();
+
+        $status = $this->entityManager->getRepository(OfferStatus::class)->findOneBy(['label' => OfferStatus::PUBLIEE]);
+        foreach ($offers as $offer) {
+
+            $offer->setOfferStatus($status);
+            $this->entityManager->persist($offer);
+        }
+
+        $this->entityManager->flush();
+
+        self::assertEquals($numberOfOffers + $numberOfOffersOnNexus, OfferFactory::count());
+    }
+
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
+    public function testSaveOffersFromNexus(){
+
+        $numberOfOffers = OfferFactory::count();
+        $numberOfOffersOnNexus = 10;
+
+        // create the mock to return 10 Offers instead of actually polling Nexus because we are not testing that here
+        $mockService = $this->createMock(OfferService::class);
+        $mockService->method('pollNexusForNewOffers')
+                    ->willReturn(array_map(function (Proxy $item){
+                        return $item->object();
+                    },OfferFactory::createMany($numberOfOffersOnNexus)));
+
+
+        /** @var Offer[] $offers */
+        $offers = $mockService->pollNexusForNewOffers();
+
+       $this->service->saveOffersFromNexus($offers);
+        self::assertEquals($numberOfOffers + $numberOfOffersOnNexus, OfferFactory::count());
+
+    }
+
+
+
 }

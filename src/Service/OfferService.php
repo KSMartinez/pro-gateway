@@ -338,5 +338,36 @@ class OfferService
         return $this->nexusAPIService->requestNexusForOffers();
     }
 
+    /**
+     * @param Offer[] $offers
+     * @return void
+     * @throws Exception
+     */
+    public function saveOffersFromNexus(array $offers){
+
+        $batchSize = 0;
+        $batchLimit = 20;
+
+        $status = $this->getOfferStatus(OfferStatus::ATTENTE_DE_VALIDATION);
+
+        foreach ($offers as $offer) {
+            $offer->setOfferStatus($status);
+            $this->entityManager->persist($offer);
+            $batchSize++;
+
+            //flush in batches of $batchLimit to improve performance
+            if ($batchSize == $batchLimit){
+                $this->entityManager->flush();
+                $batchSize = 0;
+            }
+        }
+
+        //call flush to flush any remaining offers
+        $this->entityManager->flush();
+
+
+
+    }
+
 
 }   

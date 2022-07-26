@@ -11,13 +11,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name       : 'app:nexus:api',
+    name       : 'app:nexus:api:dispatch_candidatures',
     description: 'Calls the Nexus API (referred as the Intermediate API) for ReseauPro',
 )]
 class NexusApiDispatchCandidatureCommand extends Command
 {
 
-    protected string $name = 'app:nexus:api';
+    protected string $name = 'app:nexus:api:dispatch_candidatures';
 
     public function __construct(private NexusAPIService $nexusAPIService)
     {

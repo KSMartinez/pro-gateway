@@ -13,6 +13,7 @@ use DateTime;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use function Zenstruck\Foundry\factory;
 
 class NexusAPIServiceTest extends KernelTestCase
 {
@@ -86,6 +87,9 @@ class NexusAPIServiceTest extends KernelTestCase
      */
     public function testRequestNexusForOffers(){
 
+        $numberOfOffers = OfferFactory::count();
+        $numberOfOffersOnNexus = 10;
+
         $nexusService = $this->containerInstance->get(NexusAPIService::class);
 
         /** @var Offer[] $offers */
@@ -99,6 +103,9 @@ class NexusAPIServiceTest extends KernelTestCase
         }
 
         $this->entityManager->flush();
+
+        self::assertEquals($numberOfOffers + $numberOfOffersOnNexus, OfferFactory::count());
+
 
     }
 
