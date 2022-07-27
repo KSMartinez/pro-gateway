@@ -8,6 +8,8 @@ use App\Entity\User;
 use App\Repository\EventParticipantRepository;
 use App\Repository\EventRepository;
 use App\Repository\UserRepository;
+use App\Serializer\EventNormalizer;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -15,22 +17,25 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class EventService
 {
-    /**
-     * Number of random events to display
-     */
-    const random_Events_Value = 6;
+    const NUMBER_OF_RANDOM_EVENTS_TO_DISPLAY = 6;
+    const CONTENT_TYPE_JSON = 'json';
+    const DATA_JSON_PARAM = 'id';
 
     /**
      * @param EventRepository $eventRepository
      * @param EventParticipantRepository $eventParticipantRepository
      * @param UserRepository $userRepository
      * @param RequestStack $requestStack
+     * @param EntityManagerInterface $entityManager
+     * @param EventNormalizer $eventNormalizer
      */
     public function __construct(
         private EventRepository            $eventRepository,
         private EventParticipantRepository $eventParticipantRepository,
         private UserRepository             $userRepository,
-        private RequestStack               $requestStack
+        private RequestStack               $requestStack,
+        private EntityManagerInterface $entityManager,
+        private EventNormalizer $eventNormalizer
     )
     {
     }
@@ -49,10 +54,10 @@ class EventService
 
         $rangeMax = count($allEvents) - 1;
 
-        if (count($allEvents) > self::random_Events_Value) {
+        if (count($allEvents) > self::NUMBER_OF_RANDOM_EVENTS_TO_DISPLAY) {
 
             # Let's generate 6 Random events
-            while (count($events) != self::random_Events_Value) {
+            while (count($events) != self::NUMBER_OF_RANDOM_EVENTS_TO_DISPLAY) {
 
                 for ($i = 0; $i < count($allEvents); $i++) {
 
@@ -189,10 +194,46 @@ class EventService
 
         if ($file instanceof File) {
             $object->setFile($file);
-            $object->setUpdatedAt(new \DateTimeImmutable());
+            $object->setUpdatedAt(new \DateTime());
         }
 
         return $object;
+    }
+
+    /**
+     * @return Event|void
+     * @throws Exception
+     */
+    public function updateImageStock()
+    {
+        if ($this->requestStack->getCurrentRequest() === null) {
+            throw new Exception('Request is null');
+        }
+        $request = $this->requestStack->getCurrentRequest();
+        $object = $request->attributes->get('data');
+
+        if (!($object instanceof Event)) {
+            throw new \RuntimeException('The object does not match');
+        }
+        if (!$object->getId()) {
+            throw new Exception('The object should have an id for updating');
+        }
+        if (!$this->eventRepository->find($object->getId())) {
+            throw new Exception('The object should have an id for updating');
+        }
+
+        if ($request->getContentType() === self::CONTENT_TYPE_JSON) {
+            $arrayDataJson = json_decode($request->getContent(), true);
+            if (is_array($arrayDataJson)) {
+                $imageStockIdReceived = $arrayDataJson[self::DATA_JSON_PARAM];
+                $pathFilename = $this->eventNormalizer->imageStockIdExist($imageStockIdReceived);
+                $object->setImagePath($pathFilename);
+                $this->entityManager->flush();
+
+                return $object;
+            }
+            throw new Exception();
+        }
     }
 
 

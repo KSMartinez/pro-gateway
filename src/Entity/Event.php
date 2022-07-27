@@ -4,14 +4,13 @@ namespace App\Entity;
 
 
 use ApiPlatform\Core\Annotation\ApiProperty;
+use App\Controller\Event\UpdateImageStockAction;
 use DateTime;
 use App\Entity\User;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Faker\Provider\UserAgent;
 use Doctrine\ORM\Mapping as ORM;
-
-
 use App\Repository\EventRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
@@ -93,7 +92,19 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                 'multipart' => ['multipart/form-data'],
             ]
 
-            ], 
+            ],
+        'updateImageStock' => [
+            'method' => 'POST',
+            'path' => '/event/{id}/updateImageStock',
+            'openapi_context' => [
+                'summary' => 'Use this endpoint to update only the picture of "banque d\'images"'
+            ],
+            'controller' => UpdateImageStockAction::class,
+            'denormalization_context' => ['groups' => ['event:updateImageStock']],
+            'input_formats' => [
+                'json' => ['application/json'],
+            ]
+        ],
                 'downloadParticipantList' => [
                     'method' => 'GET',
                     'path' => '/downloadParticipantList/{id}',
@@ -231,12 +242,11 @@ class Event
      */
     #[ORM\ManyToOne(targetEntity: EventCategory::class, cascade: ['PERSIST'], inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['event:read', 'event:create'])]
+    #[Groups(['event:read', 'event:create', 'event:update'])]
     private EventCategory $category;
 
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['event:read'])]
     public ?string $imagePath = null;
 
     
@@ -250,6 +260,10 @@ class Event
     #[ApiProperty(iri: 'http://schema.org/imageUrl')]
     #[Groups(['event:read'])]
     public ?string $imageUrl = null;
+
+    #[ApiProperty(iri: 'http://schema.org/imageStockId')]
+    #[Groups(['event:create'])]
+    public ?string $imageStockId = null;
 
 
     /**
@@ -299,7 +313,7 @@ class Event
 
 
     /**
-     * @var string  
+     * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $link;
@@ -308,6 +322,7 @@ class Event
      * @var string[]
      */
     #[ORM\Column(type: 'json', nullable: true)]
+    #[Groups(['event:create'])]
     private array $questions = [];
 
     /**
@@ -651,6 +666,22 @@ class Event
         $this->associatedGroup = $associatedGroup;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getImageStockId(): ?string
+    {
+        return $this->imageStockId;
+    }
+
+    /**
+     * @param string|null $imageStockId
+     */
+    public function setImageStockId(?string $imageStockId): void
+    {
+        $this->imageStockId = $imageStockId;
     }
 
 }

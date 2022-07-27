@@ -13,7 +13,7 @@ use App\Validator\Constraints\NewsCategory as Assert;
 use Symfony\Component\Validator\Constraints as AssertVendor;
 
 #[ORM\Entity(repositoryClass: NewsCategoryRepository::class)]
-#[UniqueEntity('title')]
+#[UniqueEntity('label')]
 #[ApiResource(attributes: ["pagination_enabled" => false])]
 class NewsCategory
 {
