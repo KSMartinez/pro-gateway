@@ -5,6 +5,7 @@ namespace App\Serializer;
 use App\DataProvider\ImageStockDataProvider;
 use App\Entity\News;
 use ArrayObject;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\ContextAwareNormalizerInterface;
@@ -23,7 +24,8 @@ final class NewsNormalizer implements ContextAwareNormalizerInterface, Normalize
 
     public function __construct(
         private StorageInterface $storage,
-        private ImageStockDataProvider $imageStockDataProvider
+        private ImageStockDataProvider $imageStockDataProvider,
+        private EntityManagerInterface $entityManager
     )
     {
     }
@@ -52,12 +54,12 @@ final class NewsNormalizer implements ContextAwareNormalizerInterface, Normalize
      */
     private function buildImageUrl($object): News
     {
+
         /** @var  News $object */
         $imageStockIdReceived = $object->getImageStockId();
         if ($imageStockIdReceived) {
             $object->imageUrl = $this->imageStockIdExist($imageStockIdReceived);
-
-            return $object;
+            $object->imagePath = $object->imageUrl;
         }
 
         $imgPath = $object->getImagePath();
@@ -66,13 +68,12 @@ final class NewsNormalizer implements ContextAwareNormalizerInterface, Normalize
             $dirname = strlen($pathParts['dirname']) !== 0;
             if($dirname && $pathParts['dirname'] !== self::MEDIA_DIR_USER && $pathParts['dirname'] !== self::MEDIA_DIR_GENERAL ) {
                 $object->imageUrl = $this->storage->resolveUri($object, self::FIELD_NAME_IMAGE);
-
                 return $object;
             }
         }
 
         $object->imageUrl = $imgPath;
-
+        $this->entityManager->flush();
         return $object;
     }
 
