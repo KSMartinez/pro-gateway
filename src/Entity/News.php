@@ -147,6 +147,10 @@ class News
     #[Groups(['news:read'])]
     private ?DateTimeInterface $publishedAt;
 
+    #[ApiProperty(iri: 'http://schema.org/imageStockId')]
+    #[Groups(['news:create'])]
+    public ?string $imageStockId = null;
+
     #[ApiProperty(iri: 'http://schema.org/imageUrl')]
     #[Groups(['news:read'])]
     public ?string $imageUrl = null;
@@ -495,5 +499,21 @@ class News
     public function setPublishInMyName(?bool $publishInMyName): void
     {
         $this->publishInMyName = $publishInMyName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getImageStockId(): ?string
+    {
+        return $this->imageStockId;
+    }
+
+    /**
+     * @param string|null $imageStockId
+     */
+    public function setImageStockId(?string $imageStockId): void
+    {
+        $this->imageStockId = $imageStockId;
     }
 }

@@ -58,9 +58,9 @@ class ImageStockDataProvider implements RestrictedDataProviderInterface, Collect
         //Easy way to get rid of the dots that scandir() picks up in Linux environments:
         $scannedDirectory = array_diff($ls, ['..', '.']);
         $imagesPath = [];
-        foreach ($scannedDirectory as $scan) {
-            $imgPath = '/' . $this->directoryPath . '/' . $resourceType . '/' . $scan;
-            $imagesPath[] = new ImageStock($imgPath, $resourceType);
+        foreach ($scannedDirectory as $filename) {
+            $imgPath = '/' . $this->directoryPath . '/' . $resourceType . '/';
+            $imagesPath[] = new ImageStock($filename, $imgPath, $resourceType);
         }
 
         return $imagesPath;
@@ -75,6 +75,6 @@ class ImageStockDataProvider implements RestrictedDataProviderInterface, Collect
      */
     public function getItem(string $resourceClass, $id, string $operationName = null, array $context = []): ImageStock
     {
-        return new ImageStock('/app', 'user');
+        return new ImageStock('myImage.png', '/app/imagDir/', 'user');
     }
 }
