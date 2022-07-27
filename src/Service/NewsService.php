@@ -5,6 +5,7 @@ namespace App\Service;
 
 use App\Entity\News;
 use App\Repository\NewsRepository;
+use App\Serializer\NewsNormalizer;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -15,17 +16,19 @@ class NewsService
 {
     const NUMBER_OF_RANDOM_EVENTS_TO_DISPLAY = 6;
     const CONTENT_TYPE_JSON = 'json';
-    const DATA_JSON_PARAM = 'pathImg';
+    const DATA_JSON_PARAM = 'id';
 
     /**
      * @param NewsRepository $newsRepository
      * @param RequestStack $requestStack
      * @param EntityManagerInterface $entityManager
+     * @param NewsNormalizer $newsNormalizer
      */
     public function __construct(
         private NewsRepository $newsRepository,
         private RequestStack $requestStack,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private NewsNormalizer $newsNormalizer
     )
     {
     }
@@ -204,7 +207,8 @@ class NewsService
         if ($request->getContentType() === self::CONTENT_TYPE_JSON) {
             $arrayDataJson = json_decode($request->getContent(), true);
             if (is_array($arrayDataJson)) {
-                $pathFilename = $arrayDataJson[self::DATA_JSON_PARAM];
+                $imageStockIdReceived = $arrayDataJson[self::DATA_JSON_PARAM];
+                $pathFilename = $this->newsNormalizer->imageStockIdExist($imageStockIdReceived);
                 $object->setImagePath($pathFilename);
                 $this->entityManager->flush();
 

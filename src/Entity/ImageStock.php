@@ -31,12 +31,17 @@ use ApiPlatform\Core\Annotation\ApiResource;
 class ImageStock
 {
     #[ApiProperty(
+        identifier: true
+    )]
+    private string $id;
+
+    #[ApiProperty(
         description: 'Directory resource name',
         openapiContext: [
             'Available resources' => 'User'
         ],
     )]
-    private string $resource;
+    private string $resourcePath;
 
     #[ApiProperty(
         description: 'Resource type'
@@ -44,28 +49,22 @@ class ImageStock
     private string $resourceType;
 
     #[ApiProperty(
-        identifier: true
+        description: 'File name'
     )]
-    private string $id;
+    private string $filename;
 
 
     /**
-     * @param string $resource
+     * @param string $filename
+     * @param string $resourcePath
      * @param string $resourceType
      */
-    public function __construct(string $resource, string $resourceType )
+    public function __construct(string $filename, string $resourcePath, string $resourceType)
     {
-        $this->resource = $resource;
+        $this->resourcePath = $resourcePath;
         $this->resourceType = $resourceType;
-        $this->id = (string) uniqid();
-    }
-
-    /**
-     * @return string
-     */
-    public function getResource(): string
-    {
-        return $this->resource;
+        $this->filename = $filename;
+        $this->id = (string) hash('md5', $this->filename);
     }
 
     /**
@@ -82,6 +81,30 @@ class ImageStock
     public function getId(): string
     {
         return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getResourceUrl(): string
+    {
+        return $this->getResourcePath() . $this->getFilename();
+    }
+
+    /**
+     * @return string
+     */
+    public function getResourcePath(): string
+    {
+        return $this->resourcePath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilename(): string
+    {
+        return $this->filename;
     }
 
 }

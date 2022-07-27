@@ -58,7 +58,7 @@ final class EventFactory extends ModelFactory
             'endingAt' => self::faker()->dateTimeBetween($start, $start->format('Y-m-d H:i:s').'+1 months'),
             'location' => self::faker()->city(),
             'category' => factory(EventCategory::class)->random(),
-            'image' => self::faker()->imageUrl(),
+            'imageUrl' => self::faker()->imageUrl(),
         ];
     }
 
