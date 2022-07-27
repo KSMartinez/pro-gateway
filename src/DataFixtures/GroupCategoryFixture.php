@@ -20,6 +20,7 @@ class GroupCategoryFixture extends Fixture
             GroupCategory::INTERNATIONAL,
             GroupCategory::CULTURE,
             GroupCategory::AFTER_WORK,
+            GroupCategory::TOUS,
 
         ];
 

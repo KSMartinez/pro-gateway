@@ -17,6 +17,7 @@ class GroupCategory
     const INTERNATIONAL = "International";
     const CULTURE = "Culture";
     const AFTER_WORK = "After work";
+    const TOUS = "Tous";
 
     /**
      * @var int
