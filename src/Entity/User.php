@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Controller\User\UpdateImageStockAction;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
@@ -49,8 +50,19 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
     collectionOperations  : [
-    'get',
-    'post',
+        'get'=> [
+            'normalization_context' => [
+                'groups' => [
+                    'user:read'
+                ],
+                'openapi_definition_name' => 'read collection'
+            ]
+        ],
+        'post' => [
+            'input_formats' => [
+                'multipart' => ['multipart/form-data'],
+            ],
+        ],
     'annuaire_list' => [
         'method' => 'GET',
         'path' => '/annuaireList',
@@ -58,7 +70,23 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     ],
 ],
     itemOperations        : [
-        'get','put','delete', 'patch',
+        'get' => [
+            'normalization_context' => [
+                'groups' => [
+                    'user:read',
+                    'user:read:item'
+                ],
+                'openapi_definition_name' => 'read item'
+            ]
+        ],
+        'put' => [
+            'denormalization_context' => [
+                'groups' => ['user:update'],
+                'openapi_definition_name' => 'update item'
+            ]
+        ],
+        'delete',
+        'patch',
         'charte_user' => [
             'method' => 'POST',
             'path' => '/charteAction/{id}',
@@ -69,15 +97,25 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             'path' => '/user/{id}/updatePicture',
             'openapi_context' => [
                 'summary'     => 'Use this endpoint to update only the picture of the user. Use the PUT endpoint for all other updating'
-                ],
+            ],
             'controller' => UpdatePictureAction::class,
             'denormalization_context' => ['groups' => ['user:updatePicture']],
             'input_formats' => [
                 'multipart' => ['multipart/form-data'],
+            ]
+         ],
+        'updateImageStock' => [
+            'method' => 'POST',
+            'path' => '/user/{id}/updateImageStock',
+            'openapi_context' => [
+                'summary' => 'Use this endpoint to update only the picture of "banque d\'images"'
+            ],
+            'controller' => UpdateImageStockAction::class,
+            'denormalization_context' => ['groups' => ['user:updateImageStock']],
+            'input_formats' => [
                 'json' => ['application/json'],
             ]
-
-         ],
+        ],
 
          'checkFilledDatas' => [
             'method' => 'GET',
@@ -114,9 +152,16 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     shortName             : "users",
     denormalizationContext: [
         'groups' => [
-            'user:write'
+            'user:write',
+            'user:create'
         ]
     ],
+    normalizationContext: [
+        'groups' => [
+            'user:read',
+            'openapi_definition_name' => 'read collection'
+        ]
+    ]
 
 )]
 /**
@@ -138,6 +183,7 @@ class User implements UserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
 
@@ -145,8 +191,8 @@ class User implements UserInterface
     /**
      * @var string
      */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[Groups(['user:write', 'user:create', 'user:read'])]
     private string $email;
 
     /**
@@ -160,24 +206,28 @@ class User implements UserInterface
      * @var CV|null
      */
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: CV::class, cascade: ['persist', 'remove'])]
+    #[Groups(['user:create', 'user:read'])]
     private ?CV $cV;
 
     /**
      * @var Collection<int, Notification>
      */
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Notification::class, orphanRemoval: true)]
+    #[Groups(['user:create', 'user:read'])]
     private Collection $notifications;
 
     /**
      * @var Collection<int, SavedOfferSearch>
      */
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: SavedOfferSearch::class, orphanRemoval: true)]
+    #[Groups(['user:create', 'user:read'])]
     private Collection $savedOfferSearches;
 
     /**
      * @var Collection<int, EmailNotification>
      */
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: EmailNotification::class, orphanRemoval: true)]
+    #[Groups(['user:create', 'user:read'])]
     private Collection $emailNotifications;
 
     /**
@@ -186,6 +236,7 @@ class User implements UserInterface
      * @var int|null
      */
     #[ORM\Column(type: 'integer', nullable: true)]
+    #[Groups(['user:read'])]
     private ?int $frequency = 1;
 
 
@@ -193,204 +244,149 @@ class User implements UserInterface
      * @var boolean
      */
     #[ORM\Column(type: 'boolean',  nullable: false)]
+    #[Groups(['user:read', 'user:create'])]
     private bool $charteSigned = false;
 
 
       /**
      * @var DateTimeInterface|null
      */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'date', nullable: true)]
+    #[Groups(['user:write', 'user:create', 'user:read'])]
     private ?DateTimeInterface $birthday;
 
     /**
      * @var string|null
      */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['user:write', 'user:create', 'user:read'])]
     private ?string $telephone;
 
 
     /**
      * @var string|null
      */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['user:write', 'user:create', 'user:read'])]
     private ?string $firstname;
 
       /**
      * @var string
      */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['user:write', 'user:create', 'user:read'])]
     private string $surname;
 
-     /**
-     * @Vich\UploadableField(mapping="media_object", fileNameProperty="imageLink")
-     */
-    #[Groups(['user:updatePicture'])]
-    #[Assert\ImageFileRequirements]
-    public ?File $imageFile = null;
-
-     /**
-     * @var string|null
-     */
-    /*#[Groups(['user:read'])]*/
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $imageLink;
+    #[ApiProperty(iri: 'http://schema.org/imageStockId')]
+    #[Groups(['user:create'])]
+    public ?string $imageStockId = null;
 
     #[ApiProperty(iri: 'http://schema.org/imageUrl')]
     #[Groups(['user:read'])]
     public ?string $imageUrl = null;
 
 
-     /**
-     * @var string|null
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    public ?string $imagePath = null;
+
+     /**
+     * @Vich\UploadableField(mapping="media_object", fileNameProperty="imagePath")
+     */
+    #[Groups(['user:updatePicture', 'user:create'])]
+    #[Assert\ImageFileRequirements]
+    public ?File $imageFile = null;
+
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?string $profilTitle;
 
 
-    /**
-     * @var string|null
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?string $useFirstname;
 
 
-     /**
-     * @var string|null
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?string $useSurname;
 
 
-      /**
-     * @var string|null
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?string $profilDescription;
 
 
-     /**
-     * @var boolean
-     */
-    #[Groups(['user:write'])]
     #[ORM\Column(type: 'boolean')]
+    #[Groups(['user:write', 'user:create'])]
     private bool $birthdayIsPublic = false;
 
 
-     /**
-     * @var string|null
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?string $address;
 
-     /**
-     * @var string|null
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?string $city;
 
-     /**
-     * @var string
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['user:write', 'user:create'])]
     private string $country;
 
-     /**
-     * @var boolean
-     */
-    #[Groups(["user:write"])]
+
     #[ORM\Column(type: 'boolean')]
+    #[Groups(['user:write', 'user:create'])]
     private bool $cityAndCountryIsPublic = false;
 
-     /**
-     * @var boolean|null
-     */
-    #[Groups(["user:write"])]
+
     #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?bool $mailIsPublic;
 
 
-     /**
-     * @var boolean|null
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?bool $telephoneIsPublic;
 
 
-     /**
-     * @var boolean|null
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?bool $addressIsPublic;
 
 
-      /**
-     * @var bool|null
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?bool $datasVisibleForAllMembers;
 
 
-      /**
-     * @var bool|null
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?bool $datasVisibleForAnnuaire;
 
 
-      /**
-     * @var bool|null
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?bool $datasPublic;
 
 
-      /**
-     * @var bool|null
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?bool $datasAllPrivate;
 
 
-
-      /**
-     * @var bool|null
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?bool $newsLetterNotification;
 
 
-
-      /**
-     * @var bool|null
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?bool $rejectedCharte;
 
 
-      /**
-     * @var bool|null
-     */
-    #[Groups(["user:write"])]
     #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['user:write', 'user:create'])]
     private ?bool $availableToWork;
 
 
@@ -454,8 +450,8 @@ class User implements UserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: GroupMember::class, orphanRemoval: true)]
     private Collection $groupsMemberOf;
 
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $updatedAt;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $updatedAt;
 
     /**
      * @var Collection<int, Conversation>
@@ -463,9 +459,7 @@ class User implements UserInterface
     #[ORM\ManyToMany(targetEntity: Conversation::class, mappedBy: 'users')]
     private Collection $conversations;
 
-    /**
-     * User constructor.
-     */
+
     public function __construct()
     {
         $this->notifications = new ArrayCollection();
@@ -769,25 +763,6 @@ class User implements UserInterface
     public function setFile(?File $imageFile): void
     {
         $this->imageFile = $imageFile;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getImageLink(): ?string
-    {
-        return $this->imageLink;
-    }
-
-    /**
-     * @param string|null $imageLink
-     * @return $this
-     */
-    public function setImageLink(?string $imageLink): self
-    {
-        $this->imageLink = $imageLink;
-
-        return $this;
     }
 
     /**
@@ -1296,12 +1271,12 @@ class User implements UserInterface
         return $this->groupsMemberOf;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTimeInterface
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
@@ -1335,6 +1310,31 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getImageStockId(): ?string
+    {
+        return $this->imageStockId;
+    }
 
+    /**
+     * @param string|null $imageStockId
+     */
+    public function setImageStockId(?string $imageStockId): void
+    {
+        $this->imageStockId = $imageStockId;
+    }
 
+    public function getImagePath(): ?string
+    {
+        return $this->imagePath;
+    }
+
+    public function setImagePath(?string $imagePath): self
+    {
+        $this->imagePath = $imagePath;
+
+        return $this;
+    }
 }

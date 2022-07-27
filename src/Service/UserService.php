@@ -6,6 +6,7 @@ use App\Entity\Conversation;
 use App\Entity\Group;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Serializer\UserNormalizer;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -13,12 +14,21 @@ use Symfony\Component\HttpFoundation\File\File;
 
 class UserService
 {
+    const CONTENT_TYPE_JSON = 'json';
+    const DATA_JSON_PARAM = 'id';
+
     /**
      * @param EntityManagerInterface $entityManager
-     * @param UserRepository         $userRepository
-     * @param RequestStack           $requestStack
+     * @param UserRepository $userRepository
+     * @param RequestStack $requestStack
+     * @param UserNormalizer $userNormalizer
      */
-    public function __construct(private EntityManagerInterface $entityManager, private UserRepository $userRepository, private RequestStack $requestStack)
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private UserRepository $userRepository,
+        private RequestStack $requestStack,
+        private UserNormalizer $userNormalizer
+    )
     {
     }
 
@@ -78,24 +88,49 @@ class UserService
             throw new Exception('The user should have an id for updating');
         }
 
-        if ($request->getContentType() === 'json') {
+        $file = $request->files->get('imageFile');
+        if ($file instanceof File) {
+            $object->setFile($file);
+            $object->setUpdatedAt(new \DateTime());
+        }
+
+        return $object;
+    }
+
+    /**
+     * @return User|void
+     * @throws Exception
+     */
+    public function updateImageStock()
+    {
+        if ($this->requestStack->getCurrentRequest() === null) {
+            throw new Exception('Request is null');
+        }
+        $request = $this->requestStack->getCurrentRequest();
+        $object = $request->attributes->get('data');
+
+        if (!($object instanceof User)) {
+            throw new \RuntimeException('The object does not match');
+        }
+        if (!$object->getId()) {
+            throw new Exception('The object should have an id for updating');
+        }
+        if (!$this->userRepository->find($object->getId())) {
+            throw new Exception('The object should have an id for updating');
+        }
+
+        if ($request->getContentType() === self::CONTENT_TYPE_JSON) {
             $arrayDataJson = json_decode($request->getContent(), true);
             if (is_array($arrayDataJson)) {
-                $pathFilename = $arrayDataJson['pathImg'];
-                $object->setImageLink($pathFilename);
+                $imageStockIdReceived = $arrayDataJson[self::DATA_JSON_PARAM];
+                $pathFilename = $this->userNormalizer->imageStockIdExist($imageStockIdReceived);
+                $object->setImagePath($pathFilename);
+                $this->entityManager->flush();
 
                 return $object;
             }
             throw new Exception();
         }
-
-        $file = $request->files->get('image');
-        if ($file instanceof File) {
-            $object->setFile($file);
-            $object->setUpdatedAt(new \DateTimeImmutable());
-        }
-
-        return $object;
     }
 
 
