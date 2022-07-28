@@ -16,9 +16,10 @@ use Doctrine\ORM\Mapping as ORM;
 )]
 class GroupStatus
 {
-    const EN_ATTENTE = 'EN_ATTENTE';
-    const CONFIRME = 'CONFIRME';
+    const EN_ATTENTE = 'En attente';
+    const ACTIF = 'ACTIF';
     const REFUSE = 'REFUSE';
+    const DESACTIVE = 'Désactivé';
     /**
      * @var int|null
      */

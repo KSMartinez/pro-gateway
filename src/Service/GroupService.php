@@ -39,7 +39,7 @@ class GroupService
      */
     public function validateGroupDemand(GroupDemand $groupDemand): Group
     {
-        $groupConfirmedStatus = $this->getGroupStatus(GroupStatus::CONFIRME);
+        $groupConfirmedStatus = $this->getGroupStatus(GroupStatus::ACTIF);
         $group = $groupDemand->getGroup();
         $group->setGroupStatus($groupConfirmedStatus);
 

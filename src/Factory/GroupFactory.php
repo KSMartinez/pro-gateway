@@ -51,7 +51,7 @@ final class GroupFactory extends ModelFactory
     {
         return [
             // TODO add your default values here (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories)
-            'name' => self::faker()->text(),
+            'name' => self::faker()->text(50),
             'dateCreated' => self::faker()->dateTime(),
             'description' => self::faker()->text(),
             'groupStatus' => factory(GroupStatus::class)->random(),
@@ -62,6 +62,7 @@ final class GroupFactory extends ModelFactory
             'educationDomain' => factory(EducationDomain::class)->random(),
             'educationComposante' => factory(EducationComposante::class)->random(),
             'educationSpeciality' => factory(EducationSpeciality::class)->random(),
+            // 'events'=> EventFactory::random(),
         ];
     }
 

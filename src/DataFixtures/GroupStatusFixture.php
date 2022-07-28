@@ -13,8 +13,9 @@ class GroupStatusFixture extends Fixture
     {
         $groupStatuses = [
             GroupStatus::EN_ATTENTE,
-            GroupStatus::CONFIRME,
-            GroupStatus::CONFIRME
+            GroupStatus::ACTIF,
+            GroupStatus::DESACTIVE, 
+            GroupStatus::REFUSE
         ];
 
         foreach ($groupStatuses as $groupStatus) {
