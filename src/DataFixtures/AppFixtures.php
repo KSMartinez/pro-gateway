@@ -28,7 +28,7 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
 
-        OfferFactory::createMany(20);
+        OfferFactory::createMany(50);
 
         /**
          * This is the main fake user
