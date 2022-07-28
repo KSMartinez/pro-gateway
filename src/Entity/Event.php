@@ -61,10 +61,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
             'controller' => RandomEventsListAction::class,
         ],
     ],
-    iri: 'http://schema.org/Event',
     itemOperations: [
         'get' => [
-        'normalization_context' => [
+            'path' => '/api/event',
+            'normalization_context' => [
             'groups' => [
                 'event:read',
                 'event:read:item'
@@ -315,6 +315,7 @@ class Event
      * @var string|null
      */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['event:read', 'event:create'])]
     private ?string $link;
 
     /**

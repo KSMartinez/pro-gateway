@@ -17,7 +17,11 @@ use Symfony\Component\Security\Core\Security;
 class GroupMemberDataPersister implements DataPersisterInterface
 {
 
-    public function __construct(private EntityManagerInterface $entityManager, private Security $security, private GroupMemberService $groupMemberService)
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private Security $security,
+        private GroupMemberService $groupMemberService
+    )
     {
     }
 

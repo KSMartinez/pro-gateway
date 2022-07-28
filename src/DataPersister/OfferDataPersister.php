@@ -5,7 +5,6 @@ namespace App\DataPersister;
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Offer;
 use App\Service\OfferService;
-use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 
 /**

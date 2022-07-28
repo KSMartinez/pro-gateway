@@ -55,6 +55,7 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
     iri: 'http://schema.org/News',
     itemOperations: [
         'get' => [
+            'path' => '/api/news',
             'normalization_context' => [
                 'groups' => [
                     'news:read',
@@ -189,7 +190,7 @@ class News
 
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[Groups(['news:read'])]
+    #[Groups(['news:read', 'news:create'])]
     private ?User $createdBy;
 
      /**
