@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
@@ -15,6 +16,7 @@ use App\Controller\Offer\MultipleValidateOfferAction;
 use App\Controller\Offer\ReactivateExpiredOfferAction;
 use App\Controller\Offer\RefuseOfferAction;
 use App\Controller\Offer\SetFulfilledOfferAction;
+use App\Controller\Offer\UpdateImageStockAction;
 use App\Controller\Offer\UpdateLogoAction;
 use App\Controller\Offer\UpdatePictureAction;
 use App\Controller\Offer\ValidateOfferAction;
@@ -46,11 +48,15 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
  */
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 #[ApiResource(
-    collectionOperations  : [
-        'get', 'create_offer' => [
+    collectionOperations: [
+        'get',
+        'create_offer' => [
             'method' => 'POST',
             'path' => '/offers/create',
             'controller' => CreateOfferAction::class,
+            'input_formats' => [
+                'multipart' => ['multipart/form-data'],
+            ],
         ],
         'multiple_delete_offers' => [
             'method' => 'DELETE',
@@ -103,7 +109,7 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
             'validate' => false
         ]
     ],
-    itemOperations        : [
+    itemOperations: [
         'get', 'put',
         'validate_offer' => ['method' => 'POST',
             'path' => '/offers/{id}/validate',
@@ -162,15 +168,30 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
             ]
 
         ],
+        'updateImageStock' => [
+            'method' => 'POST',
+            'path' => '/offer/{id}/updateImageStock',
+            'openapi_context' => [
+                'summary' => 'Use this endpoint to update only the picture of "banque d\'images"'
+            ],
+            'controller' => UpdateImageStockAction::class,
+            'denormalization_context' => ['groups' => ['offer:updateImageStock']],
+            'input_formats' => [
+                'json' => ['application/json'],
+            ]
+        ],
 
     ],
+    attributes: ["pagination_enabled" => false],
     denormalizationContext: [
         'groups' => [
-            'offer:write'
+            'offer:write',
+            'offer:create'
         ]
-],  normalizationContext  : [
+], normalizationContext: [
     'groups' => [
-        'offer:read'
+        'offer:read',
+        'openapi_definition_name' => 'read collection'
     ]
 ]
 
@@ -350,17 +371,22 @@ class Offer
     #[Assert\ImageFileRequirements]
     public ?File $logoFile = null;
 
-    /**
-     * @var string|null
-     */
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ApiProperty(iri: 'http://schema.org/imageStockId')]
+    #[Groups(['offer:create'])]
+    public ?string $imageStockId = null;
+
+    #[ApiProperty(iri: 'http://schema.org/imageUrl')]
     #[Groups(['offer:read'])]
-    private ?string $image = null;
+    public ?string $imageUrl = null;
+
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    public ?string $imagePath = null;
 
     /**
-     * @Vich\UploadableField(mapping="media_object", fileNameProperty="image")
+     * @Vich\UploadableField(mapping="media_object", fileNameProperty="imagePath")
      */
-    #[Groups(['offer:updatePicture', 'offer:write'])]
+    #[Groups(['offer:updatePicture', 'offer:write', 'offer:create'])]
     #[Assert\ImageFileRequirements]
     public ?File $imageFile = null;
 
@@ -434,7 +460,7 @@ class Offer
      */
     #[ORM\Column(type: 'boolean')]
     #[Groups(['offer:read', 'offer:write'])]
-    private bool $isAccessibleForDisabled = false;
+    private bool $accessibleForDisabled = false;
 
     /**
      * @var Collection<int, OfferContact>
@@ -443,8 +469,11 @@ class Offer
     #[Groups(['offer:read', 'offer:write'])]
     private Collection $contacts;
 
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $updatedAt;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $updatedAt;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $createdAt;
 
 
     public function __construct()
@@ -454,6 +483,7 @@ class Offer
         $this->dateModified = new DateTime('now');
         $this->levelOfEducations = new ArrayCollection();
         $this->contacts = new ArrayCollection();
+        $this->createdAt = new Datetime();
     }
 
 
@@ -896,14 +926,14 @@ class Offer
         $this->imageFile = $imageFile;
     }
 
-    public function getImage(): ?string
+    public function getImagePath(): ?string
     {
-        return $this->image;
+        return $this->imagePath;
     }
 
-    public function setImage(?string $image): self
+    public function setImagePath(?string $imagePath): self
     {
-        $this->image = $image;
+        $this->imagePath = $imagePath;
 
         return $this;
     }
@@ -1102,18 +1132,18 @@ class Offer
     /**
      * @return bool|null
      */
-    public function getIsAccessibleForDisabled(): ?bool
+    public function isAccessibleForDisabled(): ?bool
     {
-        return $this->isAccessibleForDisabled;
+        return $this->accessibleForDisabled;
     }
 
     /**
-     * @param bool $isAccessibleForDisabled
+     * @param bool $accessibleForDisabled
      * @return $this
      */
-    public function setIsAccessibleForDisabled(bool $isAccessibleForDisabled): self
+    public function setAccessibleForDisabled(bool $accessibleForDisabled): self
     {
-        $this->isAccessibleForDisabled = $isAccessibleForDisabled;
+        $this->accessibleForDisabled = $accessibleForDisabled;
 
         return $this;
     }
@@ -1156,16 +1186,32 @@ class Offer
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTimeInterface
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getImageStockId(): ?string
+    {
+        return $this->imageStockId;
+    }
+
+    /**
+     * @param string|null $imageStockId
+     */
+    public function setImageStockId(?string $imageStockId): void
+    {
+        $this->imageStockId = $imageStockId;
     }
 
 }

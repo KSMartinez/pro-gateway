@@ -95,13 +95,15 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
             ]
         ],
     ],
+    attributes: ['pagination_enabled' => false],
     denormalizationContext: ['groups' => ['news:create']],
     normalizationContext: [
         'groups' => [
             'news:read',
             'openapi_definition_name' => 'read collection'
         ]
-    ])]
+    ]
+)]
 /**
  * @Vich\Uploadable()
  */

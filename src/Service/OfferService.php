@@ -7,6 +7,7 @@ use App\Entity\OfferStatus;
 use App\Entity\User;
 use App\Repository\OfferRepository;
 use App\Repository\OfferStatusRepository;
+use App\Serializer\OfferNormalizer;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,6 +23,9 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class OfferService
 {
+    const CONTENT_TYPE_JSON = 'json';
+    const DATA_JSON_PARAM = 'id';
+
     /**
      * @param NotificationService $notificationService
      * @param OfferStatusRepository $offerStatusRepository
@@ -29,6 +33,8 @@ class OfferService
      * @param EntityManagerInterface $entityManager
      * @param OfferRepository $offerRepository
      * @param RequestStack $requestStack
+     * @param NexusAPIService $nexusAPIService
+     * @param OfferNormalizer $offerNormalizer
      */
     public function __construct(
         private NotificationService    $notificationService,
@@ -37,7 +43,8 @@ class OfferService
         private EntityManagerInterface $entityManager,
         private OfferRepository        $offerRepository,
         private RequestStack           $requestStack,
-        private NexusAPIService $nexusAPIService
+        private NexusAPIService        $nexusAPIService,
+        private OfferNormalizer        $offerNormalizer
     )
     {
     }
@@ -142,12 +149,48 @@ class OfferService
         $file = $request->files->get('imageFile');
         if ($file instanceof File) {
             $object->setFile($file);
-            $object->setUpdatedAt(new DateTimeImmutable());
+            $object->setUpdatedAt(new DateTime());
             $this->entityManager->persist($object);
             $this->entityManager->flush();
         }
 
         return $object;
+    }
+
+    /**
+     * @return Offer|void
+     * @throws Exception
+     */
+    public function updateImageStock()
+    {
+        if ($this->requestStack->getCurrentRequest() === null) {
+            throw new Exception('Request is null');
+        }
+        $request = $this->requestStack->getCurrentRequest();
+        $object = $request->attributes->get('data');
+
+        if (!($object instanceof Offer)) {
+            throw new \RuntimeException('The object does not match');
+        }
+        if (!$object->getId()) {
+            throw new Exception('The object should have an id for updating');
+        }
+        if (!$this->offerRepository->find($object->getId())) {
+            throw new Exception('The object should have an id for updating');
+        }
+
+        if ($request->getContentType() === self::CONTENT_TYPE_JSON) {
+            $arrayDataJson = json_decode($request->getContent(), true);
+            if (is_array($arrayDataJson)) {
+                $imageStockIdReceived = $arrayDataJson[self::DATA_JSON_PARAM];
+                $pathFilename = $this->offerNormalizer->imageStockIdExist($imageStockIdReceived);
+                $object->setImagePath($pathFilename);
+                $this->entityManager->flush();
+
+                return $object;
+            }
+            throw new Exception();
+        }
     }
 
 
@@ -159,16 +202,11 @@ class OfferService
     public function refuseOffer(Offer $offer): Offer
     {
         $offerStatusRefuse = $this->getOfferStatus(OfferStatus::REFUSE);
-
-
         $offer->setOfferStatus($offerStatusRefuse);
-
-
         $this->entityManager->persist($offer);
         $this->entityManager->flush();
 
         return $offer;
-
     }
 
     /**
@@ -179,11 +217,7 @@ class OfferService
     public function archiveOffer(Offer $offer): Offer
     {
         $offerStatusArchivee = $this->getOfferStatus(OfferStatus::ARCHIVEE);
-
-
         $offer->setOfferStatus($offerStatusArchivee);
-
-
         $this->entityManager->persist($offer);
         $this->entityManager->flush();
 
@@ -198,11 +232,7 @@ class OfferService
     public function setFulfilled(Offer $offer): Offer
     {
         $offerStatusPourvue = $this->getOfferStatus(OfferStatus::POURVUE);
-
-
         $offer->setOfferStatus($offerStatusPourvue);
-
-
         $this->entityManager->persist($offer);
         $this->entityManager->flush();
 
@@ -230,7 +260,6 @@ class OfferService
      */
     public function setValidationStatus(Offer $offer): Offer
     {
-
         /** @var User $user */
         $user = $this->security->getUser();
         if (in_array(User::ROLE_ADMIN, $user->getRoles())) {
@@ -238,7 +267,6 @@ class OfferService
         } else {
             $offerStatusToSet = $this->getOfferStatus(OfferStatus::ATTENTE_DE_VALIDATION);
         }
-
 
         $offer->setOfferStatus($offerStatusToSet);
 
@@ -255,7 +283,6 @@ class OfferService
      */
     public function deleteMultipleOffers(array $ids)
     {
-
         foreach ($ids as $id) {
             $offer = $this->offerRepository->find($id);
             if ($offer) {
@@ -272,11 +299,7 @@ class OfferService
     public function deleteOffer(Offer $offer): Offer
     {
         $offerStatusSupprime = $this->getOfferStatus(OfferStatus::SUPPRIMEE);
-
-
         $offer->setOfferStatus($offerStatusSupprime);
-
-
         $this->entityManager->persist($offer);
         $this->entityManager->flush();
 
@@ -291,7 +314,6 @@ class OfferService
     public function validateMultipleOffers(array $ids)
     {
         foreach ($ids as $id) {
-
             $offer = $this->offerRepository->find($id);
             if ($offer) {
                 $this->validateOffer($offer);
@@ -343,7 +365,8 @@ class OfferService
      * @return void
      * @throws Exception
      */
-    public function saveOffersFromNexus(array $offers){
+    public function saveOffersFromNexus(array $offers)
+    {
 
         $batchSize = 0;
         $batchLimit = 20;
@@ -356,7 +379,7 @@ class OfferService
             $batchSize++;
 
             //flush in batches of $batchLimit to improve performance
-            if ($batchSize == $batchLimit){
+            if ($batchSize == $batchLimit) {
                 $this->entityManager->flush();
                 $batchSize = 0;
             }
@@ -364,7 +387,6 @@ class OfferService
 
         //call flush to flush any remaining offers
         $this->entityManager->flush();
-
 
 
     }

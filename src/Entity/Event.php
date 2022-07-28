@@ -110,13 +110,14 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                     'path' => '/downloadParticipantList/{id}',
                     'controller' => DownloadParticipantListAction::class,
                 ],
-           
+
                 'participantList' => [
-                    'method' => 'GET',      
+                    'method' => 'GET',
                     'path' => '/participantList/{id}',
                     'controller' => ParticipantListAction::class,
                 ],
     ],
+    attributes: ['pagination_enabled' => false],
     denormalizationContext: ['groups' => ['event:create']],
     normalizationContext: [
         'groups' => [
@@ -197,15 +198,13 @@ class Event
     private ?string $company;
 
 
-    /**
-     * @var int|null
-     */
-    #[ORM\Column(type: 'integer', nullable: true)]
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups(['event:read', 'event:create'])]
-    private ?int $maxNumberOfParticipants;
+    private ?string $maxNumberOfParticipants;
 
 
-       /**
+    /**
      * @var DateTime
      */
     #[ORM\Column(type: 'date')]
@@ -309,7 +308,7 @@ class Event
      */
     #[ORM\Column(type: 'boolean', nullable: true)]
     #[Groups(['event:create'])]
-    private ?bool $adaptedToHandicapped;
+    private ?bool $accessibleForDisabled;
 
 
     /**
@@ -438,12 +437,13 @@ class Event
         return $this;
     }
 
-    public function getMaxNumberOfParticipants(): ?int
+    public function getMaxNumberOfParticipants(): ?string
     {
         return $this->maxNumberOfParticipants;
     }
 
-    public function setMaxNumberOfParticipants(?int $maxNumberOfParticipants): self
+
+    public function setMaxNumberOfParticipants(?string $maxNumberOfParticipants): self
     {
         $this->maxNumberOfParticipants = $maxNumberOfParticipants;
 
@@ -611,14 +611,16 @@ class Event
         return $this;
     }
 
-    public function isAdaptedToHandicapped(): ?bool
+
+    public function isAccessibleForDisabled(): ?bool
     {
-        return $this->adaptedToHandicapped;
+        return $this->accessibleForDisabled;
     }
 
-    public function setAdaptedToHandicapped(?bool $adaptedToHandicapped): self
+
+    public function setAccessibleForDisabled(?bool $accessibleForDisabled): self
     {
-        $this->adaptedToHandicapped = $adaptedToHandicapped;
+        $this->accessibleForDisabled = $accessibleForDisabled;
 
         return $this;
     }
