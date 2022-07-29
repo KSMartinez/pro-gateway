@@ -234,6 +234,14 @@ class News
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $createdAt;
 
+    /**
+     * @var NewsStatus
+     */
+    #[ORM\ManyToOne(targetEntity: NewsStatus::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['news:read'])]
+    private NewsStatus $newsStatus;
+
     public function __construct()
     {
         $this->publishedAt = new DateTime();
@@ -518,5 +526,17 @@ class News
     public function setImageStockId(?string $imageStockId): void
     {
         $this->imageStockId = $imageStockId;
+    }
+
+    public function getNewsStatus(): NewsStatus
+    {
+        return $this->newsStatus;
+    }
+
+    public function setNewsStatus(NewsStatus $newsStatus): self
+    {
+        $this->newsStatus = $newsStatus;
+
+        return $this;
     }
 }

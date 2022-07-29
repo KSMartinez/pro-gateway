@@ -332,6 +332,14 @@ class Event
     #[ORM\ManyToOne(targetEntity: Group::class, inversedBy: 'events')]
     private ?Group $associatedGroup;
 
+    /**
+     * @var EventStatus
+     */
+    #[ORM\ManyToOne(targetEntity: EventStatus::class)]
+    #[Groups(['event:read'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private EventStatus $eventStatus;
+
     
     public function __construct()
     {
@@ -685,6 +693,18 @@ class Event
     public function setImageStockId(?string $imageStockId): void
     {
         $this->imageStockId = $imageStockId;
+    }
+
+    public function getEventStatus(): EventStatus
+    {
+        return $this->eventStatus;
+    }
+
+    public function setEventStatus(EventStatus $eventStatus): self
+    {
+        $this->eventStatus = $eventStatus;
+
+        return $this;
     }
 
 }

@@ -2,13 +2,14 @@
 
 namespace App\Factory;
 
-use App\Entity\News;
-use App\Entity\NewsCategory;
-use App\Repository\NewsRepository;
 use DateTime;
-use Zenstruck\Foundry\RepositoryProxy;
-use Zenstruck\Foundry\ModelFactory;
+use App\Entity\News;
+use App\Entity\NewsStatus;
+use App\Entity\NewsCategory;
 use Zenstruck\Foundry\Proxy;
+use App\Repository\NewsRepository;
+use Zenstruck\Foundry\ModelFactory;
+use Zenstruck\Foundry\RepositoryProxy;
 use function Zenstruck\Foundry\factory;
 
 /**
@@ -54,6 +55,7 @@ final class NewsFactory extends ModelFactory
             'imageUrl' => self::faker()->imageUrl(),
             'visibility' => 'private',
             'chapo' => self::faker()->paragraphs(3, true),
+            'newsStatus' => factory(NewsStatus::class)->random(),
         ];
     }
 

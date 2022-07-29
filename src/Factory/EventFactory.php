@@ -3,12 +3,13 @@
 namespace App\Factory;
 
 use App\Entity\Event;
+use DateTimeImmutable;
+use App\Entity\EventStatus;
+use Zenstruck\Foundry\Proxy;
 use App\Entity\EventCategory;
 use App\Repository\EventRepository;
-use DateTimeImmutable;
-use Zenstruck\Foundry\RepositoryProxy;
 use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
+use Zenstruck\Foundry\RepositoryProxy;
 use function Zenstruck\Foundry\factory;
 
 /**
@@ -59,6 +60,7 @@ final class EventFactory extends ModelFactory
             'location' => self::faker()->city(),
             'category' => factory(EventCategory::class)->random(),
             'imageUrl' => self::faker()->imageUrl(),
+            'eventStatus' => factory(EventStatus::class)->random(),
         ];
     }
 
