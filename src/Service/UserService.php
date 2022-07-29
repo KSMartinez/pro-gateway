@@ -2,11 +2,9 @@
 
 namespace App\Service;
 
-use App\Entity\Conversation;
 use App\Entity\Group;
 use App\Entity\User;
 use App\Repository\UserRepository;
-use App\Serializer\UserNormalizer;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -21,13 +19,13 @@ class UserService
      * @param EntityManagerInterface $entityManager
      * @param UserRepository $userRepository
      * @param RequestStack $requestStack
-     * @param UserNormalizer $userNormalizer
+     * @param ImageStockService $imageStockService
      */
     public function __construct(
         private EntityManagerInterface $entityManager,
         private UserRepository $userRepository,
         private RequestStack $requestStack,
-        private UserNormalizer $userNormalizer
+        private ImageStockService $imageStockService
     )
     {
     }
@@ -123,7 +121,7 @@ class UserService
             $arrayDataJson = json_decode($request->getContent(), true);
             if (is_array($arrayDataJson)) {
                 $imageStockIdReceived = $arrayDataJson[self::DATA_JSON_PARAM];
-                $pathFilename = $this->userNormalizer->imageStockIdExist($imageStockIdReceived);
+                $pathFilename = $this->imageStockService->imageStockIdExist($imageStockIdReceived);
                 $object->setImagePath($pathFilename);
                 $this->entityManager->flush();
 

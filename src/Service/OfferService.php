@@ -7,7 +7,6 @@ use App\Entity\OfferStatus;
 use App\Entity\User;
 use App\Repository\OfferRepository;
 use App\Repository\OfferStatusRepository;
-use App\Serializer\OfferNormalizer;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -34,7 +33,7 @@ class OfferService
      * @param OfferRepository $offerRepository
      * @param RequestStack $requestStack
      * @param NexusAPIService $nexusAPIService
-     * @param OfferNormalizer $offerNormalizer
+     * @param ImageStockService $imageStockService
      */
     public function __construct(
         private NotificationService    $notificationService,
@@ -44,7 +43,7 @@ class OfferService
         private OfferRepository        $offerRepository,
         private RequestStack           $requestStack,
         private NexusAPIService        $nexusAPIService,
-        private OfferNormalizer        $offerNormalizer
+        private ImageStockService      $imageStockService
     )
     {
     }
@@ -170,7 +169,7 @@ class OfferService
         $object = $request->attributes->get('data');
 
         if (!($object instanceof Offer)) {
-            throw new \RuntimeException('The object does not match');
+            throw new RuntimeException('The object does not match');
         }
         if (!$object->getId()) {
             throw new Exception('The object should have an id for updating');
@@ -183,7 +182,7 @@ class OfferService
             $arrayDataJson = json_decode($request->getContent(), true);
             if (is_array($arrayDataJson)) {
                 $imageStockIdReceived = $arrayDataJson[self::DATA_JSON_PARAM];
-                $pathFilename = $this->offerNormalizer->imageStockIdExist($imageStockIdReceived);
+                $pathFilename = $this->imageStockService->imageStockIdExist($imageStockIdReceived);
                 $object->setImagePath($pathFilename);
                 $this->entityManager->flush();
 

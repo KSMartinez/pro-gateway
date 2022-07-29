@@ -5,7 +5,6 @@ namespace App\Service;
 
 use App\Entity\News;
 use App\Repository\NewsRepository;
-use App\Serializer\NewsNormalizer;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -22,13 +21,13 @@ class NewsService
      * @param NewsRepository $newsRepository
      * @param RequestStack $requestStack
      * @param EntityManagerInterface $entityManager
-     * @param NewsNormalizer $newsNormalizer
+     * @param ImageStockService $imageStockService
      */
     public function __construct(
         private NewsRepository $newsRepository,
         private RequestStack $requestStack,
         private EntityManagerInterface $entityManager,
-        private NewsNormalizer $newsNormalizer
+        private ImageStockService $imageStockService
     )
     {
     }
@@ -208,7 +207,7 @@ class NewsService
             $arrayDataJson = json_decode($request->getContent(), true);
             if (is_array($arrayDataJson)) {
                 $imageStockIdReceived = $arrayDataJson[self::DATA_JSON_PARAM];
-                $pathFilename = $this->newsNormalizer->imageStockIdExist($imageStockIdReceived);
+                $pathFilename = $this->imageStockService->imageStockIdExist($imageStockIdReceived);
                 $object->setImagePath($pathFilename);
                 $this->entityManager->flush();
 

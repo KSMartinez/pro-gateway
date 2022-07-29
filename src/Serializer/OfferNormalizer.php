@@ -2,8 +2,8 @@
 
 namespace App\Serializer;
 
-use App\DataProvider\ImageStockDataProvider;
 use App\Entity\Offer;
+use App\Service\ImageStockService;
 use ArrayObject;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -22,10 +22,16 @@ final class OfferNormalizer implements ContextAwareNormalizerInterface, Normaliz
     private const MEDIA_DIR_USER = '/media/default/user';
     private const MEDIA_DIR_GENERAL = '/media/default/general';
 
+
+    /**
+     * @param StorageInterface $storage
+     * @param EntityManagerInterface $entityManager
+     * @param ImageStockService $imageStockService
+     */
     public function __construct(
-        private StorageInterface $storage,
-        private ImageStockDataProvider $imageStockDataProvider,
-        private EntityManagerInterface $entityManager
+        private StorageInterface       $storage,
+        private EntityManagerInterface $entityManager,
+        private ImageStockService      $imageStockService
     )
     {
     }
@@ -39,7 +45,9 @@ final class OfferNormalizer implements ContextAwareNormalizerInterface, Normaliz
      * @throws ExceptionInterface
      * @throws Exception
      */
-    public function normalize($object, ?string $format = null, array $context = []): array|string|int|float|bool|ArrayObject|null
+    public function normalize(
+        $object, ?string $format = null, array $context = []
+    ): array|string|int|float|bool|ArrayObject|null
     {
         $context[self::ALREADY_CALLED] = true;
         $object = $this->buildImageUrl($object);
@@ -58,15 +66,19 @@ final class OfferNormalizer implements ContextAwareNormalizerInterface, Normaliz
         /** @var  Offer $object */
         $imageStockIdReceived = $object->getImageStockId();
         if ($imageStockIdReceived) {
-            $object->imageUrl = $this->imageStockIdExist($imageStockIdReceived);
+            $object->imageUrl = $this->imageStockService->imageStockIdExist($imageStockIdReceived);
             $object->imagePath = $object->imageUrl;
         }
 
         $imgPath = $object->getImagePath();
         if ($imgPath !== null) {
-            $pathParts =  pathinfo($imgPath);
+            $pathParts = pathinfo($imgPath);
             $dirname = strlen($pathParts['dirname']) !== 0;
-            if($dirname && $pathParts['dirname'] !== self::MEDIA_DIR_USER && $pathParts['dirname'] !== self::MEDIA_DIR_GENERAL ) {
+            if (
+                $dirname &&
+                $pathParts['dirname'] !== self::MEDIA_DIR_USER &&
+                $pathParts['dirname'] !== self::MEDIA_DIR_GENERAL
+            ) {
                 $object->imageUrl = $this->storage->resolveUri($object, self::FIELD_NAME_IMAGE);
                 return $object;
             }
@@ -75,25 +87,6 @@ final class OfferNormalizer implements ContextAwareNormalizerInterface, Normaliz
         $object->imageUrl = $imgPath;
         $this->entityManager->flush();
         return $object;
-    }
-
-    /**
-     * @param string $imageStockIdReceived
-     * @return string|null
-     * @throws Exception
-     */
-    public function imageStockIdExist (string $imageStockIdReceived): ?string
-    {
-        $arrayImagesStock = $this->imageStockDataProvider->getCollection('App\Entity\ImageStock');
-        if(count($arrayImagesStock) > 0 ) {
-            foreach ($arrayImagesStock as $imageStock) {
-                if($imageStock->getId() === $imageStockIdReceived ) {
-                    return $imageStock->getResourceUrl();
-                }
-            }
-        }
-
-        return null;
     }
 
 

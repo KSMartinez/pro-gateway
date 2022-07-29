@@ -2,8 +2,8 @@
 
 namespace App\Serializer;
 
-use App\DataProvider\ImageStockDataProvider;
 use App\Entity\Event;
+use App\Service\ImageStockService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\ContextAwareNormalizerInterface;
@@ -22,10 +22,15 @@ final class EventNormalizer implements ContextAwareNormalizerInterface, Normaliz
     private const MEDIA_DIR_USER = '/media/default/user';
     private const MEDIA_DIR_GENERAL = '/media/default/general';
 
+    /**
+     * @param StorageInterface $storage
+     * @param EntityManagerInterface $entityManager
+     * @param ImageStockService $imageStockService
+     */
     public function __construct(
         private StorageInterface       $storage,
-        private ImageStockDataProvider $imageStockDataProvider,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private ImageStockService $imageStockService
     )
     {
     }
@@ -57,7 +62,7 @@ final class EventNormalizer implements ContextAwareNormalizerInterface, Normaliz
         /** @var  Event $object */
         $imageStockIdReceived = $object->getImageStockId();
         if ($imageStockIdReceived) {
-            $object->imageUrl = $this->imageStockIdExist($imageStockIdReceived);
+            $object->imageUrl = $this->imageStockService->imageStockIdExist($imageStockIdReceived);
             $object->imagePath = $object->imageUrl;
         }
 
@@ -76,26 +81,6 @@ final class EventNormalizer implements ContextAwareNormalizerInterface, Normaliz
         $this->entityManager->flush();
         return $object;
     }
-
-    /**
-     * @param string $imageStockIdReceived
-     * @return string|null
-     * @throws Exception
-     */
-    public function imageStockIdExist(string $imageStockIdReceived): ?string
-    {
-        $arrayImagesStock = $this->imageStockDataProvider->getCollection('App\Entity\ImageStock');
-        if (count($arrayImagesStock) > 0) {
-            foreach ($arrayImagesStock as $imageStock) {
-                if ($imageStock->getId() === $imageStockIdReceived) {
-                    return $imageStock->getResourceUrl();
-                }
-            }
-        }
-
-        return null;
-    }
-
 
     /**
      * @param mixed $data
