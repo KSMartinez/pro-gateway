@@ -49,7 +49,14 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 #[ApiResource(
     collectionOperations: [
-        'get',
+        'get'=> [
+            'normalization_context' => [
+                'groups' => [
+                    'offer:read'
+                ],
+                'openapi_definition_name' => 'read collection'
+            ]
+        ],
         'create_offer' => [
             'method' => 'POST',
             'path' => '/offers/create',
@@ -110,7 +117,16 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
         ]
     ],
     itemOperations: [
-        'get', 'put',
+        'get' => [
+            'normalization_context' => [
+                'groups' => [
+                    'offer:read',
+                    'offer:read:item'
+                ],
+                'openapi_definition_name' => 'read item'
+            ]
+        ],
+        'put',
         'validate_offer' => ['method' => 'POST',
             'path' => '/offers/{id}/validate',
             'security' => 'is_granted("ROLE_ADMIN")',
@@ -166,7 +182,6 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
             'input_formats' => [
                 'multipart' => ['multipart/form-data'],
             ]
-
         ],
         'updateImageStock' => [
             'method' => 'POST',
@@ -180,7 +195,6 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
                 'json' => ['application/json'],
             ]
         ],
-
     ],
     attributes: ["pagination_enabled" => false],
     denormalizationContext: [
@@ -188,7 +202,7 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
             'offer:write',
             'offer:create'
         ]
-], normalizationContext: [
+    ], normalizationContext: [
     'groups' => [
         'offer:read',
         'openapi_definition_name' => 'read collection'
@@ -247,9 +261,7 @@ class Offer
     #[Groups(['offer:read', 'offer:write'])]
     private DateTimeInterface $datePosted;
 
-    /**
-     * @var int|null
-     */
+
     #[ORM\Column(type: 'integer', nullable: true)]
     #[Groups(['offer:read', 'offer:write'])]
     private ?int $publishDuration;
@@ -317,7 +329,7 @@ class Offer
      */
     #[ORM\Column(type: 'boolean')]
     #[Groups(['offer:read', 'offer:write'])]
-    private bool $isOfPartner = false;
+    private bool $postedByPartner = false;
 
 
     /**
@@ -345,7 +357,6 @@ class Offer
     private ?int $numberOfCandidatures;
 
 
-
     /**
      * @var string|null
      */
@@ -368,7 +379,7 @@ class Offer
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="logoLink")
      */
     #[Groups(['offer:updateLogo', 'offer:write'])]
-    #[Assert\ImageFileRequirements]
+    #[Assert\LogoFileRequirements]
     public ?File $logoFile = null;
 
     #[ApiProperty(iri: 'http://schema.org/imageStockId')]
@@ -472,8 +483,8 @@ class Offer
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $updatedAt;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $createdAt;
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $createdAt;
 
 
     public function __construct()
@@ -483,7 +494,7 @@ class Offer
         $this->dateModified = new DateTime('now');
         $this->levelOfEducations = new ArrayCollection();
         $this->contacts = new ArrayCollection();
-        $this->createdAt = new Datetime();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
 
@@ -780,18 +791,18 @@ class Offer
     /**
      * @return bool|null
      */
-    public function getIsOfPartner(): ?bool
+    public function isPostedByPartner(): ?bool
     {
-        return $this->isOfPartner;
+        return $this->postedByPartner;
     }
 
     /**
-     * @param bool $isOfPartner
+     * @param bool $postedByPartner
      * @return $this
      */
-    public function setIsOfPartner(bool $isOfPartner): self
+    public function setPostedByPartner(bool $postedByPartner): self
     {
-        $this->isOfPartner = $isOfPartner;
+        $this->postedByPartner = $postedByPartner;
 
         return $this;
     }
@@ -1213,5 +1224,4 @@ class Offer
     {
         $this->imageStockId = $imageStockId;
     }
-
 }

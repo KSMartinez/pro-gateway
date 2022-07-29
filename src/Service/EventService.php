@@ -8,7 +8,6 @@ use App\Entity\User;
 use App\Repository\EventParticipantRepository;
 use App\Repository\EventRepository;
 use App\Repository\UserRepository;
-use App\Serializer\EventNormalizer;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\File\File;
@@ -27,7 +26,7 @@ class EventService
      * @param UserRepository $userRepository
      * @param RequestStack $requestStack
      * @param EntityManagerInterface $entityManager
-     * @param EventNormalizer $eventNormalizer
+     * @param ImageStockService $imageStockService
      */
     public function __construct(
         private EventRepository            $eventRepository,
@@ -35,7 +34,7 @@ class EventService
         private UserRepository             $userRepository,
         private RequestStack               $requestStack,
         private EntityManagerInterface $entityManager,
-        private EventNormalizer $eventNormalizer
+        private ImageStockService $imageStockService
     )
     {
     }
@@ -226,7 +225,7 @@ class EventService
             $arrayDataJson = json_decode($request->getContent(), true);
             if (is_array($arrayDataJson)) {
                 $imageStockIdReceived = $arrayDataJson[self::DATA_JSON_PARAM];
-                $pathFilename = $this->eventNormalizer->imageStockIdExist($imageStockIdReceived);
+                $pathFilename = $this->imageStockService->imageStockIdExist($imageStockIdReceived);
                 $object->setImagePath($pathFilename);
                 $this->entityManager->flush();
 
