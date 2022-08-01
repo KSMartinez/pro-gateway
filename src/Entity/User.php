@@ -167,7 +167,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 /**
  * @Vich\Uploadable()
  */
-class User implements UserInterface
+class User implements UserInterface, ImageStockCompatibleInterface
 {
     const ROLE_ADMIN = 'ROLE_ADMIN';
     const ROLE_ETUDIANT = 'ROLE_ETUDIANT';

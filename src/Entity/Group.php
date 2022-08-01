@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Group\CreateGroupDemandAction;
@@ -15,7 +16,11 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Validator\Constraints\Group as Assert;
+use Symfony\Component\Validator\Constraints as AssertVendor;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ApiFilter(SearchFilter::class, properties={"name":"partial", "createdBy": "exact"})
@@ -63,7 +68,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ]
 ]
 )]
-class Group
+/**
+ * @Vich\Uploadable()
+ */
+class Group implements ImageStockCompatibleInterface
 {
     /**
      * @var int|null
@@ -172,6 +180,26 @@ class Group
     #[ORM\ManyToOne(targetEntity: EducationSpeciality::class, inversedBy: 'groups')]
     #[Groups(['group:read'])]
     private ?EducationSpeciality $educationSpeciality;
+
+    #[ApiProperty(iri: 'http://schema.org/imageStockId')]
+    #[Groups(['group:create'])]
+    public ?string $imageStockId = null;
+
+    #[ApiProperty(iri: 'http://schema.org/imageUrl')]
+    #[Groups(['group:read'])]
+    public ?string $imageUrl = null;
+
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    public ?string $imagePath = null;
+
+
+    /**
+     * @Vich\UploadableField(mapping="media_object", fileNameProperty="imagePath")
+     */
+    #[Groups(['group:updatePicture', 'group:create'])]
+    #[Assert\ImageFileRequirements]
+    public ?File $imageFile = null;
 
 
     public function __construct()
@@ -396,5 +424,38 @@ class Group
         $this->educationSpeciality = $educationSpeciality;
 
         return $this;
+    }
+
+    public function getImageStockId(): ?string
+    {
+        return $this->imageStockId;
+    }
+
+    public function getImagePath(): ?string
+    {
+        return $this->imagePath;
+    }
+
+    public function setImagePath(?string $imagePath): self
+    {
+        $this->imagePath = $imagePath;
+
+        return $this;
+    }
+
+    /**
+     * @return File|null
+     */
+    public function getFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * @param File|null $imageFile
+     */
+    public function setFile(?File $imageFile): void
+    {
+        $this->imageFile = $imageFile;
     }
 }

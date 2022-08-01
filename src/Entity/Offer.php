@@ -214,7 +214,7 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
 /**
  * @Vich\Uploadable()
  */
-class Offer
+class Offer implements ImageStockCompatibleInterface
 {
 
     /**
