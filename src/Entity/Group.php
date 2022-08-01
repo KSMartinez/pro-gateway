@@ -10,6 +10,8 @@ use App\Controller\Group\CreateGroupDemandAction;
 use App\Controller\Group\ListGroupDemandsAction;
 use App\Controller\Group\RejectGroupDemandAction;
 use App\Controller\Group\ValidateGroupDemandAction;
+use App\Controller\Group\UpdateImageStockAction;
+use App\Controller\Group\UpdatePictureAction;
 use App\Model\GroupDemand;
 use App\Repository\GroupRepository;
 use DateTimeInterface;
@@ -29,7 +31,19 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Table(name: '`group`')]
 #[ApiResource(
        collectionOperations  : [
-        'get',
+        'get'=> [
+            'normalization_context' => [
+                'groups' => [
+                    'group:read'
+                ],
+                'openapi_definition_name' => 'read collection'
+            ]
+        ],
+        'post' => [
+            'input_formats' => [
+                'multipart' => ['multipart/form-data'],
+            ],
+        ],
         'list_group_demands' => [
             'method' => 'get',
             'path' => '/groups/demandes/',
@@ -41,8 +55,50 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             'controller' => CreateGroupDemandAction::class
         ]
     ],
-       itemOperations        : [
-        'get','put', 'patch','delete',
+    iri: 'http://schema.org/Group',
+    itemOperations: [
+        'get' => [
+            'path' => '/api/groups',
+            'normalization_context' => [
+                'groups' => [
+                    'group:read',
+                    'group:read:item'
+                ],
+                'openapi_definition_name' => 'read item'
+            ]
+        ],
+        'put' => [
+            'denormalization_context' => [
+                'groups' => ['group:update'],
+                'openapi_definition_name' => 'update item'
+            ]
+        ],
+        'updatePicture' => [
+            'method' => 'POST',
+            'path' => '/groups/{id}/updatePicture',
+            'openapi_context' => [
+                'summary' => 'Use this endpoint to update only the picture of the group. Use the PUT endpoint for all other updating'
+            ],
+            'controller' => UpdatePictureAction::class,
+            'denormalization_context' => ['groups' => ['group:updatePicture']],
+            'input_formats' => [
+                'multipart' => ['multipart/form-data'],
+            ]
+        ],
+        'updateImageStock' => [
+            'method' => 'POST',
+            'path' => '/groups/{id}/updateImageStock',
+            'openapi_context' => [
+                'summary' => 'Use this endpoint to update only the picture of "banque d\'images"'
+            ],
+            'controller' => UpdateImageStockAction::class,
+            'denormalization_context' => ['groups' => ['group:updateImageStock']],
+            'input_formats' => [
+                'json' => ['application/json'],
+            ]
+        ],
+        'patch',
+        'delete',
         'validate_group_demand' => [
             'method' => 'post',
             'path' => '/groups/demande/{id}/validate',
@@ -58,15 +114,19 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             'controller' => RejectGroupDemandAction::class
         ]
     ],
-       denormalizationContext: [
+    attributes: ['pagination_enabled' => false],
+    denormalizationContext: [
         'groups' => [
-            'group:write'
+            'group:write',
+            'group:create'
         ]
-    ], normalizationContext  : [
-    'groups' => [
-        'group:read'
+    ],
+    normalizationContext  : [
+        'groups' => [
+            'group:read',
+            'openapi_definition_name' => 'read collection'
+        ]
     ]
-]
 )]
 /**
  * @Vich\Uploadable()
@@ -78,14 +138,14 @@ class Group implements ImageStockCompatibleInterface
      */
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[Groups(["group:read", "group:write"])]
+    #[Groups(['group:read', 'group:write', 'group:create'])]
     #[ORM\Column(type: 'integer')]
     private ?int $id;
 
     /**
      * @var string
      */
-    #[Groups(["group:read", "group:write"])]
+    #[Groups(['group:read', 'group:write', 'group:create'])]
     #[ORM\Column(type: 'string', length: 255)]
     private string $name;
 
@@ -99,7 +159,7 @@ class Group implements ImageStockCompatibleInterface
     /**
      * @var string|null
      */
-    #[Groups(["group:read", "group:write"])]
+    #[Groups(['group:read', 'group:write', 'group:create'])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $description;
 
@@ -200,6 +260,9 @@ class Group implements ImageStockCompatibleInterface
     #[Groups(['group:updatePicture', 'group:create'])]
     #[Assert\ImageFileRequirements]
     public ?File $imageFile = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $updatedAt;
 
 
     public function __construct()
@@ -457,5 +520,17 @@ class Group implements ImageStockCompatibleInterface
     public function setFile(?File $imageFile): void
     {
         $this->imageFile = $imageFile;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
     }
 }

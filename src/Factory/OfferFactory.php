@@ -62,7 +62,7 @@ final class OfferFactory extends ModelFactory
             'companyName' => self::faker()->company(),
             'isDirect' => self::faker()->boolean(),
             'isPublic' => self::faker()->boolean(),
-            'isOfPartner' => self::faker()->boolean(),
+            'postedByPartner' => self::faker()->boolean(),
             'offerId' => self::faker()->unique()->numberBetween(0,50),
             'offerStatus' => factory(OfferStatus::class)->random(),
             'offerCategory' => factory(OfferCategory::class)->random(),
