@@ -22,8 +22,6 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class OfferService
 {
-    const CONTENT_TYPE_JSON = 'json';
-    const DATA_JSON_PARAM = 'id';
 
     /**
      * @param NotificationService $notificationService
@@ -33,7 +31,6 @@ class OfferService
      * @param OfferRepository $offerRepository
      * @param RequestStack $requestStack
      * @param NexusAPIService $nexusAPIService
-     * @param ImageStockService $imageStockService
      */
     public function __construct(
         private NotificationService    $notificationService,
@@ -43,7 +40,6 @@ class OfferService
         private OfferRepository        $offerRepository,
         private RequestStack           $requestStack,
         private NexusAPIService        $nexusAPIService,
-        private ImageStockService      $imageStockService
     )
     {
     }
@@ -123,73 +119,6 @@ class OfferService
         }
 
         return $object;
-    }
-
-    /**
-     * @return Offer
-     * @throws Exception
-     */
-    public function updatePicture(): Offer
-    {
-        if ($this->requestStack->getCurrentRequest() === null) {
-            throw new Exception('Request is null');
-        }
-        $request = $this->requestStack->getCurrentRequest();
-        $object = $request->attributes->get('data');
-        if (!($object instanceof Offer)) {
-            throw new RuntimeException('The object does not match');
-        }
-        if (!$object->getId()) {
-            throw new Exception('The user should have an id for updating');
-        }
-        if (!$this->offerRepository->find($object->getId())) {
-            throw new Exception('The user should have an id for updating');
-        }
-        $file = $request->files->get('imageFile');
-        if ($file instanceof File) {
-            $object->setFile($file);
-            $object->setUpdatedAt(new DateTime());
-            $this->entityManager->persist($object);
-            $this->entityManager->flush();
-        }
-
-        return $object;
-    }
-
-    /**
-     * @return Offer|void
-     * @throws Exception
-     */
-    public function updateImageStock()
-    {
-        if ($this->requestStack->getCurrentRequest() === null) {
-            throw new Exception('Request is null');
-        }
-        $request = $this->requestStack->getCurrentRequest();
-        $object = $request->attributes->get('data');
-
-        if (!($object instanceof Offer)) {
-            throw new RuntimeException('The object does not match');
-        }
-        if (!$object->getId()) {
-            throw new Exception('The object should have an id for updating');
-        }
-        if (!$this->offerRepository->find($object->getId())) {
-            throw new Exception('The object should have an id for updating');
-        }
-
-        if ($request->getContentType() === self::CONTENT_TYPE_JSON) {
-            $arrayDataJson = json_decode($request->getContent(), true);
-            if (is_array($arrayDataJson)) {
-                $imageStockIdReceived = $arrayDataJson[self::DATA_JSON_PARAM];
-                $pathFilename = $this->imageStockService->imageStockIdExist($imageStockIdReceived);
-                $object->setImagePath($pathFilename);
-                $this->entityManager->flush();
-
-                return $object;
-            }
-            throw new Exception();
-        }
     }
 
 

@@ -2,26 +2,26 @@
 
 namespace App\Controller\Offer;
 
-use App\Entity\Offer;
-use App\Service\OfferService;
+use App\Entity\UploadPictureCompatibleInterface;
+use App\Service\UpdatePictureService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class UpdatePictureAction extends AbstractController
 {
     /**
-     * @param OfferService $offerService
+     * @param UpdatePictureService $updatePicture
      */
-    public function __construct(private OfferService $offerService)
+    public function __construct(private UpdatePictureService $updatePicture)
     {
     }
 
     /**
-     * @return Offer
+     * @return UploadPictureCompatibleInterface
      * @throws Exception
      */
-    public function __invoke(): Offer
+    public function __invoke(): UploadPictureCompatibleInterface
     {
-        return $this->offerService->updatePicture();
+        return $this->updatePicture->process('App\Entity\Offer');
     }
 }

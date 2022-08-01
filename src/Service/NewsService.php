@@ -1,33 +1,20 @@
 <?php
 
-
 namespace App\Service;
 
 use App\Entity\News;
 use App\Repository\NewsRepository;
 use DateTime;
-use Doctrine\ORM\EntityManagerInterface;
-use Exception;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 class NewsService
 {
     const NUMBER_OF_RANDOM_EVENTS_TO_DISPLAY = 6;
-    const CONTENT_TYPE_JSON = 'json';
-    const DATA_JSON_PARAM = 'id';
 
     /**
      * @param NewsRepository $newsRepository
-     * @param RequestStack $requestStack
-     * @param EntityManagerInterface $entityManager
-     * @param ImageStockService $imageStockService
      */
     public function __construct(
-        private NewsRepository $newsRepository,
-        private RequestStack $requestStack,
-        private EntityManagerInterface $entityManager,
-        private ImageStockService $imageStockService
+        private NewsRepository $newsRepository
     )
     {
     }
@@ -147,73 +134,5 @@ class NewsService
         }
 
         return $result;
-    }
-
-    /**
-     * @return News
-     * @throws Exception
-     */
-    public function updatePicture(): News
-    {
-        if ($this->requestStack->getCurrentRequest() === null) {
-            throw new Exception('Request is null');
-        }
-        $request = $this->requestStack->getCurrentRequest();
-        $object = $request->attributes->get('data');
-
-        if (!($object instanceof News)) {
-            throw new \RuntimeException('The object does not match');
-        }
-        if (!$object->getId()) {
-            throw new Exception('The object should have an id for updating');
-        }
-        if (!$this->newsRepository->find($object->getId())) {
-            throw new Exception('The object should have an id for updating');
-        }
-
-        $file = $request->files->get('imageFile');
-
-        if ($file instanceof File) {
-            $object->setFile($file);
-            $object->setUpdatedAt(new \DateTime());
-        }
-
-        return $object;
-    }
-
-    /**
-     * @return News|void
-     * @throws Exception
-     */
-    public function updateImageStock()
-    {
-        if ($this->requestStack->getCurrentRequest() === null) {
-            throw new Exception('Request is null');
-        }
-        $request = $this->requestStack->getCurrentRequest();
-        $object = $request->attributes->get('data');
-
-        if (!($object instanceof News)) {
-            throw new \RuntimeException('The object does not match');
-        }
-        if (!$object->getId()) {
-            throw new Exception('The object should have an id for updating');
-        }
-        if (!$this->newsRepository->find($object->getId())) {
-            throw new Exception('The object should have an id for updating');
-        }
-
-        if ($request->getContentType() === self::CONTENT_TYPE_JSON) {
-            $arrayDataJson = json_decode($request->getContent(), true);
-            if (is_array($arrayDataJson)) {
-                $imageStockIdReceived = $arrayDataJson[self::DATA_JSON_PARAM];
-                $pathFilename = $this->imageStockService->imageStockIdExist($imageStockIdReceived);
-                $object->setImagePath($pathFilename);
-                $this->entityManager->flush();
-
-                return $object;
-            }
-            throw new Exception();
-        }
     }
 }

@@ -1,42 +1,33 @@
 <?php
 
 namespace App\Service;
+
 use App\Entity\Group;
 use App\Entity\GroupMember;
 use App\Entity\GroupMemberStatus;
 use App\Entity\GroupStatus;
 use App\Entity\User;
 use App\Model\GroupDemand;
-use App\Repository\GroupMemberRepository;
 use App\Repository\GroupMemberStatusRepository;
 use App\Repository\GroupRepository;
 use App\Repository\GroupStatusRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 class GroupService
 {
-    const CONTENT_TYPE_JSON = 'json';
-    const DATA_JSON_PARAM = 'id';
-
     /**
      * @param GroupMemberStatusRepository $groupMemberStatusRepository
      * @param EntityManagerInterface $entityManager
      * @param GroupRepository $groupRepository
      * @param GroupStatusRepository $groupStatusRepository
-     * @param RequestStack $requestStack
-     * @param ImageStockService $imageStockService
      */
     public function __construct(
         private GroupMemberStatusRepository $groupMemberStatusRepository,
         private EntityManagerInterface $entityManager,
         private GroupRepository $groupRepository,
         private GroupStatusRepository $groupStatusRepository,
-        private RequestStack $requestStack,
-        private ImageStockService $imageStockService
     )
     {
     }
@@ -146,8 +137,6 @@ class GroupService
         $this->entityManager->flush();
         return $group;
 
-
-
     }
 
     /**
@@ -175,71 +164,4 @@ class GroupService
         return $group == null;
     }
 
-    /**
-     * @return Group
-     * @throws Exception
-     */
-    public function updatePicture(): Group
-    {
-        if ($this->requestStack->getCurrentRequest() === null) {
-            throw new Exception('Request is null');
-        }
-        $request = $this->requestStack->getCurrentRequest();
-        $object = $request->attributes->get('data');
-
-        if (!($object instanceof Group)) {
-            throw new \RuntimeException('The object does not match');
-        }
-        if (!$object->getId()) {
-            throw new Exception('The object should have an id for updating');
-        }
-        if (!$this->groupRepository->find($object->getId())) {
-            throw new Exception('The object should have an id for updating');
-        }
-
-        $file = $request->files->get('imageFile');
-
-        if ($file instanceof File) {
-            $object->setFile($file);
-            $object->setUpdatedAt(new \DateTime());
-        }
-
-        return $object;
-    }
-
-    /**
-     * @return Group|void
-     * @throws Exception
-     */
-    public function updateImageStock()
-    {
-        if ($this->requestStack->getCurrentRequest() === null) {
-            throw new Exception('Request is null');
-        }
-        $request = $this->requestStack->getCurrentRequest();
-        $object = $request->attributes->get('data');
-
-        if (!($object instanceof Group)) {
-            throw new \RuntimeException('The object does not match');
-        }
-        if (!$object->getId()) {
-            throw new Exception('The object should have an id for updating');
-        }
-        if (!$this->groupRepository->find($object->getId())) {
-            throw new Exception('The object should have an id for updating');
-        }
-
-        if ($request->getContentType() === self::CONTENT_TYPE_JSON) {
-            $arrayDataJson = json_decode($request->getContent(), true);
-            if (is_array($arrayDataJson)) {
-                $imageStockIdReceived = $arrayDataJson[self::DATA_JSON_PARAM];
-                $pathFilename = $this->imageStockService->imageStockIdExist($imageStockIdReceived);
-                $object->setImagePath($pathFilename);
-                $this->entityManager->flush();
-
-                return $object;
-            }
-            throw new Exception();
-        }
-    }
 }

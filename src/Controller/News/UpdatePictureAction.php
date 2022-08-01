@@ -4,8 +4,8 @@
 namespace App\Controller\News;
 
 
-use App\Entity\News;
-use App\Service\NewsService;
+use App\Entity\UploadPictureCompatibleInterface;
+use App\Service\UpdatePictureService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -19,18 +19,18 @@ class UpdatePictureAction extends AbstractController
 {
 
     /**
-     * @param NewsService $newsService
+     * @param UpdatePictureService $updatePicture
      */
-    public function __construct(private NewsService $newsService)
+    public function __construct(private UpdatePictureService $updatePicture)
     {
     }
 
     /**
-     * @return News
+     * @return UploadPictureCompatibleInterface
      * @throws Exception
      */
-    public function __invoke(): News
+    public function __invoke(): UploadPictureCompatibleInterface
     {
-        return $this->newsService->updatePicture();
+        return $this->updatePicture->process('App\Entity\News');
     }
 }     

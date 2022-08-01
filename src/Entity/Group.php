@@ -131,7 +131,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 /**
  * @Vich\Uploadable()
  */
-class Group implements ImageStockCompatibleInterface
+class Group implements ImageStockCompatibleInterface, UploadPictureCompatibleInterface
 {
     /**
      * @var int|null

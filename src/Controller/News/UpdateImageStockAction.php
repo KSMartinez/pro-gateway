@@ -2,8 +2,8 @@
 
 namespace App\Controller\News;
 
-use App\Entity\News;
-use App\Service\NewsService;
+use App\Entity\ImageStockCompatibleInterface;
+use App\Service\ImageStockService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -11,18 +11,16 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 #[AsController]
 class UpdateImageStockAction extends AbstractController
 {
-
-    public function __construct(private NewsService $newsService)
+    public function __construct(private ImageStockService $imageStockService)
     {
     }
 
     /**
-     * @return News|void
-     * 
+     * @return ImageStockCompatibleInterface|void
      * @throws Exception
      */
     public function __invoke()
     {
-        return $this->newsService->updateImageStock();
+        return $this->imageStockService->updatePicture('App\Entity\News');
     }
 }

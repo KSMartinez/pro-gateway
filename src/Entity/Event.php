@@ -129,7 +129,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 /**
  * @Vich\Uploadable()
  */
-class Event implements ImageStockCompatibleInterface
+class Event implements ImageStockCompatibleInterface, UploadPictureCompatibleInterface
 {
 
     /**

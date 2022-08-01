@@ -11,4 +11,8 @@ interface ImageStockCompatibleInterface
     public function getImageStockId(): ?string;
 
     public function getImagePath(): ?string;
+
+    public function setImagePath(?string $imagePath): self;
+
+    public function getId(): ?int;
 }

@@ -2,8 +2,8 @@
 
 namespace App\Controller\Event;
 
-use App\Entity\Event;
-use App\Service\EventService;
+use App\Entity\ImageStockCompatibleInterface;
+use App\Service\ImageStockService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -11,17 +11,17 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 #[AsController]
 class UpdateImageStockAction extends AbstractController
 {
-    public function __construct(private EventService $eventService)
+    public function __construct(private ImageStockService $imageStockService)
     {
     }
 
     /**
-     * @return Event|void
+     * @return ImageStockCompatibleInterface|void
      *
      * @throws Exception
      */
     public function __invoke()
     {
-        return $this->eventService->updateImageStock();
+        return $this->imageStockService->updatePicture('App\Entity\Event');
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Controller\Group;
 
-use App\Entity\Group;
-use App\Service\GroupService;
+use App\Entity\ImageStockCompatibleInterface;
+use App\Service\ImageStockService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -12,17 +12,20 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 class UpdateImageStockAction extends AbstractController
 {
 
-    public function __construct(private GroupService $groupService)
+    /**
+     * @param ImageStockService $imageStockService
+     */
+    public function __construct(private ImageStockService $imageStockService)
     {
     }
 
     /**
-     * @return Group|void
+     * @return ImageStockCompatibleInterface|void
      *
      * @throws Exception
      */
     public function __invoke()
     {
-        return $this->groupService->updateImageStock();
+        return $this->imageStockService->updatePicture('App\Entity\Group');
     }
 }

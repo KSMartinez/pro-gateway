@@ -1,33 +1,29 @@
 <?php
 
-
 namespace App\Controller\Group;
 
-
-use App\Entity\Group;
-use App\Service\GroupService;
+use App\Entity\UploadPictureCompatibleInterface;
+use App\Service\UpdatePictureService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
-
 #[AsController]
 class UpdatePictureAction extends AbstractController
 {
-
     /**
-     * @param GroupService $groupService
+     * @param UpdatePictureService $updatePicture
      */
-    public function __construct(private GroupService $groupService)
+    public function __construct(private UpdatePictureService $updatePicture)
     {
     }
 
     /**
-     * @return Group
+     * @return UploadPictureCompatibleInterface
      * @throws Exception
      */
-    public function __invoke(): Group
+    public function __invoke(): UploadPictureCompatibleInterface
     {
-        return $this->groupService->updatePicture();
+        return $this->updatePicture->process('App\Entity\Group');
     }
 }

@@ -4,9 +4,9 @@
 namespace App\Controller\Event;
 
 
+use App\Entity\UploadPictureCompatibleInterface;
+use App\Service\UpdatePictureService;
 use Exception;
-use App\Entity\Event; 
-use App\Service\EventService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -17,28 +17,20 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[AsController]
 class UpdatePictureAction extends AbstractController
 {
-
     /**
-     * @var EventService
+     * @param UpdatePictureService $updatePicture
      */
-    private EventService $eventService;
-
-    /**
-     * UpdatePictureAction constructor.
-     * @param EventService $eventService
-     */
-    public function __construct(EventService $eventService)
+    public function __construct(private UpdatePictureService $updatePicture)
     {
-        $this->eventService = $eventService;
     }
  
 
     /**
-     * @return Event
+     * @return UploadPictureCompatibleInterface
      * @throws Exception
      */
-    public function __invoke(): Event
+    public function __invoke(): UploadPictureCompatibleInterface
     {
-        return $this->eventService->updatePicture();
+        return $this->updatePicture->process('App\Entity\Event');
     }
 }     

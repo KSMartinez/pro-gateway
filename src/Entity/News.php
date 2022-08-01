@@ -108,7 +108,7 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
 /**
  * @Vich\Uploadable()
  */
-class News implements ImageStockCompatibleInterface
+class News implements ImageStockCompatibleInterface, UploadPictureCompatibleInterface
 {
 
     const VISIBILITY_PRIVATE = 'private';

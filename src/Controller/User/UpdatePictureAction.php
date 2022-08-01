@@ -1,11 +1,9 @@
 <?php
 
-
 namespace App\Controller\User;
 
-
-use App\Entity\User;
-use App\Service\UserService;
+use App\Entity\UploadPictureCompatibleInterface;
+use App\Service\UpdatePictureService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -18,18 +16,18 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 class UpdatePictureAction extends AbstractController
 {
     /**
-     * @param UserService $userService
+     * @param UpdatePictureService $updatePicture
      */
-    public function __construct(private UserService $userService)
+    public function __construct(private UpdatePictureService $updatePicture)
     {
     }
 
     /**
-     * @return User
+     * @return UploadPictureCompatibleInterface
      * @throws Exception
      */
-    public function __invoke(): User
+    public function __invoke(): UploadPictureCompatibleInterface
     {
-        return $this->userService->updatePicture();
+        return $this->updatePicture->process('App\Entity\User');
     }
 }     

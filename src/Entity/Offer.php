@@ -169,7 +169,6 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
             'input_formats' => [
                 'multipart' => ['multipart/form-data'],
             ]
-
         ],
         'updatePicture' => [
             'method' => 'POST',
@@ -202,19 +201,19 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
             'offer:write',
             'offer:create'
         ]
-    ], normalizationContext: [
-    'groups' => [
+    ],
+    normalizationContext: [
+        'groups' => [
         'offer:read',
         'openapi_definition_name' => 'read collection'
+        ]
     ]
-]
-
 )]
 #[HasLifecycleCallbacks]
 /**
  * @Vich\Uploadable()
  */
-class Offer implements ImageStockCompatibleInterface
+class Offer implements ImageStockCompatibleInterface, UploadPictureCompatibleInterface
 {
 
     /**
