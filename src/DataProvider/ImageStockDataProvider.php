@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class ImageStockDataProvider implements RestrictedDataProviderInterface, CollectionDataProviderInterface, ItemDataProviderInterface
 {
+    const RESOURCE_TYPE_GROUP = 'group';
+    const RESOURCE_TYPE_OFFER = 'offer';
     const RESOURCE_TYPE_USER = 'user';
     const RESOURCE_TYPE_GENERAL = 'general';
     const RESOURCE_TYPE_NAME = 'resource_type';
@@ -46,10 +48,8 @@ class ImageStockDataProvider implements RestrictedDataProviderInterface, Collect
             throw new Exception('Request is null');
         }
         $resourceType = $this->requestStack->getCurrentRequest()->query->get(self::RESOURCE_TYPE_NAME);
-        if ($resourceType !== self::RESOURCE_TYPE_USER) {
-            $resourceType = self::RESOURCE_TYPE_GENERAL;
-        }
-        $path = $this->directoryPath . '/' . $resourceType;
+        $resourceNameDir = $this->getResourceNameDir($resourceType);
+        $path = $this->directoryPath . '/' . $resourceNameDir;
 
         $ls = scandir($path);
         if ($ls === false) {
@@ -59,11 +59,25 @@ class ImageStockDataProvider implements RestrictedDataProviderInterface, Collect
         $scannedDirectory = array_diff($ls, ['..', '.']);
         $imagesPath = [];
         foreach ($scannedDirectory as $filename) {
-            $imgPath = '/' . $this->directoryPath . '/' . $resourceType . '/';
-            $imagesPath[] = new ImageStock($filename, $imgPath, $resourceType);
+            $imgPath = '/' . $this->directoryPath . '/' . $resourceNameDir . '/';
+            $imagesPath[] = new ImageStock($filename, $imgPath, $resourceNameDir);
         }
 
         return $imagesPath;
+    }
+
+    /**
+     * @param string|null $resourceType
+     * @return string
+     */
+    private function getResourceNameDir(?string $resourceType) : string
+    {
+        return match ($resourceType) {
+            self::RESOURCE_TYPE_USER => self::RESOURCE_TYPE_USER,
+            self::RESOURCE_TYPE_OFFER => self::RESOURCE_TYPE_OFFER,
+            self::RESOURCE_TYPE_GROUP => self::RESOURCE_TYPE_GROUP,
+            default => self::RESOURCE_TYPE_GENERAL,
+        };
     }
 
     /**
