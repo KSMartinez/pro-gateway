@@ -6,6 +6,8 @@
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /public/media/*.jpg
+/public/media/*.png
+/public/media/default
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
@@ -19,3 +21,8 @@
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
+
+###> IDE
+.idea/
+.vscode/launch.json
+###<

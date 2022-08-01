@@ -13,7 +13,7 @@ use Vich\UploaderBundle\Storage\StorageInterface;
 use ArrayObject;
 use Exception;
 
-final class EventNormalizer implements ContextAwareNormalizerInterface, NormalizerAwareInterface
+final class EventNormalizer //implements ContextAwareNormalizerInterface, NormalizerAwareInterface
 {
     use NormalizerAwareTrait;
 

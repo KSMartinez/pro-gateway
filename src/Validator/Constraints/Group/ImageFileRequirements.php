@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Validator\Constraints\Event;
+namespace App\Validator\Constraints\Group;
 
 use App\Validator\Constraints\Traits\ImageFileGeneralRequirementsTrait;
 use Symfony\Component\Validator\Constraints\Compound;
