@@ -63,7 +63,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
     ],
     itemOperations: [
         'get' => [
-            'path' => '/api/event',
+            'path' => '/event/{id}',
             'normalization_context' => [
             'groups' => [
                 'event:read',

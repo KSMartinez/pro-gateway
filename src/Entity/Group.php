@@ -58,7 +58,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     iri: 'http://schema.org/Group',
     itemOperations: [
         'get' => [
-            'path' => '/api/groups',
+            'path' => '/groups/{id}',
             'normalization_context' => [
                 'groups' => [
                     'group:read',
@@ -152,8 +152,8 @@ class Group implements ImageStockCompatibleInterface, UploadPictureCompatibleInt
     /**
      * @var DateTimeInterface
      */
-    #[Groups(["group:read"])]
     #[ORM\Column(type: 'date')]
+    #[Groups(['group:read', 'group:write'])]
     private DateTimeInterface $dateCreated;
 
     /**
@@ -166,16 +166,16 @@ class Group implements ImageStockCompatibleInterface, UploadPictureCompatibleInt
     /**
      * @var GroupStatus
      */
-    #[Groups(["group:read"])]
     #[ORM\ManyToOne(targetEntity: GroupStatus::class)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['group:read', 'group:write'])]
     private GroupStatus $groupStatus;
 
     /**
      * @var User|null
      */
-    #[Groups(["group:read"])]
     #[ORM\ManyToOne(targetEntity: User::class)]
+    #[Groups(['group:read', 'group:write'])]
     private ?User $createdBy;
 
     /**

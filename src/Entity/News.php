@@ -55,7 +55,7 @@ use Symfony\Component\Validator\Constraints as AssertVendor;
     iri: 'http://schema.org/News',
     itemOperations: [
         'get' => [
-            'path' => '/api/news',
+            'path' => '/news/{id}',
             'normalization_context' => [
                 'groups' => [
                     'news:read',
