@@ -27,7 +27,9 @@ class ItemNormalizer extends AbstractItemNormalizer
 {
     private const ALREADY_CALLED = 'NORMALIZER_ALREADY_CALLED';
     private const FIELD_NAME_IMAGE = 'imageFile';
-    private const MEDIA_DIR_USER = '/media/default/user';
+    private const MEDIA_DIR_USER = '/media/default/users';
+    private const MEDIA_DIR_OFFER = '/media/default/offers';
+    private const MEDIA_DIR_GROUPS = '/media/default/groups';
     private const MEDIA_DIR_GENERAL = '/media/default/general';
     private const DIRNAME = 'dirname';
 
@@ -152,6 +154,8 @@ class ItemNormalizer extends AbstractItemNormalizer
             if (
                 $dirname &&
                 $pathParts[self::DIRNAME] !== self::MEDIA_DIR_USER &&
+                $pathParts[self::DIRNAME] !== self::MEDIA_DIR_GROUPS &&
+                $pathParts[self::DIRNAME] !== self::MEDIA_DIR_OFFER &&
                 $pathParts[self::DIRNAME] !== self::MEDIA_DIR_GENERAL
             ) {
                 $object->imageUrl = $this->storage->resolveUri($object, self::FIELD_NAME_IMAGE);

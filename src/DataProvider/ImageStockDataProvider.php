@@ -8,14 +8,18 @@ use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use App\Entity\ImageStock;
 use Exception;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Request;
 
 class ImageStockDataProvider implements RestrictedDataProviderInterface, CollectionDataProviderInterface, ItemDataProviderInterface
 {
-    const RESOURCE_TYPE_GROUP = 'group';
-    const RESOURCE_TYPE_OFFER = 'offer';
-    const RESOURCE_TYPE_USER = 'user';
+    const RESOURCE_TYPE_GROUP = 'groups';
+    const RESOURCE_TYPE_OFFER = 'offers';
+    const RESOURCE_TYPE_USER = 'users';
     const RESOURCE_TYPE_GENERAL = 'general';
     const RESOURCE_TYPE_NAME = 'resource_type';
+    const API_POST_CREATE_USER = '/api/users';
+    const API_POST_CREATE_GROUP = '/api/groups';
+    const API_POST_CREATE_OFFER = '/api/offers/create';
 
     /**
      * @param string $directoryPath
@@ -44,10 +48,25 @@ class ImageStockDataProvider implements RestrictedDataProviderInterface, Collect
      */
     public function getCollection(string $resourceClass, string $operationName = null): array
     {
-        if ($this->requestStack->getCurrentRequest() === null) {
+        $currentRequest = $this->requestStack->getCurrentRequest();
+        if ( $currentRequest === null) {
             throw new Exception('Request is null');
         }
-        $resourceType = $this->requestStack->getCurrentRequest()->query->get(self::RESOURCE_TYPE_NAME);
+
+        if($currentRequest->getMethod() === Request::METHOD_GET) {
+            $resourceType = $currentRequest->query->get(self::RESOURCE_TYPE_NAME);
+        }
+        if($currentRequest->getMethod() === Request::METHOD_POST) {
+            $resourceType = match ($currentRequest->getPathInfo()) {
+                self::API_POST_CREATE_OFFER => self::RESOURCE_TYPE_OFFER,
+                self::API_POST_CREATE_GROUP => self::RESOURCE_TYPE_GROUP,
+                self::API_POST_CREATE_USER => self::RESOURCE_TYPE_USER,
+                default => self::RESOURCE_TYPE_GENERAL
+            };
+        }
+
+        $resourceType = $resourceType ?? self::RESOURCE_TYPE_GENERAL;
+
         $resourceNameDir = $this->getResourceNameDir($resourceType);
         $path = $this->directoryPath . '/' . $resourceNameDir;
 
