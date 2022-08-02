@@ -148,14 +148,14 @@ class OfferDraft
      */
     #[ORM\Column(type: 'boolean', nullable:true)]
     #[Groups(['offer:read', 'offer:write'])]
-    private ?bool $isDirect = false;
+    private ?bool $direct = false;
 
     /**
      * @var bool|null
      */
     #[ORM\Column(type: 'boolean', nullable:true)]
     #[Groups(['offer:read', 'offer:write'])]
-    private ?bool $isPublic = false;
+    private ?bool $public = false;
 
     /**
      * @var string|null
@@ -169,7 +169,7 @@ class OfferDraft
      */
     #[ORM\Column(type: 'boolean', nullable:true)]
     #[Groups(['offer:read', 'offer:write'])]
-    private ?bool $isOfPartner = false;
+    private ?bool $postedByPartner = false;
 
     /**
      * @var User|null
@@ -296,21 +296,25 @@ class OfferDraft
      */
     #[ORM\Column(type: 'boolean', nullable:true)]
     #[Groups(['offer:read', 'offer:write'])]
-    private ?bool $isAccessibleForDisabled;
+    private ?bool $accessibleForDisabled;
 
     /**
      * @var Collection<int, OfferContact>
      */
     #[ORM\OneToMany(mappedBy: 'offerDraft', targetEntity: OfferContact::class, cascade:['persist'], orphanRemoval:true)]
-    private $contacts;
+    private Collection $contacts;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $updateAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $updateAt;
+    private ?\DateTimeImmutable $createdAt;
 
     public function __construct()
     {
         $this->levelOfEducations = new ArrayCollection();
         $this->contacts = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -445,26 +449,26 @@ class OfferDraft
         return $this;
     }
 
-    public function getIsDirect(): ?bool
+    public function isDirect(): ?bool
     {
-        return $this->isDirect;
+        return $this->direct;
     }
 
-    public function setIsDirect(?bool $isDirect): self
+    public function setDirect(?bool $direct): self
     {
-        $this->isDirect = $isDirect;
+        $this->direct = $direct;
 
         return $this;
     }
 
-    public function getIsPublic(): ?bool
+    public function isPublic(): ?bool
     {
-        return $this->isPublic;
+        return $this->public;
     }
 
-    public function setIsPublic(?bool $isPublic): self
+    public function setPublic(?bool $public): self
     {
-        $this->isPublic = $isPublic;
+        $this->public = $public;
 
         return $this;
     }
@@ -481,14 +485,21 @@ class OfferDraft
         return $this;
     }
 
-    public function getIsOfPartner(): ?bool
+    /**
+     * @return bool|null
+     */
+    public function isPostedByPartner(): ?bool
     {
-        return $this->isOfPartner;
+        return $this->postedByPartner;
     }
 
-    public function setIsOfPartner(?bool $isOfPartner): self
+    /**
+     * @param bool $postedByPartner
+     * @return $this
+     */
+    public function setPostedByPartner(bool $postedByPartner): self
     {
-        $this->isOfPartner = $isOfPartner;
+        $this->postedByPartner = $postedByPartner;
 
         return $this;
     }
@@ -589,24 +600,24 @@ class OfferDraft
         return $this;
     }
 
-    public function getIsAccessibleForDisabled(): ?bool
+    public function isAccessibleForDisabled(): ?bool
     {
-        return $this->isAccessibleForDisabled;
+        return $this->accessibleForDisabled;
     }
 
-    public function setIsAccessibleForDisabled(bool $isAccessibleForDisabled): self
+    public function setAccessibleForDisabled(bool $accessibleForDisabled): self
     {
-        $this->isAccessibleForDisabled = $isAccessibleForDisabled;
+        $this->accessibleForDisabled = $accessibleForDisabled;
 
         return $this;
     }
 
-    public function getUpdateAt(): ?\DateTimeImmutable
+    public function getUpdateAt(): ?\DateTimeInterface
     {
         return $this->updateAt;
     }
 
-    public function setUpdateAt(?\DateTimeImmutable $updateAt): self
+    public function setUpdateAt(?\DateTimeInterface $updateAt): self
     {
         $this->updateAt = $updateAt;
 

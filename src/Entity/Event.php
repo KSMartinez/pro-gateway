@@ -180,7 +180,7 @@ class Event implements ImageStockCompatibleInterface, UploadPictureCompatibleInt
      */
     #[ORM\Column(type: 'boolean')]
     #[Groups(['event:read', 'event:create'])]
-    private bool $isPublic;
+    private bool $public;
 
     /**
      * @var DateTimeImmutable 
@@ -401,14 +401,14 @@ class Event implements ImageStockCompatibleInterface, UploadPictureCompatibleInt
         return $this;
     }
 
-    public function getIsPublic(): ?bool
+    public function isPublic(): ?bool
     {
-        return $this->isPublic;
+        return $this->public;
     }
 
-    public function setIsPublic(bool $isPublic): self
+    public function setPublic(bool $public): self
     {
-        $this->isPublic = $isPublic;
+        $this->public = $public;
 
         return $this;
     }

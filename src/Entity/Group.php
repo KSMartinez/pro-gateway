@@ -197,14 +197,14 @@ class Group implements ImageStockCompatibleInterface, UploadPictureCompatibleInt
      */
     #[Groups(["group:read"])]
     #[ORM\Column(type: 'boolean', nullable:true)]
-    private ?bool $isPublic;
+    private ?bool $public;
 
     /**
      * @var bool|null
      */
     #[Groups(["group:read"])]
     #[ORM\Column(type: 'boolean', nullable:true)]
-    private ?bool $isInstitutional;
+    private ?bool $institutional;
 
     /**
      * @var DateTimeInterface|null
@@ -405,26 +405,26 @@ class Group implements ImageStockCompatibleInterface, UploadPictureCompatibleInt
         return $this;
     }
 
-    public function getIsPublic(): ?bool
+    public function isPublic(): ?bool
     {
-        return $this->isPublic;
+        return $this->public;
     }
 
-    public function setIsPublic(?bool $isPublic): self
+    public function setPublic(?bool $public): self
     {
-        $this->isPublic = $isPublic;
+        $this->public = $public;
 
         return $this;
     }
 
-    public function getIsInstitutional(): ?bool
+    public function isInstitutional(): ?bool
     {
-        return $this->isInstitutional;
+        return $this->institutional;
     }
 
-    public function setIsInstitutional(?bool $isInstitutional): self
+    public function setInstitutional(?bool $institutional): self
     {
-        $this->isInstitutional = $isInstitutional;
+        $this->institutional = $institutional;
 
         return $this;
     }

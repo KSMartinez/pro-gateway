@@ -307,14 +307,14 @@ class Offer implements ImageStockCompatibleInterface, UploadPictureCompatibleInt
      */
     #[ORM\Column(type: 'boolean')]
     #[Groups(['offer:read', 'offer:write'])]
-    private bool $isDirect = false;
+    private bool $direct = false;
 
     /**
      * @var bool
      */
     #[ORM\Column(type: 'boolean')]
     #[Groups(['offer:read', 'offer:write'])]
-    private bool $isPublic = false;
+    private bool $public = false;
 
     /**
      * @var string|null
@@ -732,18 +732,18 @@ class Offer implements ImageStockCompatibleInterface, UploadPictureCompatibleInt
     /**
      * @return bool|null
      */
-    public function getIsDirect(): ?bool
+    public function isDirect(): ?bool
     {
-        return $this->isDirect;
+        return $this->direct;
     }
 
     /**
-     * @param bool $isDirect
+     * @param bool $direct
      * @return $this
      */
-    public function setIsDirect(bool $isDirect): self
+    public function setDirect(bool $direct): self
     {
-        $this->isDirect = $isDirect;
+        $this->direct = $direct;
 
         return $this;
     }
@@ -752,18 +752,18 @@ class Offer implements ImageStockCompatibleInterface, UploadPictureCompatibleInt
     /**
      * @return bool|null
      */
-    public function getIsPublic(): ?bool
+    public function isPublic(): ?bool
     {
-        return $this->isPublic;
+        return $this->public;
     }
 
     /**
-     * @param bool $isPublic
+     * @param bool $public
      * @return $this
      */
-    public function setIsPublic(bool $isPublic): self
+    public function setPublic(bool $public): self
     {
-        $this->isPublic = $isPublic;
+        $this->public = $public;
 
         return $this;
     }

@@ -51,7 +51,7 @@ final class EventFactory extends ModelFactory
             'description' => self::faker()->paragraphs(3, true),
             'forAllUniversities' => self::faker()->boolean(),
             'university' => self::faker()->company(),
-            'isPublic' => self::faker()->boolean(),
+            'public' => self::faker()->boolean(),
             'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'company' => self::faker()->company(),
             'maxNumberOfParticipants' => self::faker()->randomNumber(),
