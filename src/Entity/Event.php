@@ -335,8 +335,8 @@ class Event implements ImageStockCompatibleInterface, UploadPictureCompatibleInt
     /**
      * @var EventStatus
      */
-    #[ORM\ManyToOne(targetEntity: EventStatus::class)]
-    #[Groups(['event:read'])]
+    #[ORM\ManyToOne(targetEntity: EventStatus::class, cascade: ['persist'], inversedBy: 'news')]
+    #[Groups(['event:read', 'event:read:item'])]
     #[ORM\JoinColumn(nullable: false)]
     private EventStatus $eventStatus;
 
