@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\EventStatusRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: EventStatusRepository::class)]
 #[ApiResource(
@@ -24,12 +25,14 @@ class EventStatus
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['event:read:item'])]
     private ?int $id;
 
     /**
      * @var string
      */
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['event:read:item'])]
     private string $label;
 
     /**
