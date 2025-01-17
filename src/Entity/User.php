@@ -169,7 +169,9 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
  */
 class User implements UserInterface, ImageStockCompatibleInterface
 {
-    const ROLE_ADMIN = 'ROLE_ADMIN';
+
+    // We define the role to be sure that the user got the right role for any page of the site
+    const ROLE_ADMIN = 'ROLE_ADMIN'; 
     const ROLE_ETUDIANT = 'ROLE_ETUDIANT';
     const ROLE_PERSONNEL = 'ROLE_PERSONNEL';
     const ROLE_ETUDIANT_NON_INSCRIT = 'ROLE_ETUDIANT_NI';
