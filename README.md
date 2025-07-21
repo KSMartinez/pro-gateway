@@ -1,4 +1,4 @@
-## Reseau Pro - Portail Univesite 
+## professional-gateway 
 
 - This project has PHPStan installed for code analysis. You can run the analysis at any point using 
 ``` 
